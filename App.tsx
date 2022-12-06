@@ -10,8 +10,12 @@ import { THEME } from "./src/theme";
 
 import { Loading } from "./src/components/Loading";
 
-// import { SignIn } from "./src/screens/SignIn";
+import { SignIn } from "./src/screens/SignIn";
 import { SignUp } from "./src/screens/SignUp";
+import { LoginOptions } from "./src/screens/LoginOptions";
+import { InitialTextClub } from "./src/screens/InitialTextClub";
+import { InitialTextSponsor } from "./src/screens/InitialTextSponsor";
+import { InitialTextConfection } from "./src/screens/InitialTextConfection";
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_700Bold });
@@ -23,7 +27,7 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      {fontsLoaded ? <SignUp /> : <Loading />}
+      {fontsLoaded ? <InitialTextConfection /> : <Loading />}
     </NativeBaseProvider>
   );
 }
