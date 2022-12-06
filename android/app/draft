@@ -1,0 +1,68 @@
+$ expo credentials:manager
+=====================================================
+@bllackdev/patrocina-varzea-mobile
+  Upload Keystore hashes
+    Google Certificate Fingerprint:     EB:21:E0:5A:F4:08:22:F0:9B:21:97:30:0D:1F:4F:93:CA:BD:62:B5
+    Google Certificate Hash (SHA-1):    EB21E05AF40822F09B2197300D1F4F93CABD62B5
+    Google Certificate Hash (SHA-256):  AEDFEEA3B6117F8540DC80D524072443F880BDD0AD62243332BF43FA8E122921
+    Facebook Key Hash:                  6yHgWvQIIvCbIZcwDR9Pk8q9YrU=
+  Push Notifications credentials
+    FCM Api Key:  849948842277
+=====================================================
+Keystore credentials
+  Keystore password: 941711rapha
+  Key alias:         patrocina-varzea
+  Key password:      941711rapha
+
+=====================================================
+keytool -genkey -v -storetype PKCS12 -keyalg RSA -keysize 2048 -validity 10000 -storepass EB:21:E0:5A:F4:08:22:F0:9B:21:97:30:0D:1F:4F:93:CA:BD:62:B5 -keypass EB:21:E0:5A:F4:08:22:F0:9B:21:97:30:0D:1F:4F:93:CA:BD:62:B5 -alias EB:21:E0:5A:F4:08:22:F0:9B:21:97:30:0D:1F:4F:93:CA:BD:62:B5 -keystore release.keystore -dname "CN=com.expo.patrocinavarzea.android.package,OU=,O=,L=,S=,C=US"
+
+keytool -exportcert -v -storetype PKCS12 -keyalg RSA -keysize 2048 -validity 10000 -storepass EB:21:E0:5A:F4:08:22:F0:9B:21:97:30:0D:1F:4F:93:CA:BD:62:B5 -keypass EB:21:E0:5A:F4:08:22:F0:9B:21:97:30:0D:1F:4F:93:CA:BD:62:B5 -alias EB:21:E0:5A:F4:08:22:F0:9B:21:97:30:0D:1F:4F:93:CA:BD:62:B5 -file upload_certificate.pem -keystore release.keystore -dname "CN=com.expo.patrocinavarzea.android.package,OU=,O=,L=,S=,C=US"
+=====================================================
+keytool -list -v -keystore android/keystores/release.keystore
+=====================================================
+DEU CERTO PARA RELEASE.KEYSTORE:
+
+1 - keytool -importcert -alias EB:21:E0:5A:F4:08:22:F0:9B:21:97:30:0D:1F:4F:93:CA:BD:62:B5 -file upload_cert.der -keystore truststore.jks 
+
+2 - keytool -importkeystore -srckeystore truststore.jks -destkeystore release.keystore
+=====================================================
+keytool -genkeypair -alias patrocina-varzea -keyalg RSA -keysize 2048 -validity 9125 -keystore keystore.jks
+
+keytool -export -rfc -alias patrocina-varzea -file upload_certificate.pem -keystore keystore.jks
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
