@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import {
   VStack,
   Image,
@@ -10,6 +11,8 @@ import {
 } from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
+
 import { Button } from "../components/Button";
 
 import BackgroundImg from "../assets/background.png";
@@ -17,8 +20,10 @@ import IllustrationImg from "../assets/icon.png";
 import { TouchableOpacity } from "react-native";
 
 export function EmailVerify() {
-  function handleGoBack() {
-    // navigation.goBack();
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
+
+  function handleGoSignIn() {
+    navigation.navigate("signIn");
   }
 
   return (
@@ -76,7 +81,7 @@ export function EmailVerify() {
           </Text>
         </Center>
         <Center>
-          <Button title="Voltar ao login" mt={8} onPress={handleGoBack} />
+          <Button title="Voltar ao login" mt={8} onPress={handleGoSignIn} />
           <HStack mt={4}>
             <Text color="white" fontSize="sm" fontFamily="body" mr={2}>
               Não recebeu o e-mail?
@@ -84,7 +89,7 @@ export function EmailVerify() {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
-                //navigation.navigate("retryEmailVerify");
+                navigation.navigate("retryEmailVerify");
               }}
             >
               <Text

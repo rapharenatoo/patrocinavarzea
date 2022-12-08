@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import {
   VStack,
   Image,
@@ -12,12 +14,13 @@ import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
+import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
+
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 
 import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
-import { TouchableOpacity } from "react-native";
 
 type FormDataPros = {
   email: string;
@@ -33,6 +36,7 @@ const signUpSchema = yup.object({
 });
 
 export function SignIn() {
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -44,10 +48,10 @@ export function SignIn() {
   });
 
   function handleGoBack() {
-    // navigation.goBack();
+    navigation.navigate("loginOptions");
   }
 
-  async function handleSignUp(data: FormDataPros) {
+  async function handleSignIn(data: FormDataPros) {
     console.log(data);
   }
 
@@ -110,7 +114,7 @@ export function SignIn() {
 
           <Button
             title="Acessar conta"
-            onPress={handleSubmit(handleSignUp)}
+            onPress={handleSubmit(handleSignIn)}
             isLoading={isLoading}
           />
 

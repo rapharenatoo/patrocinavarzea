@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   VStack,
   Image,
@@ -11,6 +12,8 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+
+import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
 import { SelectSingUp } from "../components/SelectSingUp";
 import { Input } from "../components/Input";
@@ -42,6 +45,7 @@ const signUpSchema = yup.object({
 });
 
 export function SignUp() {
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -52,8 +56,8 @@ export function SignUp() {
     resolver: yupResolver(signUpSchema),
   });
 
-  function handleGoBack() {
-    // navigation.goBack();
+  function handleGoSignIn() {
+    navigation.navigate("signIn");
   }
 
   async function handleSignUp(data: FormDataPros) {
@@ -169,7 +173,7 @@ export function SignUp() {
           title="Voltar para o início"
           variant="outline"
           mt={8}
-          onPress={handleGoBack}
+          onPress={handleGoSignIn}
         />
       </VStack>
     </ScrollView>

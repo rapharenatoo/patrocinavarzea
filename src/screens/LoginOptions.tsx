@@ -1,5 +1,8 @@
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { VStack, Image, Center, ScrollView, useToast } from "native-base";
+
+import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
 import { ButtonLoginOptions } from "../components/ButtonLoginOptions";
 
@@ -7,11 +10,28 @@ import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
 
 export function LoginOptions() {
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  function handleGoBack() {
-    // navigation.goBack();
+  function handleGoSignUp() {
+    navigation.navigate("signUp");
+  }
+
+  function handleGoSignInClub() {
+    navigation.navigate("initialTextClub");
+  }
+
+  function handleGoSignInSponsor() {
+    navigation.navigate("initialTextSponsor");
+  }
+
+  function handleGoSignInConfection() {
+    navigation.navigate("initialTextConfection");
+  }
+
+  function handleGoSignIn() {
+    navigation.navigate("signIn");
   }
 
   return (
@@ -42,32 +62,32 @@ export function LoginOptions() {
             title="CADASTRE-SE"
             color="secondary"
             mb={4}
-            onPress={handleGoBack}
+            onPress={handleGoSignUp}
           />
 
           <ButtonLoginOptions
-            title="CLUBE"
+            title="CLUBES-TIMES"
             color="primary"
             mb={4}
-            onPress={handleGoBack}
+            onPress={handleGoSignInClub}
           />
           <ButtonLoginOptions
             title="PATROCINADOR"
             color="primary"
             mb={4}
-            onPress={handleGoBack}
+            onPress={handleGoSignInSponsor}
           />
           <ButtonLoginOptions
-            title="CONFECÇÃO UNIFORMES"
+            title="CONFECÇÃO DE UNIFORMES"
             color="primary"
             mb={4}
-            onPress={handleGoBack}
+            onPress={handleGoSignInConfection}
           />
           <ButtonLoginOptions
             title="CAMPEONATOS"
             color="primary"
             mb={4}
-            onPress={handleGoBack}
+            onPress={handleGoSignIn}
           />
         </Center>
       </VStack>

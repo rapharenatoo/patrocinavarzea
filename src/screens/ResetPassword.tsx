@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   VStack,
   Image,
@@ -10,6 +11,8 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+
+import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
@@ -26,6 +29,7 @@ const resetPasswordSchema = yup.object({
 });
 
 export function ResetPassword() {
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -36,11 +40,11 @@ export function ResetPassword() {
     resolver: yupResolver(resetPasswordSchema),
   });
 
-  function handleGoBack() {
-    // navigation.goBack();
+  function handleGoSignIn() {
+    navigation.navigate("signIn");
   }
 
-  async function handleSignUp(data: FormDataPros) {
+  async function handleResetPassword(data: FormDataPros) {
     console.log(data);
   }
 
@@ -96,7 +100,7 @@ export function ResetPassword() {
           <Button
             title="Enviar"
             mt={2}
-            onPress={handleSubmit(handleSignUp)}
+            onPress={handleSubmit(handleResetPassword)}
             isLoading={isLoading}
           />
         </Center>
@@ -105,7 +109,7 @@ export function ResetPassword() {
           title="Voltar para o início"
           variant="outline"
           mt={32}
-          onPress={handleGoBack}
+          onPress={handleGoSignIn}
         />
       </VStack>
     </ScrollView>

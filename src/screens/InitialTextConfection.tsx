@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import {
   VStack,
   Image,
@@ -7,14 +8,19 @@ import {
   Text,
   Box,
 } from "native-base";
+
+import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
+
 import { Button } from "../components/Button";
 
 import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
 
 export function InitialTextConfection() {
-  function handleGoBack() {
-    // navigation.goBack();
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
+
+  function handleGoSignIn() {
+    navigation.navigate("signIn");
   }
 
   return (
@@ -64,7 +70,7 @@ export function InitialTextConfection() {
           </Text>
         </Box>
 
-        <Button title="Avançar" mt={8} onPress={handleGoBack} />
+        <Button title="Avançar" mt={8} onPress={handleGoSignIn} />
       </VStack>
     </ScrollView>
   );
