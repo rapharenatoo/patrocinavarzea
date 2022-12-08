@@ -6,9 +6,9 @@ import { UserPhoto } from "./UserPhoto";
 
 import defaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
-export function HomeHeader() {
+export function Header() {
   return (
-    <HStack bg="gray.600" pt={16} pb={5} px={8} alignItems="center">
+    <HStack bg="gray.600" pt={12} pb={5} px={8} alignItems="center">
       <UserPhoto
         source={defaultUserPhotoImg}
         alt="Imagem do usuário"
@@ -16,12 +16,12 @@ export function HomeHeader() {
         mr={4}
       />
 
-      <VStack flex={1}>
+      <VStack flex={1} mr={2}>
         <Text color="white" fontSize="md">
           Olá,
         </Text>
 
-        <Heading color="white" fontSize="md" fontFamily="heading">
+        <Heading color="white" fontSize="md" fontFamily="heading" numberOfLines={2}>
           Raphael Renato
         </Heading>
       </VStack>
