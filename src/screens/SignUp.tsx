@@ -4,7 +4,6 @@ import {
   VStack,
   Image,
   Center,
-  Text,
   Heading,
   ScrollView,
   useToast,
@@ -12,6 +11,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import auth from "@react-native-firebase/auth";
 
 import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
@@ -61,7 +61,59 @@ export function SignUp() {
   }
 
   async function handleSignUp(data: FormDataPros) {
-    console.log(data);
+    setIsLoading(true);
+
+    await auth()
+      .createUserWithEmailAndPassword(data.email, data.password)
+
+      .then(() => {
+        const update = {
+          displayName: data.name,
+        };
+
+        auth().currentUser.updateProfile(update);
+        auth().currentUser.sendEmailVerification();
+
+        // auth().signOut();
+        navigation.navigate("emailVerify");
+        console.log(">>>>", data);
+        console.log(">>>>", auth().currentUser);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+
+        setIsLoading(false);
+
+        if (errorCode === "auth/email-already-in-use") {
+          const messageError = toast.show({
+            title:
+              "O email já está cadastrado no Patrocina Várzea, faça o login para continuar.",
+            placement: "top",
+            bgColor: "red.500",
+          });
+          return messageError;
+        } else if (errorCode === "auth/network-request-failed") {
+          const messageError = toast.show({
+            title:
+              "Parece que você não está conectado a uma rede! Verifique sua conexão e tente novamente.",
+            placement: "top",
+            bgColor: "red.500",
+          });
+          return messageError;
+        } else {
+          const messageError = toast.show({
+            title: `Algo deu errado. Tente novamente mais tarde! Código: ${errorCode}`,
+            placement: "top",
+            bgColor: "red.500",
+          });
+          console.log(errorCode, errorMessage);
+          return messageError;
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }
 
   return (

@@ -11,6 +11,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import auth from "@react-native-firebase/auth";
 
 import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
@@ -20,7 +21,7 @@ import { Button } from "../components/Button";
 import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
 
-type FormDataPros = {
+type UserProps = {
   email: string;
 };
 
@@ -36,7 +37,7 @@ export function ResetPassword() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormDataPros>({
+  } = useForm<UserProps>({
     resolver: yupResolver(resetPasswordSchema),
   });
 
@@ -44,8 +45,34 @@ export function ResetPassword() {
     navigation.navigate("signIn");
   }
 
-  async function handleResetPassword(data: FormDataPros) {
-    console.log(data);
+  async function handleResetPassword(data: UserProps) {
+    setIsLoading(true);
+
+    await auth()
+      .sendPasswordResetEmail(data.email)
+      .then(() => {
+        const messageSuccess = toast.show({
+          title: "Enviamos um e-mail para resetar sua senha.",
+          placement: "top",
+          bgColor: "green.500",
+        });
+        navigation.navigate("signIn");
+        return messageSuccess;
+      })
+      .catch((error) => {
+        setIsLoading(false);
+
+        const messageError = toast.show({
+          title: "Algo deu errado! Tente novamente mais tarde.",
+          placement: "top",
+          bgColor: "red.500",
+        });
+        console.log(error);
+        return messageError;
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }
 
   return (

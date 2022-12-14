@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   VStack,
@@ -8,8 +10,11 @@ import {
   Text,
   Icon,
   HStack,
+  useToast,
+  Spinner,
 } from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import auth from "@react-native-firebase/auth";
 
 import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
@@ -17,13 +22,46 @@ import { Button } from "../components/Button";
 
 import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
-import { TouchableOpacity } from "react-native";
 
 export function EmailVerify() {
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleGoSignIn() {
     navigation.navigate("signIn");
+  }
+
+  async function handleSendRetryEmail() {
+    setIsLoading(true);
+
+    await auth()
+      .currentUser.sendEmailVerification()
+      .then(() => {
+        const messageSuccess = toast.show({
+          title: "E-mail enviado com sucesso.",
+          placement: "top",
+          bgColor: "green.500",
+        });
+
+        setIsLoading(false);
+
+        return messageSuccess;
+      })
+      .catch((error) => {
+        setIsLoading(false);
+
+        const messageError = toast.show({
+          title: "Algo deu errado! Tente novamente mais tarde.",
+          placement: "top",
+          bgColor: "red.500",
+        });
+        console.log(error);
+        return messageError;
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }
 
   return (
@@ -88,18 +126,20 @@ export function EmailVerify() {
             </Text>
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => {
-                navigation.navigate("retryEmailVerify");
-              }}
+              onPress={handleSendRetryEmail}
             >
-              <Text
-                color="yellow.400"
-                fontSize="sm"
-                fontFamily="body"
-                fontWeight="bold"
-              >
-                Enviar novamente
-              </Text>
+              {isLoading ? (
+                <Spinner color="yellow.400" fontSize="sm" />
+              ) : (
+                <Text
+                  color="yellow.400"
+                  fontSize="sm"
+                  fontFamily="body"
+                  fontWeight="bold"
+                >
+                  Enviar novamente
+                </Text>
+              )}
             </TouchableOpacity>
           </HStack>
         </Center>

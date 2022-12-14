@@ -13,6 +13,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import auth from "@react-native-firebase/auth";
 
 import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
@@ -21,8 +22,9 @@ import { Button } from "../components/Button";
 
 import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
+import { CLUB } from "../utils/constants";
 
-type FormDataPros = {
+type UserProps = {
   email: string;
   password: string;
 };
@@ -43,7 +45,7 @@ export function SignIn() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormDataPros>({
+  } = useForm<UserProps>({
     resolver: yupResolver(signUpSchema),
   });
 
@@ -51,8 +53,47 @@ export function SignIn() {
     navigation.navigate("loginOptions");
   }
 
-  async function handleSignIn(data: FormDataPros) {
-    console.log(data);
+  function handleGoResetPassword() {
+    navigation.navigate("resetPassword");
+  }
+
+  async function handleSignIn(data: UserProps) {
+    setIsLoading(true);
+
+    await auth()
+      .signInWithEmailAndPassword(data.email, data.password)
+      .then(({ user }) => {
+        const isEmailVerify = user.emailVerified;
+        if (!isEmailVerify) {
+          const messageError = toast.show({
+            title:
+              "A verificação do seu email ainda está pendente. Acesse seu e-mail para concluir o cadastro!",
+            placement: "top",
+            bgColor: "red.500",
+          });
+          return messageError;
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+
+        const errorCode = error.code;
+        if (
+          errorCode == "auth/wrong-password" ||
+          errorCode == "auth/user-not-found"
+        ) {
+          const messageError = toast.show({
+            title: "O email e/ou a senha inválida.",
+            placement: "top",
+            bgColor: "red.500",
+          });
+          return messageError;
+        }
+        console.log(errorCode);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }
 
   return (
@@ -118,7 +159,7 @@ export function SignIn() {
             isLoading={isLoading}
           />
 
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={handleGoResetPassword}>
             <Text
               color="gray.300"
               fontFamily="body"
