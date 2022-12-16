@@ -13,6 +13,7 @@ import { Championship } from "../screens/Championship";
 import HomeSvg from "../assets/home.svg";
 import HistorySvg from "../assets/history.svg";
 import ProfileSvg from "../assets/profile.svg";
+import ListSvg from "../assets/list.svg";
 
 type AppAdminRoutes = {
     profileInfo: undefined;
@@ -60,7 +61,7 @@ export function AppAdminRoutes() {
         component={ChampionshipsList}
         options={{
           tabBarIcon: ({ color }) => (
-            <HistorySvg fill={color} width={iconSize} height={iconSize} />
+            <ListSvg fill={color} width={iconSize} height={iconSize} />
           ),
         }}
       />

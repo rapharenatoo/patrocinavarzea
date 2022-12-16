@@ -1,9 +1,13 @@
-import { Center, Text } from "native-base";
+import { VStack, Text } from "native-base";
+
+import { FormChampionship } from "../components/FormChampionship";
+import { ScreenHeader } from "../components/ScreenHeader";
 
 export function Championship() {
   return (
-    <Center flex={1}>
-      <Text color="yellow.400"> Championship </Text>
-    </Center>
+    <VStack flex={1}>
+      <ScreenHeader title="Cadastrar Campeonato"/>
+      <FormChampionship />
+    </VStack>
   );
 }

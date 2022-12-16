@@ -73,6 +73,7 @@ export function SignIn() {
           });
           return messageError;
         }
+        console.log(">>>>", auth().currentUser);
       })
       .catch((error) => {
         setIsLoading(false);
@@ -84,6 +85,14 @@ export function SignIn() {
         ) {
           const messageError = toast.show({
             title: "O email e/ou a senha inválida.",
+            placement: "top",
+            bgColor: "red.500",
+          });
+          return messageError;
+        } else if (errorCode === "auth/network-request-failed") {
+          const messageError = toast.show({
+            title:
+              "Parece que você não está conectado a uma rede! Verifique sua conexão e tente novamente.",
             placement: "top",
             bgColor: "red.500",
           });

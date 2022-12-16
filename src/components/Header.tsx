@@ -3,7 +3,6 @@ import { Heading, HStack, VStack, Text, Icon, useToast } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
 import { useNavigation } from "@react-navigation/native";
-
 import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
 import { UserPhoto } from "./UserPhoto";
@@ -49,7 +48,7 @@ export function Header() {
           fontFamily="heading"
           numberOfLines={2}
         >
-          Raphael Renato
+          {auth().currentUser.displayName}
         </Heading>
       </VStack>
 

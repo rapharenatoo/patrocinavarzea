@@ -1,9 +1,13 @@
-import { Center, Text } from "native-base";
+import { FormAdmin } from "../components/FormAdmin";
+import { FormClub } from "../components/FormClub";
+import { FormSponsor } from "../components/FormSponsor";
+import { FormConfection } from "../components/FormConfection";
+import { FormChampionship } from "../components/FormChampionship";
 
 export function Profile() {
   return (
-    <Center flex={1}>
-      <Text color="yellow.400"> Profile </Text>
-    </Center>
+    <>
+      <FormChampionship />
+    </>
   );
 }

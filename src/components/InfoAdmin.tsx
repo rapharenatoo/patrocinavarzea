@@ -1,16 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heading, VStack, ScrollView, Text, Center, Image } from "native-base";
+import { useNavigation } from "@react-navigation/native";
+import firestore from "@react-native-firebase/firestore";
+import auth from "@react-native-firebase/auth";
+
+import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
 import { Button } from "./Button";
 import { InfoEmpty } from "./InfoEmpty";
 
 import IllustrationImg from "../assets/icon.png";
 
+type UserAdminProps = {
+  id: string;
+  name: string;
+  email: string;
+  phoneContact: string;
+};
+
 export function InfoAdmin() {
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const [infoAdmin, setInfoAdmin] = useState<UserAdminProps[]>([]);
   const [isEmpty, setIsEmpty] = useState(false);
+
+  function handleGoProfile() {
+    navigation.navigate("profile");
+    console.log(">>>>>>>");
+  }
+
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection("admin")
+      .where("email", "==", auth().currentUser.email)
+      .onSnapshot((documentSnapshot) => {
+        const data = documentSnapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            ...doc.data(),
+          };
+        }) as UserAdminProps[];
+
+        setInfoAdmin(data);
+      });
+
+    return () => subscriber();
+  }, []);
+
   return (
     <>
-      {isEmpty ? (
+      {infoAdmin.length === 0 ? (
         <InfoEmpty />
       ) : (
         <ScrollView
@@ -36,7 +74,7 @@ export function InfoAdmin() {
                 fontFamily="body"
                 numberOfLines={1}
               >
-                bllackdev@gmail.com
+                {infoAdmin[0].email}
               </Text>
               <Text
                 color="white"
@@ -45,7 +83,7 @@ export function InfoAdmin() {
                 fontFamily="body"
                 numberOfLines={1}
               >
-                Telefone: (11) 98910-0204
+                Telefone: {infoAdmin[0].phoneContact}
               </Text>
             </VStack>
             <Center mb={2}>
@@ -58,7 +96,7 @@ export function InfoAdmin() {
               />
             </Center>
 
-            <Button title="Alterar" mt={4} onPress={() => {}} />
+            <Button title="Alterar" mt={4} onPress={handleGoProfile} />
           </VStack>
         </ScrollView>
       )}

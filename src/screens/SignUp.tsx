@@ -65,16 +65,13 @@ export function SignUp() {
 
     await auth()
       .createUserWithEmailAndPassword(data.email, data.password)
-
+      
       .then(() => {
-        const update = {
+        auth().currentUser.updateProfile({
           displayName: data.name,
-        };
-
-        auth().currentUser.updateProfile(update);
+        });
         auth().currentUser.sendEmailVerification();
 
-        // auth().signOut();
         navigation.navigate("emailVerify");
         console.log(">>>>", data);
         console.log(">>>>", auth().currentUser);
