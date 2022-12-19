@@ -75,7 +75,6 @@ export function ChampionshipsList() {
   }, []);
 
   useEffect(() => {
-    setIsLoading(true);
     if (textSearch === "") {
       setList(championships);
       setIsLoading(false);

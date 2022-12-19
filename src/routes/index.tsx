@@ -5,6 +5,9 @@ import auth from "@react-native-firebase/auth";
 
 import { AuthRoutes } from "./auth.routes";
 import { AppAdminRoutes } from "./app.admin.routes";
+import { AppClubRoutes } from "./app.club.routes";
+import { AppSponsorRoutes } from "./app.sponsor.routes";
+import { AppConfectionRoutes } from "./app.confection.routes";
 
 type User = {
   uid: string;
@@ -29,7 +32,7 @@ export function Routes() {
   return (
     <Box flex={1} bg="gray.700">
       <NavigationContainer theme={theme}>
-        {user && user.emailVerified ? <AppAdminRoutes /> : <AuthRoutes />}
+        {user && user.emailVerified ? <AppClubRoutes /> : <AuthRoutes />}
       </NavigationContainer>
     </Box>
   );

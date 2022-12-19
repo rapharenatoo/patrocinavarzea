@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { TouchableOpacity } from "react-native";
 import { Heading, HStack, VStack, Text, Icon, useToast } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -11,6 +12,7 @@ import defaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
 export function Header() {
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
+  const [userPhoto, setUserPhoto] = useState(null);
   const toast = useToast();
 
   function handleLogout() {
@@ -28,10 +30,18 @@ export function Header() {
       });
   }
 
+  useEffect(() => {
+    const photo = auth().currentUser.photoURL
+      ? auth().currentUser.photoURL
+      : defaultUserPhotoImg;
+
+    setUserPhoto(photo);
+  }, [auth()]);
+
   return (
     <HStack bg="gray.600" pt={12} pb={5} px={8} alignItems="center">
       <UserPhoto
-        source={defaultUserPhotoImg}
+        source={{ uri: userPhoto }}
         alt="Imagem do usuário"
         size={16}
         mr={4}

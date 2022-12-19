@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity } from "react-native";
+import { Alert, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
@@ -11,11 +11,14 @@ import {
   Heading,
   HStack,
 } from "native-base";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
+import storage from "@react-native-firebase/storage";
 import uuid from "react-native-uuid";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
@@ -23,6 +26,8 @@ import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 import { UserPhoto } from "./UserPhoto";
 import { Input } from "./Input";
 import { Button } from "./Button";
+
+import defaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
 type Address = {
   zipCode?: string;
@@ -68,11 +73,12 @@ const validationSchema = yup.object({
 const PHOTO_SIZE = 24;
 
 export function FormClub() {
+  const toast = useToast();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [infoClub, setInfoClub] = useState<UserClubProps[]>([]);
-  const toast = useToast();
+  const [userPhoto, setUserPhoto] = useState(null);
 
   useEffect(() => {
     const subscriber = firestore()
@@ -91,6 +97,45 @@ export function FormClub() {
 
     return () => subscriber();
   }, []);
+
+  async function handleUserPhotoSelect() {
+    setPhotoIsLoading(true);
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      });
+
+      if (photoSelected.canceled) {
+        return;
+      }
+
+      if (photoSelected.assets[0].uri) {
+        const photoInfo = await FileSystem.getInfoAsync(
+          photoSelected.assets[0].uri
+        );
+
+        if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
+          return toast.show({
+            title: "Essa imagem é muito grande. Escolha uma de até 5MB.",
+            placement: "top",
+            bgColor: "red.500",
+          });
+        }
+        await auth().currentUser.updateProfile({
+          photoURL: photoSelected.assets[0].uri,
+        });
+
+        setUserPhoto(photoSelected.assets[0].uri);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPhotoIsLoading(false);
+    }
+  }
 
   const {
     control,
@@ -123,7 +168,7 @@ export function FormClub() {
           displayName: data.name,
         });
 
-        navigation.navigate("profileInfo");
+        navigation.navigate("home");
         const messageSuccess = toast.show({
           title: "Dados atualizados com sucesso.",
           placement: "top",
@@ -163,13 +208,13 @@ export function FormClub() {
           ) : (
             <UserPhoto
               source={{
-                uri: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.xn4yG10rX6X4uhzIgvk93QAAAA%26pid%3DApi&f=1&ipt=2b07fac776e7f1bbd226db1e92657e3d67c649a75fb064d4ae1faa5b5edb51bf&ipo=images",
+                uri: userPhoto,
               }}
               alt="Foto do usuário"
               size={PHOTO_SIZE}
             />
           )}
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={handleUserPhotoSelect}>
             <Text
               color="yellow.400"
               fontWeight="bold"
@@ -188,7 +233,7 @@ export function FormClub() {
           alignSelf="flex-start"
           fontFamily="heading"
         >
-          Nº de registro: 1
+          Nº de registro: {!!infoClub[0]?.drawId ? infoClub[0]?.drawId : "-"}
         </Heading>
         <Controller
           control={control}

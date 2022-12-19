@@ -126,7 +126,7 @@ export function FormConfection() {
           displayName: data.name,
         });
 
-        navigation.navigate("profileInfo");
+        navigation.navigate("home");
         const messageSuccess = toast.show({
           title: "Dados atualizados com sucesso.",
           placement: "top",

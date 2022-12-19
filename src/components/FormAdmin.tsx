@@ -70,7 +70,7 @@ export function FormAdmin() {
     defaultValues: {
       name: auth().currentUser.displayName,
       email: auth().currentUser.email,
-      phoneContact: String(infoAdmin[0]?.phoneContact)
+      phoneContact: String(infoAdmin[0]?.phoneContact),
     },
   });
 
@@ -92,7 +92,7 @@ export function FormAdmin() {
           displayName: data.name,
         });
 
-        navigation.navigate("profileInfo");
+        navigation.navigate("home");
         const messageSuccess = toast.show({
           title: "Dados atualizados com sucesso.",
           placement: "top",

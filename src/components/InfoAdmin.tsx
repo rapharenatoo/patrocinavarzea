@@ -8,6 +8,7 @@ import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
 import { Button } from "./Button";
 import { InfoEmpty } from "./InfoEmpty";
+import { Skeleton } from "./Skeleton";
 
 import IllustrationImg from "../assets/icon.png";
 
@@ -21,11 +22,10 @@ type UserAdminProps = {
 export function InfoAdmin() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [infoAdmin, setInfoAdmin] = useState<UserAdminProps[]>([]);
-  const [isEmpty, setIsEmpty] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   function handleGoProfile() {
     navigation.navigate("profile");
-    console.log(">>>>>>>");
   }
 
   useEffect(() => {
@@ -41,6 +41,7 @@ export function InfoAdmin() {
         }) as UserAdminProps[];
 
         setInfoAdmin(data);
+        setIsLoading(false);
       });
 
     return () => subscriber();
@@ -48,7 +49,10 @@ export function InfoAdmin() {
 
   return (
     <>
-      {infoAdmin.length === 0 ? (
+      {isLoading ? (
+        <Skeleton />
+      ) : (
+        <>{infoAdmin.length === 0 ? (
         <InfoEmpty />
       ) : (
         <ScrollView
@@ -74,7 +78,7 @@ export function InfoAdmin() {
                 fontFamily="body"
                 numberOfLines={1}
               >
-                {infoAdmin[0].email}
+                {auth().currentUser.email}
               </Text>
               <Text
                 color="white"
@@ -99,6 +103,8 @@ export function InfoAdmin() {
             <Button title="Alterar" mt={4} onPress={handleGoProfile} />
           </VStack>
         </ScrollView>
+      )}
+      </>
       )}
     </>
   );

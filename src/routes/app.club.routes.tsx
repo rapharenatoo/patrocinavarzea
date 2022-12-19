@@ -15,20 +15,18 @@ import HistorySvg from "../assets/history.svg";
 import ProfileSvg from "../assets/profile.svg";
 import ListSvg from "../assets/list.svg";
 import AddSvg from "../assets/add.svg";
-import SponsorSvg from "../assets/sponsor.svg";
 
-type AppAdminRoutes = {
+type AppClubRoutes = {
   home: undefined;
   profile: undefined;
   championshipsList: undefined;
-  championship: undefined;
 };
 
-export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppAdminRoutes>;
+export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppClubRoutes>;
 
-const { Navigator, Screen } = createBottomTabNavigator<AppAdminRoutes>();
+const { Navigator, Screen } = createBottomTabNavigator<AppClubRoutes>();
 
-export function AppAdminRoutes() {
+export function AppClubRoutes() {
   const { sizes, colors } = useTheme();
 
   const iconSize = sizes[8];
@@ -64,15 +62,6 @@ export function AppAdminRoutes() {
         options={{
           tabBarIcon: ({ color }) => (
             <ListSvg fill={color} width={iconSize} height={iconSize} />
-          ),
-        }}
-      />
-      <Screen
-        name="championship"
-        component={Championship}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <AddSvg fill={color} width={iconSize} height={iconSize} />
           ),
         }}
       />
