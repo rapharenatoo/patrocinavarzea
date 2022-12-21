@@ -38,8 +38,8 @@ const signUpSchema = yup.object({
 });
 
 export function SignIn() {
-  const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const toast = useToast();
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const [isLoading, setIsLoading] = useState(false);
   const {
     control,

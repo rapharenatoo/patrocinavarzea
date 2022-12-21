@@ -65,7 +65,7 @@ export function SignUp() {
 
     await auth()
       .createUserWithEmailAndPassword(data.email, data.password)
-      
+
       .then(() => {
         auth().currentUser.updateProfile({
           displayName: data.name,
@@ -73,8 +73,6 @@ export function SignUp() {
         auth().currentUser.sendEmailVerification();
 
         navigation.navigate("emailVerify");
-        console.log(">>>>", data);
-        console.log(">>>>", auth().currentUser);
       })
       .catch((error) => {
         const errorCode = error.code;

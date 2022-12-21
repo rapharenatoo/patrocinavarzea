@@ -12,10 +12,15 @@ import { Button } from "./Button";
 
 import IllustrationImg from "../assets/icon.png";
 
-export function ChampionshipEmpty() {
+type Props = {
+  title: string;
+  buttonVisible?: boolean;
+};
+
+export function Empty({ title, buttonVisible = true }: Props) {
   return (
-    <VStack flex={1} px={6} pb={10}>
-      <Center pb={4} flex={1}>
+    <VStack flex={1} px={2} mt={6}>
+      <Center flex={1} pb={4}>
         <Heading
           color="white"
           fontSize="lg"
@@ -23,10 +28,10 @@ export function ChampionshipEmpty() {
           fontFamily="heading"
           textAlign="center"
         >
-          Não há campeonatos cadastrados.
+          {title}
         </Heading>
       </Center>
-      <Center mb={2}>
+      <Center>
         <Image
           source={IllustrationImg}
           alt="Icone do aplicativo"
@@ -36,7 +41,7 @@ export function ChampionshipEmpty() {
         />
       </Center>
 
-      <Button title="Atualizar" mt={4} onPress={() => {}} />
+      {buttonVisible && <Button title="Atualizar" mt={4} onPress={() => {}} />}
     </VStack>
   );
 }

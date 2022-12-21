@@ -10,6 +10,7 @@ import {
   VStack,
   Heading,
   HStack,
+  Radio,
 } from "native-base";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -17,6 +18,8 @@ import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import uuid from "react-native-uuid";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
@@ -36,8 +39,9 @@ type UserConfectionProps = {
   id: string;
   name: string;
   email: string;
+  type: string;
   taxId: string;
-  ie?: number;
+  ie?: string;
   address: Address;
   numberAddress?: string;
   nameContact?: string;
@@ -53,8 +57,23 @@ const validationSchema = yup.object({
     .transform((value) => (!!value ? value : null)),
   phoneContact: yup
     .string()
-    .required("Obrigatório")
+    .required("Informe o nome")
     .min(10, "O telefone deve ter pelo menos 10 digítos"),
+  type: yup.string().required("Selecione CPF ou CNPJ"),
+  taxId: yup.string().required("Informe o CPF / CNPJ"),
+  ie: yup.string().required("Informe o I.E."),
+  address: yup.object({
+    zipCode: yup
+      .string()
+      .required("Informe o CEP")
+      .min(8, "O CEP deve ter pelo menos 8 caracteres"),
+    street: yup.string().required("Informe o endereço"),
+    neighborhood: yup.string().required("Informe o bairro"),
+    state: yup.string().required("Informe o ES"),
+    city: yup.string().required("Informe o cidade"),
+  }),
+  numberAddress: yup.string().required("Informe o Nº"),
+  nameContact: yup.string(),
 });
 
 const PHOTO_SIZE = 24;
@@ -64,6 +83,8 @@ export function FormConfection() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [wantSponsor, setWantSponsor] = useState("NAO");
+  const [userPhoto, setUserPhoto] = useState(null);
   const [infoConfection, setInfoConfection] = useState<UserConfectionProps[]>(
     []
   );
@@ -100,11 +121,61 @@ export function FormConfection() {
   } = useForm<UserConfectionProps>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      name: auth().currentUser.displayName,
+      name: String(auth().currentUser.displayName),
       email: auth().currentUser.email,
-      phoneContact: String(infoConfection[0]?.phoneContact),
+      taxId: String(infoConfection[0]?.taxId),
+      ie: String(infoConfection[0]?.ie),
+      address: {
+        zipCode: infoConfection[0]?.address.zipCode,
+        street: infoConfection[0]?.address.street,
+        neighborhood: infoConfection[0]?.address.neighborhood,
+        state: infoConfection[0]?.address.state,
+        city: infoConfection[0]?.address.city,
+      },
+      numberAddress: infoConfection[0]?.numberAddress,
+      nameContact: infoConfection[0]?.nameContact,
+      phoneContact: infoConfection[0]?.phoneContact,
     },
   });
+
+  async function handleUserPhotoSelect() {
+    setPhotoIsLoading(true);
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      });
+
+      if (photoSelected.canceled) {
+        return;
+      }
+
+      if (photoSelected.assets[0].uri) {
+        const photoInfo = await FileSystem.getInfoAsync(
+          photoSelected.assets[0].uri
+        );
+
+        if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
+          return toast.show({
+            title: "Essa imagem é muito grande. Escolha uma de até 5MB.",
+            placement: "top",
+            bgColor: "red.500",
+          });
+        }
+        await auth().currentUser.updateProfile({
+          photoURL: photoSelected.assets[0].uri,
+        });
+
+        setUserPhoto(photoSelected.assets[0].uri);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPhotoIsLoading(false);
+    }
+  }
 
   const validateUUIDUser =
     infoConfection.length === 0
@@ -119,6 +190,7 @@ export function FormConfection() {
       .doc(validateUUIDUser)
       .set({
         ...data,
+        wantSponsor,
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
@@ -166,13 +238,13 @@ export function FormConfection() {
           ) : (
             <UserPhoto
               source={{
-                uri: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.xn4yG10rX6X4uhzIgvk93QAAAA%26pid%3DApi&f=1&ipt=2b07fac776e7f1bbd226db1e92657e3d67c649a75fb064d4ae1faa5b5edb51bf&ipo=images",
+                uri: userPhoto,
               }}
               alt="Foto do usuário"
               size={PHOTO_SIZE}
             />
           )}
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={handleUserPhotoSelect}>
             <Text
               color="yellow.400"
               fontWeight="bold"
@@ -198,7 +270,7 @@ export function FormConfection() {
           )}
         />
 
-        <Input bg="gray.600" placeholder="PF ou PJ" />
+        {/* <Input bg="gray.600" placeholder="PF ou PJ" /> */}
 
         <Controller
           control={control}
@@ -208,7 +280,7 @@ export function FormConfection() {
               bg="gray.600"
               placeholder="CPF / CNPJ"
               onChangeText={onChange}
-              value={value}
+              // value={value}
               errorMessage={errors.taxId?.message}
             />
           )}
@@ -222,7 +294,7 @@ export function FormConfection() {
               bg="gray.600"
               placeholder="I.E."
               onChangeText={onChange}
-              value={value}
+              // value={value}
               errorMessage={errors.ie?.message}
             />
           )}
@@ -263,7 +335,7 @@ export function FormConfection() {
               bg="gray.600"
               placeholder="CEP"
               onChangeText={onChange}
-              value={value}
+              // value={value}
               errorMessage={errors.address?.zipCode?.message}
             />
           )}
@@ -277,7 +349,7 @@ export function FormConfection() {
               bg="gray.600"
               placeholder="Endereço"
               onChangeText={onChange}
-              value={value}
+              // value={value}
               errorMessage={errors.address?.street?.message}
             />
           )}
@@ -293,7 +365,7 @@ export function FormConfection() {
                   bg="gray.600"
                   placeholder="Nº"
                   onChangeText={onChange}
-                  value={value}
+                  // value={value}
                   errorMessage={errors.numberAddress?.message}
                 />
               )}
@@ -308,7 +380,7 @@ export function FormConfection() {
                   bg="gray.600"
                   placeholder="Bairro"
                   onChangeText={onChange}
-                  value={value}
+                  // value={value}
                   errorMessage={errors.address?.neighborhood?.message}
                 />
               )}
@@ -327,7 +399,7 @@ export function FormConfection() {
                   bg="gray.600"
                   placeholder="ES"
                   onChangeText={onChange}
-                  value={value}
+                  // value={value}
                   errorMessage={errors.address?.state?.message}
                 />
               )}
@@ -342,7 +414,7 @@ export function FormConfection() {
                   bg="gray.600"
                   placeholder="Cidade"
                   onChangeText={onChange}
-                  value={value}
+                  // value={value}
                   errorMessage={errors.address?.city?.message}
                 />
               )}
@@ -370,7 +442,7 @@ export function FormConfection() {
               placeholder="Nome do contato"
               keyboardType="numeric"
               onChangeText={onChange}
-              value={value}
+              // value={value}
               errorMessage={errors.nameContact?.message}
             />
           )}
@@ -402,19 +474,48 @@ export function FormConfection() {
           Informações da confecção
         </Heading>
 
-        <Controller
-          control={control}
-          name="wantSponsor"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="Deseja patrocinar? RadioButton"
-              onChangeText={onChange}
-              value={value}
-              errorMessage={errors.wantSponsor?.message}
-            />
-          )}
-        />
+        <VStack mb={4}>
+          <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
+            Quer patrocinar?
+          </Text>
+          <Radio.Group
+            name="wantSponsor"
+            accessibilityLabel="patrocinar"
+            value={wantSponsor}
+            onChange={(e) => {
+              setWantSponsor(e);
+            }}
+          >
+            <HStack space={4}>
+              <Radio
+                value="SIM"
+                colorScheme="yellow"
+                size="sm"
+                my={1}
+                _text={{
+                  color: "gray.100",
+                  fontSize: "sm",
+                  fontFamily: "body",
+                }}
+              >
+                Sim
+              </Radio>
+              <Radio
+                value="NAO"
+                colorScheme="yellow"
+                size="sm"
+                my={1}
+                _text={{
+                  color: "gray.100",
+                  fontSize: "sm",
+                  fontFamily: "body",
+                }}
+              >
+                Não
+              </Radio>
+            </HStack>
+          </Radio.Group>
+        </VStack>
 
         <Button
           title="Atualizar"

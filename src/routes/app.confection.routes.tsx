@@ -8,7 +8,7 @@ import {
 import { Home } from "../screens/Home";
 import { Profile } from "../screens/Profile";
 import { ChampionshipsList } from "../screens/ChampionshipsList";
-import { Championship } from "../screens/Championship";
+import { ClubList } from "../screens/ClubList";
 
 import HomeSvg from "../assets/home.svg";
 import HistorySvg from "../assets/history.svg";
@@ -58,7 +58,7 @@ export function AppConfectionRoutes() {
           ),
         }}
       />
-      <Screen
+      {/* <Screen
         name="championshipsList"
         component={ChampionshipsList}
         options={{
@@ -66,14 +66,13 @@ export function AppConfectionRoutes() {
             <ListSvg fill={color} width={iconSize} height={iconSize} />
           ),
         }}
-      />
+      /> */}
       <Screen
         name="clubList"
-        component={Championship}
+        component={ClubList}
         options={{
-          tabBarButton: () => null,
           tabBarIcon: ({ color }) => (
-            <AddSvg fill={color} width={iconSize} height={iconSize} />
+            <ListSvg fill={color} width={iconSize} height={iconSize} />
           ),
         }}
       />

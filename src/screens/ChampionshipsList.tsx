@@ -17,7 +17,7 @@ import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
 import { ChampionshipCard } from "../components/ChampionshipCard";
 import { ScreenHeader } from "../components/ScreenHeader";
-import { ChampionshipEmpty } from "../components/ChampionshipEmpty";
+import { Empty } from "../components/Empty";
 
 type Rewards = {
   uniform: boolean;
@@ -152,8 +152,13 @@ export function ChampionshipsList() {
               />
             )}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={<ChampionshipEmpty />}
-            _contentContainerStyle={{ pb: 8 }}
+            ListEmptyComponent={
+              <Empty
+                title="Não há campeonatos cadastrados."
+                buttonVisible={false}
+              />
+            }
+            _contentContainerStyle={{ pb: 2 }}
           />
         )}
       </VStack>

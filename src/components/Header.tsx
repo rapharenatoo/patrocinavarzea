@@ -1,19 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { TouchableOpacity } from "react-native";
 import { Heading, HStack, VStack, Text, Icon, useToast } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
-import { useNavigation } from "@react-navigation/native";
-import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
 import { UserPhoto } from "./UserPhoto";
+import { AlertModal } from "../components/AlertModal";
 
 import defaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
 export function Header() {
-  const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const [userPhoto, setUserPhoto] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
   const toast = useToast();
+
+  const onClose = () => setIsOpen(false);
+  const cancelRef = useRef(null);
 
   function handleLogout() {
     auth()
@@ -62,7 +64,7 @@ export function Header() {
         </Heading>
       </VStack>
 
-      <TouchableOpacity onPress={handleLogout}>
+      <TouchableOpacity onPress={() => setIsOpen(!isOpen)}>
         <Icon
           as={MaterialIcons}
           name="power-settings-new"
@@ -70,6 +72,15 @@ export function Header() {
           size={7}
         />
       </TouchableOpacity>
+      <AlertModal
+        title="Desconectar"
+        text="Tem certeza que deseja desconectar da sua conta?"
+        colorScheme="danger"
+        isOpen={isOpen}
+        onPressPrimary={handleLogout}
+        onPressSecondary={onClose}
+        cancelRef={cancelRef}
+      />
     </HStack>
   );
 }

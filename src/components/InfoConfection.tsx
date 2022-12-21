@@ -67,7 +67,7 @@ export function InfoConfection() {
   return (
     <>
       {isLoading ? (
-        <Skeleton />
+        <Skeleton /> 
       ) : (
         <>
           {infoConfection.length === 0 ? (
@@ -215,7 +215,7 @@ export function InfoConfection() {
                   />
                 </Center>
 
-                <Button title="Alterar" mt={4} onPress={() => {}} />
+                <Button title="Alterar" mt={4} onPress={handleGoProfile} />
               </VStack>
             </ScrollView>
           )}
