@@ -21,8 +21,8 @@ export function SelectZone({
         height={12}
         borderColor={invalid ? "red.500" : "gray.600"}
         px={4}
-        accessibilityLabel="Região ou Zone"
-        placeholder="Região / Zone"
+        accessibilityLabel="Região ou Zona"
+        placeholder="Região / Zona"
         placeholderTextColor="gray.300"
         fontFamily="body"
         color="white"

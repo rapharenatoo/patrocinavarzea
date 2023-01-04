@@ -32,7 +32,7 @@ import { SelectTaxId } from "../components/SelectTaxId";
 import defaultUserPhotoImg from "../assets/userPhotoDefault.png";
 import { SelectZone } from "./SelectZone";
 
-type DrawId = {
+type DrawIdClub = {
   id: string;
   drawId: number;
 };
@@ -113,7 +113,7 @@ export function FormClub() {
   const [ownField, setOwnField] = useState("NAO");
   const [wantSponsorship, setWantSponsorship] = useState("SIM");
   const [isSponsorship, setIsSponsorship] = useState("NAO");
-  const [drawId, setDrawId] = useState<DrawId[]>([]);
+  const [drawId, setDrawId] = useState<DrawIdClub[]>([]);
   const [type, setType] = useState("");
   const ref = useRef<InputMask>(null);
 
@@ -149,7 +149,7 @@ export function FormClub() {
             id: doc.id,
             drawId: doc.data().drawId,
           };
-        }) as DrawId[];
+        }) as DrawIdClub[];
 
         setDrawId(data);
       });
@@ -245,8 +245,7 @@ export function FormClub() {
   }
 
   const getDrawId =
-    infoClub[0]?.drawId === undefined
-      ? Number(drawId[0]?.drawId) + 1
+    !infoClub[0]?.drawId ? Number(drawId[0]?.drawId) + 1
       : Number(infoClub[0]?.drawId);
 
   async function handleUserRegister(data: UserClubProps) {
@@ -258,7 +257,7 @@ export function FormClub() {
       .set({
         ...data,
         email: auth().currentUser.email,
-        drawId: Number(getDrawId[0]), // Send or firestore: NaN 
+        drawId: Number(getDrawId), // Send or firestore: NaN 
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
