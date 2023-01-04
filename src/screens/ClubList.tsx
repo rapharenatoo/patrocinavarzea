@@ -130,7 +130,7 @@ export function ClubList() {
   async function handleSendEmail() {
     setIsLoading(true);
 
-    const to = ["bllackdev@gmail.com"];
+    const to = ["bllackdev@gmail.com", "contato@patrocinavarzea.com.br"];
 
     email(to, {
       subject: `Novos Patrocínios de ${sponsor[0].name}`,
@@ -169,7 +169,7 @@ export function ClubList() {
 
         const messageSuccess = toast.show({
           title:
-            "Parabéns você acabou de patrocinar! Entre os próximos dias nossa equipe entrará em contato.",
+            "Parabéns você acabou de patrocinar! Nossa equipe entrará em contato nos próximos dias.",
           placement: "top",
           bgColor: "green.500",
           duration: 15000,

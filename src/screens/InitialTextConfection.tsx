@@ -20,7 +20,7 @@ export function InitialTextConfection() {
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
 
   function handleGoSignIn() {
-    navigation.navigate("signIn");
+    navigation.navigate("signInConfection");
   }
 
   return (

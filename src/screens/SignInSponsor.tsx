@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   VStack,
@@ -7,109 +8,82 @@ import {
   Heading,
   ScrollView,
   useToast,
+  Text,
 } from "native-base";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import auth from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
 
 import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
-import { SelectSingUp } from "../components/SelectSingUp";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 
 import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
+import { CLUB } from "../utils/constants";
 
-type FormDataPros = {
-  type: string;
-  name: string;
+type UserProps = {
   email: string;
   password: string;
-  password_confirm: string;
 };
 
 const signUpSchema = yup.object({
-  type: yup.string().required("Informe o tipo"),
-  name: yup.string().required("Informe o nome"),
   email: yup.string().required("Informe o e-mail").email("E-mail inválido"),
   password: yup
     .string()
     .required("Informe a senha")
     .min(6, "A senha deve ter pelo menos 6 digítos"),
-  password_confirm: yup
-    .string()
-    .required("Confirme a senha")
-    .oneOf([yup.ref("password"), null], "A confirmação de senha não confere"),
 });
 
-export function SignUp() {
-  const navigation = useNavigation<AuthNavigatorRoutesProps>();
+export function SignInSponsor() {
   const toast = useToast();
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const [isLoading, setIsLoading] = useState(false);
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormDataPros>({
+  } = useForm<UserProps>({
     resolver: yupResolver(signUpSchema),
   });
 
-  function handleGoLoginOptions() {
+  function handleGoBack() {
     navigation.navigate("loginOptions");
   }
 
-  async function handleSignUp(data: FormDataPros) {
+  function handleGoResetPassword() {
+    navigation.navigate("resetPassword");
+  }
+
+  async function handleSignIn(data: UserProps) {
     setIsLoading(true);
 
     await auth()
-      .createUserWithEmailAndPassword(data.email, data.password)
-
-      .then(() => {
-        auth().currentUser.updateProfile({
-          displayName: data.name,
-        });
-        auth().currentUser.sendEmailVerification();
-
-        firestore()
-          .collection("club")
-          .doc(auth().currentUser.uid)
-          .set({
-            name: data.name,
-            email: data.email,
-            type: data.type,
-            createdAt: firestore.FieldValue.serverTimestamp(),
-          })
-          .then(() => {})
-          .catch((error) => {
-            setIsLoading(false);
-
-            const messageError = toast.show({
-              title: "Algo deu errado! Tente novamente mais tarde.",
-              placement: "top",
-              bgColor: "red.500",
-            });
-            console.log(error);
-            return messageError;
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-
-        navigation.navigate("emailVerify");
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
-        setIsLoading(false);
-
-        if (errorCode === "auth/email-already-in-use") {
+      .signInWithEmailAndPassword(data.email, data.password)
+      .then(({ user }) => {
+        const isEmailVerify = user.emailVerified;
+        if (!isEmailVerify) {
           const messageError = toast.show({
             title:
-              "O email já está cadastrado no Patrocina Várzea, faça o login para continuar.",
+              "A verificação do seu email ainda está pendente. Acesse seu e-mail para concluir o cadastro!",
+            placement: "top",
+            bgColor: "red.500",
+          });
+          return messageError;
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+
+        const errorCode = error.code;
+        if (
+          errorCode == "auth/wrong-password" ||
+          errorCode == "auth/user-not-found"
+        ) {
+          const messageError = toast.show({
+            title: "O email e/ou a senha inválida.",
             placement: "top",
             bgColor: "red.500",
           });
@@ -122,15 +96,8 @@ export function SignUp() {
             bgColor: "red.500",
           });
           return messageError;
-        } else {
-          const messageError = toast.show({
-            title: `Algo deu errado. Tente novamente mais tarde! Código: ${errorCode}`,
-            placement: "top",
-            bgColor: "red.500",
-          });
-          console.log(errorCode, errorMessage);
-          return messageError;
         }
+        console.log(errorCode);
       })
       .finally(() => {
         setIsLoading(false);
@@ -151,7 +118,7 @@ export function SignUp() {
           resizeMode="repeat"
           position="absolute"
         />
-        <Center mt={8} mb={4}>
+        <Center mt={20} mb={10}>
           <Image
             source={IllustrationImg}
             alt="Icone do aplicativo"
@@ -162,33 +129,8 @@ export function SignUp() {
         </Center>
         <Center>
           <Heading color="yellow.400" fontSize="xl" mb={6} fontFamily="heading">
-            Crie sua conta
+            Acesse sua conta
           </Heading>
-
-          <Controller
-            control={control}
-            name="type"
-            render={({ field: { onChange, value } }) => (
-              <SelectSingUp
-                type={value}
-                onChange={onChange}
-                errorMessage={errors.type?.message}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="name"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Nome"
-                onChangeText={onChange}
-                value={value}
-                errorMessage={errors.name?.message}
-              />
-            )}
-          />
 
           <Controller
             control={control}
@@ -219,34 +161,30 @@ export function SignUp() {
             )}
           />
 
-          <Controller
-            control={control}
-            name="password_confirm"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Confirme a Senha"
-                secureTextEntry
-                onChangeText={onChange}
-                value={value}
-                onSubmitEditing={handleSubmit(handleSignUp)}
-                returnKeyType="send"
-                errorMessage={errors.password_confirm?.message}
-              />
-            )}
-          />
-
           <Button
-            title="Criar conta"
-            onPress={handleSubmit(handleSignUp)}
+            title="Acessar conta"
+            onPress={handleSubmit(handleSignIn)}
             isLoading={isLoading}
           />
+
+          <TouchableOpacity onPress={handleGoResetPassword}>
+            <Text
+              color="gray.300"
+              fontFamily="body"
+              fontWeight="bold"
+              fontSize="xs"
+              mt={4}
+            >
+              Esqueceu a senha?
+            </Text>
+          </TouchableOpacity>
         </Center>
 
         <Button
           title="Voltar para o início"
           variant="outline"
-          mt={8}
-          onPress={handleGoLoginOptions}
+          mt={12}
+          onPress={handleGoBack}
         />
       </VStack>
     </ScrollView>

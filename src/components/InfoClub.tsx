@@ -76,7 +76,7 @@ export function InfoClub() {
         <Skeleton />
       ) : (
         <>
-          {infoClub.length === 0 ? (
+          {!infoClub[0]?.taxId ? (
             <InfoEmpty />
           ) : (
             <ScrollView
@@ -102,7 +102,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    CPF / CNPJ: {infoClub[0].taxId}
+                    CPF / CNPJ: {infoClub[0]?.taxId}
                   </Text>
                   <Text
                     color="white"
@@ -129,7 +129,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Telefone: {infoClub[0].phoneContact}
+                    Telefone: {infoClub[0]?.phoneContact}
                   </Text>
                   <Text
                     color="white"
@@ -138,7 +138,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Nº de registro: {infoClub[0].drawId}
+                    Nº de registro: {infoClub[0]?.drawId}
                   </Text>
                 </VStack>
 
@@ -158,7 +158,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    CEP: {infoClub[0].address?.zipCode}
+                    CEP: {infoClub[0]?.address?.zipCode}
                   </Text>
                   <Text
                     color="white"
@@ -167,7 +167,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={2}
                   >
-                    {infoClub[0].address?.street}, {infoClub[0].numberAddress}
+                    {infoClub[0]?.address?.street}, {infoClub[0]?.numberAddress}
                   </Text>
                   <Text
                     color="white"
@@ -176,7 +176,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    {infoClub[0].address?.neighborhood}
+                    {infoClub[0]?.address?.neighborhood}
                   </Text>
                   <Text
                     color="white"
@@ -185,7 +185,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    {infoClub[0].address?.city} - {infoClub[0].address?.state}
+                    {infoClub[0]?.address?.city} - {infoClub[0]?.address?.state}
                   </Text>
                   <Text
                     color="white"
@@ -194,7 +194,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Região / Zona: {infoClub[0].zone}
+                    Região / Zona: {infoClub[0]?.zone}
                   </Text>
                 </VStack>
 
@@ -214,7 +214,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Instagram: {infoClub[0].instagram}
+                    Instagram: {infoClub[0]?.instagram}
                   </Text>
                   <Text
                     color="white"
@@ -223,7 +223,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={2}
                   >
-                    Facebook: {infoClub[0].facebook}
+                    Facebook: {infoClub[0]?.facebook}
                   </Text>
                 </VStack>
 
@@ -243,7 +243,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={2}
                   >
-                    Cores do clube-time: {infoClub[0].clubColors}
+                    Cores do clube-time: {infoClub[0]?.clubColors}
                   </Text>
                   <Text
                     color="white"
@@ -252,7 +252,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Deseja receber patrocínio? {infoClub[0].wantSponsorship}
+                    Deseja receber patrocínio? {infoClub[0]?.wantSponsorship}
                   </Text>
                   <Text
                     color="white"
@@ -261,7 +261,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Já tem patrocínio? {infoClub[0].isSponsorship}
+                    Já tem patrocínio? {infoClub[0]?.isSponsorship}
                   </Text>
                   <Text
                     color="white"
@@ -270,7 +270,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Data de término: {infoClub[0].endDate}
+                    Data de término: {infoClub[0]?.endDate}
                   </Text>
                   <Text
                     color="white"
@@ -279,7 +279,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Tem campo próprio? {infoClub[0].ownField}
+                    Tem campo próprio? {infoClub[0]?.ownField}
                   </Text>
                   <Text
                     color="white"
@@ -288,7 +288,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Data de fundação: {infoClub[0].foundationDate}
+                    Data de fundação: {infoClub[0]?.foundationDate}
                   </Text>
                 </VStack>
 

@@ -37,7 +37,7 @@ const signUpSchema = yup.object({
     .min(6, "A senha deve ter pelo menos 6 digítos"),
 });
 
-export function SignIn() {
+export function SignInAdmin() {
   const toast = useToast();
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const [isLoading, setIsLoading] = useState(false);
@@ -73,7 +73,6 @@ export function SignIn() {
           });
           return messageError;
         }
-        console.log(">>>>", auth().currentUser);
       })
       .catch((error) => {
         setIsLoading(false);

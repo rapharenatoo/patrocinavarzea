@@ -10,7 +10,7 @@ export function Home() {
   return (
     <VStack flex={1}>
       <Header />
-      <InfoConfection />
+      <InfoClub />
     </VStack>
   );
 }

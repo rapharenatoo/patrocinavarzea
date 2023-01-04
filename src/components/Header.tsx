@@ -33,7 +33,7 @@ export function Header() {
   }
 
   useEffect(() => {
-    const photo = auth().currentUser.photoURL
+    const photo = auth().currentUser?.photoURL
       ? auth().currentUser.photoURL
       : defaultUserPhotoImg;
 
@@ -43,7 +43,7 @@ export function Header() {
   return (
     <HStack bg="gray.600" pt={12} pb={5} px={8} alignItems="center">
       <UserPhoto
-        source={{ uri: userPhoto }}
+        source={{ uri: auth().currentUser.photoURL }}
         alt="Imagem do usuário"
         size={16}
         mr={4}

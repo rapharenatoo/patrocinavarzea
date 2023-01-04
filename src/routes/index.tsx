@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTheme, Box } from "native-base";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 
 import { AuthRoutes } from "./auth.routes";
 import { AppAdminRoutes } from "./app.admin.routes";
@@ -32,7 +33,7 @@ export function Routes() {
   return (
     <Box flex={1} bg="gray.700">
       <NavigationContainer theme={theme}>
-        {user && user.emailVerified ? <AppConfectionRoutes /> : <AuthRoutes />}
+        {user && user.emailVerified ? <AppClubRoutes /> : <AuthRoutes />}
       </NavigationContainer>
     </Box>
   );

@@ -3,7 +3,10 @@ import {
   NativeStackNavigationProp,
 } from "@react-navigation/native-stack";
 
-import { SignIn } from "../screens/SignIn";
+import { SignInClub } from "../screens/SignInClub";
+import { SignInSponsor } from "../screens/SignInSponsor";
+import { SignInConfection } from "../screens/SignInConfection";
+import { SignInAdmin } from "../screens/SignInAdmin";
 import { SignUp } from "../screens/SignUp";
 import { LoginOptions } from "../screens/LoginOptions";
 import { InitialTextClub } from "../screens/InitialTextClub";
@@ -14,7 +17,10 @@ import { RetryEmailVerify } from "../screens/RetryEmailVerify";
 import { ResetPassword } from "../screens/ResetPassword";
 
 type AuthRoutes = {
-  signIn: undefined;
+  signInAdmin: undefined;
+  signInClub: undefined;
+  signInSponsor: undefined;
+  signInConfection: undefined;
   signUp: undefined;
   loginOptions: undefined;
   initialTextClub: undefined;
@@ -33,7 +39,10 @@ export function AuthRoutes() {
   return (
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="loginOptions" component={LoginOptions} />
-      <Screen name="signIn" component={SignIn} />
+      <Screen name="signInAdmin" component={SignInAdmin} />
+      <Screen name="signInClub" component={SignInClub} />
+      <Screen name="signInSponsor" component={SignInSponsor} />
+      <Screen name="signInConfection" component={SignInConfection} />
       <Screen name="signUp" component={SignUp} />
       <Screen name="initialTextClub" component={InitialTextClub} />
       <Screen name="initialTextSponsor" component={InitialTextSponsor} />

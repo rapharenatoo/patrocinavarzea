@@ -19,7 +19,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
-import uuid from "react-native-uuid";
 import { TextInputMask, TextInputMaskMethods } from "react-native-masked-text";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
@@ -29,9 +28,14 @@ import { Input } from "./Input";
 import { Button } from "./Button";
 import { Skeleton } from "./Skeleton";
 import { SelectTaxId } from "../components/SelectTaxId";
-import { RadioButton } from "./RadioButton";
 
 import defaultUserPhotoImg from "../assets/userPhotoDefault.png";
+import { SelectZone } from "./SelectZone";
+
+type DrawId = {
+  id: string;
+  drawId: number;
+};
 
 type Address = {
   zipCode?: string;
@@ -47,19 +51,19 @@ type UserClubProps = {
   email: string;
   type: string;
   taxId: string;
-  address: Address;
+  address?: Address;
   numberAddress?: string;
-  foundationDate: string;
-  zone: string;
-  clubColors: string;
-  instagram: string;
-  facebook: string;
-  nameContact: string;
-  phoneContact: string;
+  foundationDate?: string;
+  zone?: string;
+  clubColors?: string;
+  instagram?: string;
+  facebook?: string;
+  nameContact?: string;
+  phoneContact?: string;
   ownField: string;
   wantSponsorship: string;
   isSponsorship: string;
-  endDate: string;
+  endDate?: string;
   createdAt: any;
   drawId: number;
 };
@@ -69,12 +73,8 @@ const validationSchema = yup.object({
     .string()
     .nullable()
     .transform((value) => (!!value ? value : null)),
-  phoneContact: yup
-    .string()
-    .required("Obrigatório")
-    .min(10, "O telefone deve ter pelo menos 10 digítos"),
-  type: yup.string().required("Selecione CPF ou CNPJ"),
-  taxId: yup.string().required("Obrigatório"),
+  // type: yup.string().required("Selecione CPF ou CNPJ"),
+  taxId: yup.string().required("Informe o CPF / CNPJ"),
   address: yup.object({
     zipCode: yup
       .string()
@@ -92,6 +92,9 @@ const validationSchema = yup.object({
   instagram: yup.string(),
   facebook: yup.string(),
   nameContact: yup.string(),
+  phoneContact: yup
+    .string()
+    .min(10, "O telefone deve ter pelo menos 10 digítos"),
   endDate: yup.string(),
 });
 
@@ -103,16 +106,20 @@ export function FormClub() {
   const toast = useToast();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
   const [infoClub, setInfoClub] = useState<UserClubProps[]>([]);
   const [userPhoto, setUserPhoto] = useState(null);
   const [ownField, setOwnField] = useState("NAO");
   const [wantSponsorship, setWantSponsorship] = useState("SIM");
   const [isSponsorship, setIsSponsorship] = useState("NAO");
+  const [drawId, setDrawId] = useState<DrawId[]>([]);
   const [type, setType] = useState("");
   const ref = useRef<InputMask>(null);
 
   useEffect(() => {
+    setIsSkeletonLoading(true);
+
     const subscriber = firestore()
       .collection("club")
       .where("email", "==", auth().currentUser.email)
@@ -125,7 +132,26 @@ export function FormClub() {
         }) as UserClubProps[];
 
         setInfoClub(data);
-        setIsLoading(false);
+        setIsSkeletonLoading(false);
+      });
+
+    return () => subscriber();
+  }, []);
+
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection("club")
+      .orderBy("drawId", "desc")
+      .limit(1)
+      .onSnapshot((documentSnapshot) => {
+        const data = documentSnapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            drawId: doc.data().drawId,
+          };
+        }) as DrawId[];
+
+        setDrawId(data);
       });
 
     return () => subscriber();
@@ -140,26 +166,42 @@ export function FormClub() {
     defaultValues: {
       name: auth().currentUser.displayName,
       email: auth().currentUser.email,
-      taxId: String(infoClub[0]?.taxId),
+      taxId: !!infoClub[0]?.taxId ? infoClub[0]?.taxId : "",
       address: {
-        zipCode: infoClub[0]?.address.zipCode,
-        street: infoClub[0]?.address.street,
-        neighborhood: infoClub[0]?.address.neighborhood,
-        state: infoClub[0]?.address.state,
-        city: infoClub[0]?.address.city,
+        zipCode: !!infoClub[0]?.address?.zipCode
+          ? infoClub[0]?.address?.zipCode
+          : "",
+        street: !!infoClub[0]?.address?.street
+          ? infoClub[0]?.address?.street
+          : "",
+        neighborhood: !!infoClub[0]?.address?.neighborhood
+          ? infoClub[0]?.address?.neighborhood
+          : "",
+        state: !!infoClub[0]?.address?.state ? infoClub[0]?.address?.state : "",
+        city: !!infoClub[0]?.address?.city ? infoClub[0]?.address?.city : "",
       },
-      numberAddress: infoClub[0]?.numberAddress,
-      zone: infoClub[0]?.zone,
-      foundationDate: infoClub[0]?.foundationDate,
-      clubColors: infoClub[0]?.clubColors,
-      instagram: infoClub[0]?.instagram,
-      facebook: infoClub[0]?.facebook,
-      nameContact: infoClub[0]?.nameContact,
-      phoneContact: infoClub[0]?.phoneContact,
-      ownField: infoClub[0]?.ownField,
-      wantSponsorship: infoClub[0]?.wantSponsorship,
-      isSponsorship: infoClub[0]?.isSponsorship,
-      endDate: infoClub[0]?.endDate,
+      numberAddress: !!infoClub[0]?.numberAddress
+        ? infoClub[0]?.numberAddress
+        : "",
+      zone: !!infoClub[0]?.zone ? infoClub[0]?.zone : "",
+      foundationDate: !!infoClub[0]?.foundationDate
+        ? infoClub[0]?.foundationDate
+        : "",
+      clubColors: !!infoClub[0]?.clubColors ? infoClub[0]?.clubColors : "",
+      instagram: !!infoClub[0]?.instagram ? infoClub[0]?.instagram : "",
+      facebook: !!infoClub[0]?.facebook ? infoClub[0]?.facebook : "",
+      nameContact: !!infoClub[0]?.nameContact ? infoClub[0]?.nameContact : "",
+      phoneContact: !!infoClub[0]?.phoneContact
+        ? infoClub[0]?.phoneContact
+        : "",
+      ownField: !!infoClub[0]?.ownField ? infoClub[0]?.ownField : "",
+      wantSponsorship: !!infoClub[0]?.wantSponsorship
+        ? infoClub[0]?.wantSponsorship
+        : "",
+      isSponsorship: !!infoClub[0]?.isSponsorship
+        ? infoClub[0]?.isSponsorship
+        : "",
+      endDate: !!infoClub[0]?.endDate ? infoClub[0]?.endDate : "",
     },
   });
 
@@ -202,20 +244,21 @@ export function FormClub() {
     }
   }
 
-  const validateUUIDUser =
-    infoClub.length === 0 ? String(uuid.v4()) : String(infoClub[0]?.id);
+  const getDrawId =
+    infoClub[0]?.drawId === undefined
+      ? Number(drawId[0]?.drawId) + 1
+      : Number(infoClub[0]?.drawId);
 
   async function handleUserRegister(data: UserClubProps) {
     setIsLoading(true);
 
     await firestore()
       .collection("club")
-      .doc(validateUUIDUser)
+      .doc(infoClub[0]?.id)
       .set({
         ...data,
-        ownField,
-        wantSponsorship,
-        isSponsorship,
+        email: auth().currentUser.email,
+        drawId: Number(getDrawId[0]), // Send or firestore: NaN 
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
@@ -247,7 +290,7 @@ export function FormClub() {
         setIsLoading(false);
       });
 
-    console.log(data);
+      console.log(data);
   }
 
   // const validateTaxId = () => {
@@ -269,7 +312,7 @@ export function FormClub() {
 
   return (
     <>
-      {isLoading ? (
+      {isSkeletonLoading ? (
         <Skeleton />
       ) : (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -335,34 +378,12 @@ export function FormClub() {
                 <Input
                   bg="gray.600"
                   placeholder="CPF / CNPJ"
+                  keyboardType="numeric"
                   onChangeText={onChange}
                   value={value}
-                  errorMessage={errors.name?.message}
+                  defaultValue={infoClub[0]?.taxId}
+                  errorMessage={errors.taxId?.message}
                 />
-                // <TextInputMask
-                //   type={value.length <= 11 ? "cpf" : "cnpj"}
-                //   value={value}
-                //   placeholder="CPF / CNPJ"
-                //   // placeholderTextColor={theme.colors.gray}
-                //   onChangeText={onChange}
-                //   keyboardType="numeric"
-                //   style={{
-                //     width: 300,
-                //     height: 35,
-                //     backgroundColor: "#202024",
-                //     borderRadius: 8,
-                //     flexDirection: "row",
-                //     justifyContent: "center",
-                //     alignItems: "center",
-                //     paddingHorizontal: 12,
-                //     fontSize: 18,
-                //     fontFamily: "Roboto_400Regular",
-                //     color: "#FFFFFF",
-                //     marginBottom: 21,
-                //   }}
-                //   onEndEditing={() => validateTaxId()}
-                //   ref={ref}
-                // />
               )}
             />
 
@@ -400,8 +421,9 @@ export function FormClub() {
                 <Input
                   bg="gray.600"
                   placeholder="CEP"
+                  keyboardType="numeric"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
                   defaultValue={infoClub[0]?.address?.zipCode}
                   errorMessage={errors.address?.zipCode?.message}
                 />
@@ -416,7 +438,7 @@ export function FormClub() {
                   bg="gray.600"
                   placeholder="Endereço"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
                   defaultValue={infoClub[0]?.address?.street}
                   errorMessage={errors.address?.street?.message}
                 />
@@ -433,7 +455,7 @@ export function FormClub() {
                       bg="gray.600"
                       placeholder="Nº"
                       onChangeText={onChange}
-                      // value={value}
+                      value={value}
                       defaultValue={infoClub[0]?.numberAddress}
                       errorMessage={errors.numberAddress?.message}
                     />
@@ -449,7 +471,7 @@ export function FormClub() {
                       bg="gray.600"
                       placeholder="Bairro"
                       onChangeText={onChange}
-                      // value={value}
+                      value={value}
                       defaultValue={infoClub[0]?.address?.neighborhood}
                       errorMessage={errors.address?.neighborhood?.message}
                     />
@@ -468,8 +490,10 @@ export function FormClub() {
                       w={20}
                       bg="gray.600"
                       placeholder="ES"
+                      // autoCapitalize=""
+
                       onChangeText={onChange}
-                      // value={value}
+                      value={value}
                       defaultValue={infoClub[0]?.address?.state}
                       errorMessage={errors.address?.state?.message}
                     />
@@ -485,7 +509,7 @@ export function FormClub() {
                       bg="gray.600"
                       placeholder="Cidade"
                       onChangeText={onChange}
-                      // value={value}
+                      value={value}
                       defaultValue={infoClub[0]?.address?.city}
                       errorMessage={errors.address?.city?.message}
                     />
@@ -498,15 +522,7 @@ export function FormClub() {
               control={control}
               name="zone"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
-                  placeholder="Região / Zona"
-                  keyboardType="numeric"
-                  onChangeText={onChange}
-                  // value={value}
-                  defaultValue={infoClub[0]?.zone}
-                  errorMessage={errors.zone?.message}
-                />
+                <SelectZone zone={value} onChange={onChange} />
               )}
             />
 
@@ -528,9 +544,8 @@ export function FormClub() {
                 <Input
                   bg="gray.600"
                   placeholder="Instagram"
-                  keyboardType="numeric"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
                   defaultValue={infoClub[0]?.instagram}
                   errorMessage={errors.instagram?.message}
                 />
@@ -544,9 +559,8 @@ export function FormClub() {
                 <Input
                   bg="gray.600"
                   placeholder="Facebook"
-                  keyboardType="numeric"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
                   defaultValue={infoClub[0]?.facebook}
                   errorMessage={errors.facebook?.message}
                 />
@@ -571,9 +585,8 @@ export function FormClub() {
                 <Input
                   bg="gray.600"
                   placeholder="Nome do contato"
-                  keyboardType="numeric"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
                   defaultValue={infoClub[0]?.nameContact}
                   errorMessage={errors.nameContact?.message}
                 />
@@ -589,7 +602,7 @@ export function FormClub() {
                   placeholder="Telefone"
                   keyboardType="numeric"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
                   defaultValue={infoClub[0]?.phoneContact}
                   errorMessage={errors.phoneContact?.message}
                 />
@@ -616,7 +629,7 @@ export function FormClub() {
                   placeholder="Data de fundação"
                   keyboardType="numeric"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
                   defaultValue={infoClub[0]?.foundationDate}
                   errorMessage={errors.foundationDate?.message}
                 />
@@ -631,7 +644,7 @@ export function FormClub() {
                   bg="gray.600"
                   placeholder="Cores do clube - time"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
                   defaultValue={infoClub[0]?.clubColors}
                   errorMessage={errors.clubColors?.message}
                 />
@@ -767,7 +780,7 @@ export function FormClub() {
               </Radio.Group>
             </VStack>
 
-            {isSponsorship === "sim" && (
+            {isSponsorship === "SIM" && (
               <Controller
                 control={control}
                 name="endDate"
@@ -777,7 +790,7 @@ export function FormClub() {
                     placeholder="Término do patrocínio"
                     keyboardType="numeric"
                     onChangeText={onChange}
-                    // value={value}
+                    value={value}
                     defaultValue={infoClub[0]?.endDate}
                     errorMessage={errors.endDate?.message}
                   />

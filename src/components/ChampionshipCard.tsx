@@ -14,6 +14,7 @@ type ChampionshipProps = {
   };
   zone: string;
   qtdTeams: string;
+  instagram: string;
 };
 
 export function ChampionshipCard({
@@ -23,6 +24,7 @@ export function ChampionshipCard({
   address,
   zone,
   qtdTeams,
+  instagram,
 }: ChampionshipProps) {
   return (
     <VStack px={5} py={4} mt={3} bg="gray.600" rounded="md">
@@ -42,7 +44,10 @@ export function ChampionshipCard({
       </Text>
 
       <Text color="gray.100" fontSize="sm" numberOfLines={2}>
-        Data: {date} - Qtd Times: {qtdTeams}
+        Dt de início: {date}
+      </Text>
+      <Text color="gray.100" fontSize="sm">
+        Qtd Times: {qtdTeams}
       </Text>
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
@@ -58,6 +63,10 @@ export function ChampionshipCard({
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1}>
         Região: Zona {zone}
+      </Text>
+
+      <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
+        Instagram: {instagram}
       </Text>
     </VStack>
   );

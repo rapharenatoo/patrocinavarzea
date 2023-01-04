@@ -42,6 +42,7 @@ type UserChampionshipProps = {
   address: Address;
   numberAddress?: string;
   zone: string;
+  instagram: string;
   qtdTeams: string;
   rewards: Array<string>;
   createdAt: any;
@@ -83,6 +84,7 @@ export function FormChampionship() {
         city: "",
       },
       numberAddress: "",
+      instagram: "",
       zone: "",
       qtdTeams: "",
       rewards: [],
@@ -330,6 +332,20 @@ export function FormChampionship() {
         >
           Sobre o campeonato
         </Heading>
+
+        <Controller
+          control={control}
+          name="instagram"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              bg="gray.600"
+              placeholder="Instagram"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.instagram?.message}
+            />
+          )}
+        />
 
         <Controller
           control={control}

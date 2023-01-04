@@ -45,6 +45,7 @@ type ChampionshipProps = {
   address: Address;
   zone: string;
   qtdTeams: string;
+  instagram: string;
   // rewards: Rewards;
 };
 
@@ -149,6 +150,7 @@ export function ChampionshipsList() {
                 }}
                 zone={item.zone}
                 qtdTeams={item.qtdTeams}
+                instagram={item.instagram}
               />
             )}
             showsVerticalScrollIndicator={false}

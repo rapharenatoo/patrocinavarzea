@@ -31,7 +31,7 @@ export function LoginOptions() {
   }
 
   function handleGoSignIn() {
-    navigation.navigate("signIn");
+    navigation.navigate("signInAdmin");
   }
 
   return (
