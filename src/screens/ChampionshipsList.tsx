@@ -29,7 +29,6 @@ type Rewards = {
 type Address = {
   zipCode: string;
   street: string;
-  number: string;
   neighborhood: string;
   state: string;
   city: string;
@@ -43,20 +42,22 @@ type ChampionshipProps = {
   email: string;
   date: string;
   address: Address;
+  numberAddress: string;
   zone: string;
   qtdTeams: string;
   instagram: string;
-  // rewards: Rewards;
+  rewards: Array<string>;
+  otherRewards?: string;
 };
 
 export function ChampionshipsList() {
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [textSearch, setTextSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [championships, setChampionships] = useState<ChampionshipProps[]>([]);
   const [list, setList] = useState(championships);
 
   useEffect(() => {
+    setIsLoading(true);
     const subscriber = firestore()
       .collection("championship")
       .onSnapshot((documentSnapshot) => {
@@ -78,7 +79,6 @@ export function ChampionshipsList() {
   useEffect(() => {
     if (textSearch === "") {
       setList(championships);
-      setIsLoading(false);
     } else {
       setList(
         championships.filter((item) => {
@@ -94,7 +94,6 @@ export function ChampionshipsList() {
           }
         })
       );
-      setIsLoading(false);
     }
   }, [textSearch]);
 
@@ -113,6 +112,7 @@ export function ChampionshipsList() {
           fontFamily="body"
           placeholderTextColor="gray.300"
           placeholder="Buscar"
+          onChangeText={setTextSearch}
           _focus={{
             bg: "gray.700",
             borderWidth: 1,
@@ -143,14 +143,16 @@ export function ChampionshipsList() {
                 address={{
                   zipCode: item.address.zipCode,
                   street: item.address.street,
-                  number: item.address.number,
                   neighborhood: item.address.neighborhood,
                   state: item.address.state,
                   city: item.address.city,
                 }}
+                numberAddress={item.numberAddress}
                 zone={item.zone}
                 qtdTeams={item.qtdTeams}
                 instagram={item.instagram}
+                rewards={item.rewards.toString().replace(/,/g, ", ")}
+                otherRewards={item.otherRewards}
               />
             )}
             showsVerticalScrollIndicator={false}

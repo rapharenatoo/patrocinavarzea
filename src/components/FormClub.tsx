@@ -28,9 +28,9 @@ import { Input } from "./Input";
 import { Button } from "./Button";
 import { Skeleton } from "./Skeleton";
 import { SelectTaxId } from "../components/SelectTaxId";
+import { SelectZone } from "./SelectZone";
 
 import defaultUserPhotoImg from "../assets/userPhotoDefault.png";
-import { SelectZone } from "./SelectZone";
 
 type DrawIdClub = {
   id: string;
@@ -110,9 +110,9 @@ export function FormClub() {
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
   const [infoClub, setInfoClub] = useState<UserClubProps[]>([]);
   const [userPhoto, setUserPhoto] = useState(null);
-  const [ownField, setOwnField] = useState("NAO");
+  const [ownField, setOwnField] = useState("NÃO");
   const [wantSponsorship, setWantSponsorship] = useState("SIM");
-  const [isSponsorship, setIsSponsorship] = useState("NAO");
+  const [isSponsorship, setIsSponsorship] = useState("NÃO");
   const [drawId, setDrawId] = useState<DrawIdClub[]>([]);
   const [type, setType] = useState("");
   const ref = useRef<InputMask>(null);
@@ -194,13 +194,13 @@ export function FormClub() {
       phoneContact: !!infoClub[0]?.phoneContact
         ? infoClub[0]?.phoneContact
         : "",
-      ownField: !!infoClub[0]?.ownField ? infoClub[0]?.ownField : "",
+      ownField: !!infoClub[0]?.ownField ? infoClub[0]?.ownField : ownField,
       wantSponsorship: !!infoClub[0]?.wantSponsorship
         ? infoClub[0]?.wantSponsorship
-        : "",
+        : wantSponsorship,
       isSponsorship: !!infoClub[0]?.isSponsorship
         ? infoClub[0]?.isSponsorship
-        : "",
+        : isSponsorship,
       endDate: !!infoClub[0]?.endDate ? infoClub[0]?.endDate : "",
     },
   });
@@ -244,9 +244,9 @@ export function FormClub() {
     }
   }
 
-  const getDrawId =
-    !infoClub[0]?.drawId ? Number(drawId[0]?.drawId) + 1
-      : Number(infoClub[0]?.drawId);
+  const getDrawId = !infoClub[0]?.drawId
+    ? Number(drawId[0]?.drawId) + 1
+    : Number(infoClub[0]?.drawId);
 
   async function handleUserRegister(data: UserClubProps) {
     setIsLoading(true);
@@ -257,7 +257,10 @@ export function FormClub() {
       .set({
         ...data,
         email: auth().currentUser.email,
-        drawId: Number(getDrawId), // Send or firestore: NaN 
+        ownField: ownField,
+        wantSponsorship: wantSponsorship,
+        isSponsorship: isSponsorship,
+        drawId: getDrawId,
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
@@ -288,8 +291,6 @@ export function FormClub() {
       .finally(() => {
         setIsLoading(false);
       });
-
-      console.log(data);
   }
 
   // const validateTaxId = () => {
@@ -677,7 +678,7 @@ export function FormClub() {
                     Sim
                   </Radio>
                   <Radio
-                    value="NAO"
+                    value="NÃO"
                     colorScheme="yellow"
                     size="sm"
                     my={1}
@@ -720,7 +721,7 @@ export function FormClub() {
                     Sim
                   </Radio>
                   <Radio
-                    value="NAO"
+                    value="NÃO"
                     colorScheme="yellow"
                     size="sm"
                     my={1}
@@ -763,7 +764,7 @@ export function FormClub() {
                     Sim
                   </Radio>
                   <Radio
-                    value="NAO"
+                    value="NÃO"
                     colorScheme="yellow"
                     size="sm"
                     my={1}

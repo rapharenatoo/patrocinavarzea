@@ -42,7 +42,7 @@ export function ResetPassword() {
   });
 
   function handleGoSignIn() {
-    navigation.navigate("signIn");
+    navigation.navigate("loginOptions");
   }
 
   async function handleResetPassword(data: UserProps) {
@@ -56,7 +56,7 @@ export function ResetPassword() {
           placement: "top",
           bgColor: "green.500",
         });
-        navigation.navigate("signIn");
+        navigation.navigate("loginOptions");
         return messageSuccess;
       })
       .catch((error) => {

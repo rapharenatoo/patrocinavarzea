@@ -27,13 +27,13 @@ export function Routes() {
       setUser(userInfo);
     });
 
-    return subscriber;
+    return () => subscriber();
   }, []);
 
   return (
     <Box flex={1} bg="gray.700">
       <NavigationContainer theme={theme}>
-        {user && user.emailVerified ? <AppClubRoutes /> : <AuthRoutes />}
+        {user && user.emailVerified ? <AppAdminRoutes /> : <AuthRoutes />}
       </NavigationContainer>
     </Box>
   );

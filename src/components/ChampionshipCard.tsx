@@ -7,14 +7,16 @@ type ChampionshipProps = {
   address: {
     zipCode: string;
     street: string;
-    number: string;
     neighborhood: string;
     state: string;
     city: string;
   };
+  numberAddress: string;
   zone: string;
   qtdTeams: string;
   instagram: string;
+  rewards: string;
+  otherRewards?: string;
 };
 
 export function ChampionshipCard({
@@ -22,9 +24,12 @@ export function ChampionshipCard({
   organizer,
   date,
   address,
+  numberAddress,
   zone,
   qtdTeams,
   instagram,
+  rewards,
+  otherRewards,
 }: ChampionshipProps) {
   return (
     <VStack px={5} py={4} mt={3} bg="gray.600" rounded="md">
@@ -54,7 +59,7 @@ export function ChampionshipCard({
         CEP: {address.zipCode}
       </Text>
       <Text color="gray.100" fontSize="sm" numberOfLines={2}>
-        End: {address.street}, {address.number}, {address.neighborhood}
+        End: {address.street}, {numberAddress}, {address.neighborhood}
       </Text>
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1}>
@@ -67,6 +72,10 @@ export function ChampionshipCard({
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
         Instagram: {instagram}
+      </Text>
+
+      <Text color="gray.100" fontSize="sm" numberOfLines={3} mt={2}>
+        Premiação: {rewards}{!!otherRewards && `, ${otherRewards}`}
       </Text>
     </VStack>
   );

@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 
-import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
+import { AppNavigatorRoutesProps } from "../routes/app.club.routes";
 
 import { Button } from "./Button";
 import { InfoEmpty } from "./InfoEmpty";
@@ -263,15 +263,17 @@ export function InfoClub() {
                   >
                     Já tem patrocínio? {infoClub[0]?.isSponsorship}
                   </Text>
-                  <Text
-                    color="white"
-                    fontSize="sm"
-                    mb={1}
-                    fontFamily="body"
-                    numberOfLines={1}
-                  >
-                    Data de término: {infoClub[0]?.endDate}
-                  </Text>
+                  {infoClub[0]?.isSponsorship === "SIM" && (
+                    <Text
+                      color="white"
+                      fontSize="sm"
+                      mb={1}
+                      fontFamily="body"
+                      numberOfLines={1}
+                    >
+                      Data de término: {infoClub[0]?.endDate}
+                    </Text>
+                  )}
                   <Text
                     color="white"
                     fontSize="sm"

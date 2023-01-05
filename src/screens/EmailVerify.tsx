@@ -29,7 +29,7 @@ export function EmailVerify() {
   const [isLoading, setIsLoading] = useState(false);
 
   function handleGoSignIn() {
-    navigation.navigate("signIn");
+    navigation.navigate("loginOptions");
   }
 
   async function handleSendRetryEmail() {
@@ -119,7 +119,7 @@ export function EmailVerify() {
           </Text>
         </Center>
         <Center>
-          <Button title="Voltar ao login" mt={8} onPress={handleGoSignIn} />
+          <Button title="Voltar ao início" mt={8} onPress={handleGoSignIn} />
           <HStack mt={4}>
             <Text color="white" fontSize="sm" fontFamily="body" mr={2}>
               Não recebeu o e-mail?

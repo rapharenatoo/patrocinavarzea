@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
-  Center,
-  Skeleton,
-  Text,
   useToast,
   VStack,
   Heading,
   HStack,
+  Checkbox,
+  FormControl,
 } from "native-base";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
-import uuid from "react-native-uuid";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
 import { UserPhoto } from "./UserPhoto";
 import { Input } from "./Input";
 import { Button } from "./Button";
+import { SelectZone } from "./SelectZone";
 
 type Address = {
   zipCode?: string;
@@ -45,24 +43,47 @@ type UserChampionshipProps = {
   instagram: string;
   qtdTeams: string;
   rewards: Array<string>;
+  otherRewards?: string;
   createdAt: any;
 };
 
 const validationSchema = yup.object({
   name: yup
     .string()
+    .required("Informe o nome do campeonato")
     .nullable()
     .transform((value) => (!!value ? value : null)),
-  phoneContact: yup
+  address: yup.object({
+    zipCode: yup
+      .string()
+      .required("Informe o CEP")
+      .min(8, "O CEP deve ter pelo menos 8 caracteres"),
+    street: yup.string().required("Informe o endereço"),
+    neighborhood: yup.string().required("Informe o bairro"),
+    state: yup.string().required("Informe o ES"),
+    city: yup.string().required("Informe o cidade"),
+  }),
+  numberAddress: yup.string().required("Informe o Nº"),
+  organizer: yup.string().required("Informe o nome do organizador"),
+  phoneOrganizer: yup
     .string()
-    .required("Obrigatório")
+    .required("Informe o telefone do organizador")
     .min(10, "O telefone deve ter pelo menos 10 digítos"),
+
+  date: yup.string().required("Informe a data do evento"),
+  qtdTeams: yup.string().required("Informe a quantidade de times no evento"),
 });
 
 export function FormChampionship() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [isLoading, setIsLoading] = useState(false);
+  const [rewards, setRewards] = useState([]);
+  const [otherRewards, setOtherRewards] = useState(false);
   const toast = useToast();
+
+  const isOtherRewards = () => {
+    return String(rewards.find((element) => element === "Outro"));
+  };
 
   const {
     control,
@@ -88,6 +109,7 @@ export function FormChampionship() {
       zone: "",
       qtdTeams: "",
       rewards: [],
+      otherRewards: "",
       createdAt: "",
     },
   });
@@ -99,6 +121,7 @@ export function FormChampionship() {
       .collection("championship")
       .add({
         ...data,
+        rewards: rewards,
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
@@ -178,7 +201,6 @@ export function FormChampionship() {
             <Input
               bg="gray.600"
               placeholder="Nome do organizador"
-              keyboardType="numeric"
               onChangeText={onChange}
               value={value}
               errorMessage={errors.organizer?.message}
@@ -219,6 +241,7 @@ export function FormChampionship() {
             <Input
               bg="gray.600"
               placeholder="CEP"
+              keyboardType="numeric"
               onChangeText={onChange}
               value={value}
               errorMessage={errors.address?.zipCode?.message}
@@ -311,14 +334,7 @@ export function FormChampionship() {
           control={control}
           name="zone"
           render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="Região / Zona"
-              keyboardType="numeric"
-              onChangeText={onChange}
-              value={value}
-              errorMessage={errors.zone?.message}
-            />
+            <SelectZone zone={value} onChange={onChange} />
           )}
         />
 
@@ -369,6 +385,7 @@ export function FormChampionship() {
             <Input
               bg="gray.600"
               placeholder="Quantidade de times"
+              keyboardType="numeric"
               onChangeText={onChange}
               value={value}
               errorMessage={errors.qtdTeams?.message}
@@ -376,20 +393,117 @@ export function FormChampionship() {
           )}
         />
 
-        {/* ALTERAR PARA O COMPONENTE CORRETO */}
-        <Controller
-          control={control}
-          name="rewards"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="Premiações: CheckBox"
-              onChangeText={onChange}
-              value={value}
-              errorMessage={errors.rewards?.message}
-            />
-          )}
-        />
+        <VStack>
+          <Heading
+            color="yellow.400"
+            fontSize="sm"
+            mb={2}
+            alignSelf="flex-start"
+            mt={6}
+            fontFamily="heading"
+          >
+            Premiações:
+          </Heading>
+          <FormControl>
+            <Checkbox.Group
+              accessibilityLabel="Premiações"
+              defaultValue={rewards}
+              onChange={setRewards}
+              value={rewards}
+            >
+              <HStack space={5}>
+                <Checkbox
+                  value="Troféu"
+                  my={2}
+                  colorScheme="yellow"
+                  _text={{
+                    mx: 2,
+                    color: "white",
+                    fontSize: "sm",
+                    fontFamily: "body",
+                  }}
+                >
+                  Trófeu
+                </Checkbox>
+                <Checkbox
+                  value="Medalhas"
+                  my={2}
+                  colorScheme="yellow"
+                  _text={{
+                    mx: 2,
+                    color: "white",
+                    fontSize: "sm",
+                    fontFamily: "body",
+                  }}
+                >
+                  Medalhas
+                </Checkbox>
+              </HStack>
+              <HStack space={2}>
+                <Checkbox
+                  value="Dinheiro"
+                  my={2}
+                  colorScheme="yellow"
+                  _text={{
+                    mx: 2,
+                    color: "white",
+                    fontSize: "sm",
+                    fontFamily: "body",
+                  }}
+                >
+                  Dinheiro
+                </Checkbox>
+                <Checkbox
+                  value="Jogo de Uniforme"
+                  my={2}
+                  colorScheme="yellow"
+                  _text={{
+                    mx: 2,
+                    color: "white",
+                    fontSize: "sm",
+                    fontFamily: "body",
+                  }}
+                >
+                  Jogo de Uniforme
+                </Checkbox>
+              </HStack>
+            </Checkbox.Group>
+            <Checkbox
+              value="other"
+              isChecked={otherRewards}
+              onChange={setOtherRewards}
+              mt={2}
+              mb={4}
+              colorScheme="yellow"
+              _text={{
+                mx: 2,
+                color: "white",
+                fontSize: "sm",
+                fontFamily: "body",
+              }}
+            >
+              Outro
+            </Checkbox>
+            {otherRewards && (
+              <Controller
+                control={control}
+                name="otherRewards"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    bg="gray.600"
+                    placeholder="Outros prêmios"
+                    onChangeText={onChange}
+                    value={value}
+                    errorMessage={errors.otherRewards?.message}
+                  />
+                )}
+              />
+            )}
+            <FormControl.ErrorMessage _text={{ color: "red.500" }}>
+              {errors.rewards?.message}
+            </FormControl.ErrorMessage>
+          </FormControl>
+        </VStack>
 
         <Button
           title="Atualizar"
