@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
   Center,
-  Skeleton,
+  Skeleton as SkeletonNative,
   Text,
   useToast,
   VStack,
@@ -26,6 +26,9 @@ import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 import { UserPhoto } from "./UserPhoto";
 import { Input } from "./Input";
 import { Button } from "./Button";
+import { Skeleton } from "./Skeleton";
+
+import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
 type Address = {
   zipCode?: string;
@@ -55,11 +58,7 @@ const validationSchema = yup.object({
     .string()
     .nullable()
     .transform((value) => (!!value ? value : null)),
-  phoneContact: yup
-    .string()
-    .required("Informe o nome")
-    .min(10, "O telefone deve ter pelo menos 10 digítos"),
-  type: yup.string().required("Selecione CPF ou CNPJ"),
+  // type: yup.string().required("Selecione CPF ou CNPJ"),
   taxId: yup.string().required("Informe o CPF / CNPJ"),
   ie: yup.string().required("Informe o I.E."),
   address: yup.object({
@@ -74,6 +73,9 @@ const validationSchema = yup.object({
   }),
   numberAddress: yup.string().required("Informe o Nº"),
   nameContact: yup.string(),
+  phoneContact: yup
+    .string()
+    .min(10, "O telefone deve ter pelo menos 10 digítos"),
 });
 
 const PHOTO_SIZE = 24;
@@ -83,7 +85,8 @@ export function FormConfection() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [wantSponsor, setWantSponsor] = useState("NAO");
+  const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
+  const [wantSponsor, setWantSponsor] = useState("NÃO");
   const [userPhoto, setUserPhoto] = useState(null);
   const [infoConfection, setInfoConfection] = useState<UserConfectionProps[]>(
     []
@@ -97,6 +100,8 @@ export function FormConfection() {
   });
 
   useEffect(() => {
+    setIsSkeletonLoading(true);
+
     const subscriber = firestore()
       .collection("confection")
       .where("email", "==", auth().currentUser.email)
@@ -109,6 +114,7 @@ export function FormConfection() {
         }) as UserConfectionProps[];
 
         setInfoConfection(data);
+        setIsSkeletonLoading(false);
       });
 
     return () => subscriber();
@@ -121,25 +127,45 @@ export function FormConfection() {
   } = useForm<UserConfectionProps>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      name: String(auth().currentUser.displayName),
+      name: auth().currentUser.displayName,
       email: auth().currentUser.email,
-      taxId: String(infoConfection[0]?.taxId),
-      ie: String(infoConfection[0]?.ie),
+      taxId: !!infoConfection[0]?.taxId ? infoConfection[0]?.taxId : "",
+      ie: !!infoConfection[0]?.ie ? infoConfection[0]?.ie : "",
       address: {
-        zipCode: infoConfection[0]?.address.zipCode,
-        street: infoConfection[0]?.address.street,
-        neighborhood: infoConfection[0]?.address.neighborhood,
-        state: infoConfection[0]?.address.state,
-        city: infoConfection[0]?.address.city,
+        zipCode: !!infoConfection[0]?.address?.zipCode
+          ? infoConfection[0]?.address?.zipCode
+          : "",
+        street: !!infoConfection[0]?.address?.street
+          ? infoConfection[0]?.address?.street
+          : "",
+        neighborhood: !!infoConfection[0]?.address?.neighborhood
+          ? infoConfection[0]?.address?.neighborhood
+          : "",
+        state: !!infoConfection[0]?.address?.state
+          ? infoConfection[0]?.address?.state
+          : "",
+        city: !!infoConfection[0]?.address?.city
+          ? infoConfection[0]?.address?.city
+          : "",
       },
-      numberAddress: infoConfection[0]?.numberAddress,
-      nameContact: infoConfection[0]?.nameContact,
-      phoneContact: infoConfection[0]?.phoneContact,
+      numberAddress: !!infoConfection[0]?.numberAddress
+        ? infoConfection[0]?.numberAddress
+        : "",
+      nameContact: !!infoConfection[0]?.nameContact
+        ? infoConfection[0]?.nameContact
+        : "",
+      phoneContact: !!infoConfection[0]?.phoneContact
+        ? infoConfection[0]?.phoneContact
+        : "",
+      wantSponsor: !!infoConfection[0]?.wantSponsor
+        ? infoConfection[0]?.wantSponsor
+        : wantSponsor,
     },
   });
 
   async function handleUserPhotoSelect() {
     setPhotoIsLoading(true);
+
     try {
       const photoSelected = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -177,20 +203,15 @@ export function FormConfection() {
     }
   }
 
-  const validateUUIDUser =
-    infoConfection.length === 0
-      ? String(uuid.v4())
-      : String(infoConfection[0]?.id);
-
   async function handleUserRegister(data: UserConfectionProps) {
     setIsLoading(true);
 
     await firestore()
       .collection("confection")
-      .doc(validateUUIDUser)
+      .doc(infoConfection[0]?.id)
       .set({
         ...data,
-        wantSponsor,
+        wantSponsor: wantSponsor,
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
@@ -224,315 +245,325 @@ export function FormConfection() {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <VStack flex={1} px={10} pb={10}>
-        <Center flex={1} mt={10}>
-          {photoIsLoading ? (
-            <Skeleton
-              w={PHOTO_SIZE}
-              h={PHOTO_SIZE}
-              rounded="full"
-              startColor="gray.500"
-              endColor="gray.300"
+    <>
+      {isSkeletonLoading ? (
+        <Skeleton />
+      ) : (
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <VStack flex={1} px={10} pb={10}>
+            <Center flex={1} mt={10}>
+              {photoIsLoading ? (
+                <SkeletonNative
+                  w={PHOTO_SIZE}
+                  h={PHOTO_SIZE}
+                  rounded="full"
+                  startColor="gray.500"
+                  endColor="gray.300"
+                />
+              ) : (
+                <UserPhoto
+                  source={
+                    auth().currentUser?.photoURL
+                      ? { uri: auth().currentUser?.photoURL }
+                      : DefaultUserPhotoImg
+                  }
+                  alt="Foto do usuário"
+                  size={PHOTO_SIZE}
+                />
+              )}
+              <TouchableOpacity onPress={handleUserPhotoSelect}>
+                <Text
+                  color="yellow.400"
+                  fontWeight="bold"
+                  fontSize="md"
+                  mt={2}
+                  mb={8}
+                >
+                  Alterar foto
+                </Text>
+              </TouchableOpacity>
+            </Center>
+            <Controller
+              control={control}
+              name="name"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  bg="gray.600"
+                  placeholder="Nome"
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.name?.message}
+                />
+              )}
             />
-          ) : (
-            <UserPhoto
-              source={{
-                uri: userPhoto,
-              }}
-              alt="Foto do usuário"
-              size={PHOTO_SIZE}
+
+            {/* <Input bg="gray.600" placeholder="PF ou PJ" /> */}
+
+            <Controller
+              control={control}
+              name="taxId"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  bg="gray.600"
+                  placeholder="CPF / CNPJ"
+                  keyboardType="numeric"
+                  onChangeText={onChange}
+                  // value={value}
+                  errorMessage={errors.taxId?.message}
+                />
+              )}
             />
-          )}
-          <TouchableOpacity onPress={handleUserPhotoSelect}>
-            <Text
+
+            <Controller
+              control={control}
+              name="ie"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  bg="gray.600"
+                  placeholder="I.E."
+                  keyboardType="numeric"
+                  onChangeText={onChange}
+                  // value={value}
+                  errorMessage={errors.ie?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  bg="gray.600"
+                  placeholder="E-mail"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  onChangeText={onChange}
+                  value={value}
+                  isDisabled
+                />
+              )}
+            />
+
+            <Heading
               color="yellow.400"
-              fontWeight="bold"
-              fontSize="md"
-              mt={2}
-              mb={8}
+              fontSize="sm"
+              mb={2}
+              alignSelf="flex-start"
+              mt={6}
+              fontFamily="heading"
             >
-              Alterar foto
-            </Text>
-          </TouchableOpacity>
-        </Center>
-        <Controller
-          control={control}
-          name="name"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="Nome"
-              onChangeText={onChange}
-              value={value}
-              errorMessage={errors.name?.message}
-            />
-          )}
-        />
+              Endereço
+            </Heading>
 
-        {/* <Input bg="gray.600" placeholder="PF ou PJ" /> */}
-
-        <Controller
-          control={control}
-          name="taxId"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="CPF / CNPJ"
-              onChangeText={onChange}
-              // value={value}
-              errorMessage={errors.taxId?.message}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="ie"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="I.E."
-              onChangeText={onChange}
-              // value={value}
-              errorMessage={errors.ie?.message}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="E-mail"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              onChangeText={onChange}
-              value={value}
-              isDisabled
-            />
-          )}
-        />
-
-        <Heading
-          color="yellow.400"
-          fontSize="sm"
-          mb={2}
-          alignSelf="flex-start"
-          mt={6}
-          fontFamily="heading"
-        >
-          Endereço
-        </Heading>
-
-        <Controller
-          control={control}
-          name="address.zipCode"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="CEP"
-              onChangeText={onChange}
-              // value={value}
-              errorMessage={errors.address?.zipCode?.message}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="address.street"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="Endereço"
-              onChangeText={onChange}
-              // value={value}
-              errorMessage={errors.address?.street?.message}
-            />
-          )}
-        />
-
-        <HStack w="full">
-          <HStack w={20} mr={2}>
             <Controller
               control={control}
-              name="numberAddress"
+              name="address.zipCode"
               render={({ field: { onChange, value } }) => (
                 <Input
                   bg="gray.600"
-                  placeholder="Nº"
+                  placeholder="CEP"
+                  keyboardType="numeric"
                   onChangeText={onChange}
                   // value={value}
-                  errorMessage={errors.numberAddress?.message}
+                  errorMessage={errors.address?.zipCode?.message}
                 />
               )}
             />
-          </HStack>
-          <HStack w={48}>
+
             <Controller
               control={control}
-              name="address.neighborhood"
+              name="address.street"
               render={({ field: { onChange, value } }) => (
                 <Input
                   bg="gray.600"
-                  placeholder="Bairro"
+                  placeholder="Endereço"
                   onChangeText={onChange}
                   // value={value}
-                  errorMessage={errors.address?.neighborhood?.message}
+                  errorMessage={errors.address?.street?.message}
                 />
               )}
             />
-          </HStack>
-        </HStack>
 
-        <HStack w="full">
-          <HStack w={20} mr={2}>
-            <Controller
-              control={control}
-              name="address.state"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  w={20}
-                  bg="gray.600"
-                  placeholder="ES"
-                  onChangeText={onChange}
-                  // value={value}
-                  errorMessage={errors.address?.state?.message}
+            <HStack w="full">
+              <HStack w={20} mr={2}>
+                <Controller
+                  control={control}
+                  name="numberAddress"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      bg="gray.600"
+                      placeholder="Nº"
+                      onChangeText={onChange}
+                      // value={value}
+                      errorMessage={errors.numberAddress?.message}
+                    />
+                  )}
                 />
-              )}
-            />
-          </HStack>
-          <HStack w={48}>
-            <Controller
-              control={control}
-              name="address.city"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
-                  placeholder="Cidade"
-                  onChangeText={onChange}
-                  // value={value}
-                  errorMessage={errors.address?.city?.message}
+              </HStack>
+              <HStack w={48}>
+                <Controller
+                  control={control}
+                  name="address.neighborhood"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      bg="gray.600"
+                      placeholder="Bairro"
+                      onChangeText={onChange}
+                      // value={value}
+                      errorMessage={errors.address?.neighborhood?.message}
+                    />
+                  )}
                 />
-              )}
-            />
-          </HStack>
-        </HStack>
-
-        <Heading
-          color="yellow.400"
-          fontSize="sm"
-          mb={2}
-          alignSelf="flex-start"
-          mt={6}
-          fontFamily="heading"
-        >
-          Informações de contato
-        </Heading>
-
-        <Controller
-          control={control}
-          name="nameContact"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="Nome do contato"
-              keyboardType="numeric"
-              onChangeText={onChange}
-              // value={value}
-              errorMessage={errors.nameContact?.message}
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="phoneContact"
-          render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="Telefone"
-              keyboardType="numeric"
-              onChangeText={onChange}
-              value={value}
-              errorMessage={errors.phoneContact?.message}
-            />
-          )}
-        />
-
-        <Heading
-          color="yellow.400"
-          fontSize="sm"
-          mb={2}
-          alignSelf="flex-start"
-          mt={6}
-          fontFamily="heading"
-        >
-          Informações da confecção
-        </Heading>
-
-        <VStack mb={4}>
-          <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
-            Quer patrocinar?
-          </Text>
-          <Radio.Group
-            name="wantSponsor"
-            accessibilityLabel="patrocinar"
-            value={wantSponsor}
-            onChange={(e) => {
-              setWantSponsor(e);
-            }}
-          >
-            <HStack space={4}>
-              <Radio
-                value="SIM"
-                colorScheme="yellow"
-                size="sm"
-                my={1}
-                _text={{
-                  color: "gray.100",
-                  fontSize: "sm",
-                  fontFamily: "body",
-                }}
-              >
-                Sim
-              </Radio>
-              <Radio
-                value="NAO"
-                colorScheme="yellow"
-                size="sm"
-                my={1}
-                _text={{
-                  color: "gray.100",
-                  fontSize: "sm",
-                  fontFamily: "body",
-                }}
-              >
-                Não
-              </Radio>
+              </HStack>
             </HStack>
-          </Radio.Group>
-        </VStack>
 
-        <Button
-          title="Atualizar"
-          mt={8}
-          onPress={handleSubmit(handleUserRegister)}
-          isLoading={isLoading}
-        />
+            <HStack w="full">
+              <HStack w={20} mr={2}>
+                <Controller
+                  control={control}
+                  name="address.state"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      w={20}
+                      bg="gray.600"
+                      placeholder="ES"
+                      onChangeText={onChange}
+                      // value={value}
+                      errorMessage={errors.address?.state?.message}
+                    />
+                  )}
+                />
+              </HStack>
+              <HStack w={48}>
+                <Controller
+                  control={control}
+                  name="address.city"
+                  render={({ field: { onChange, value } }) => (
+                    <Input
+                      bg="gray.600"
+                      placeholder="Cidade"
+                      onChangeText={onChange}
+                      // value={value}
+                      errorMessage={errors.address?.city?.message}
+                    />
+                  )}
+                />
+              </HStack>
+            </HStack>
 
-        <Button
-          title="Voltar"
-          variant="outline"
-          mt={6}
-          onPress={() => {
-            navigation.goBack();
-          }}
-        />
-      </VStack>
-    </ScrollView>
+            <Heading
+              color="yellow.400"
+              fontSize="sm"
+              mb={2}
+              alignSelf="flex-start"
+              mt={6}
+              fontFamily="heading"
+            >
+              Informações de contato
+            </Heading>
+
+            <Controller
+              control={control}
+              name="nameContact"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  bg="gray.600"
+                  placeholder="Nome do contato"
+                  onChangeText={onChange}
+                  // value={value}
+                  errorMessage={errors.nameContact?.message}
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="phoneContact"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  bg="gray.600"
+                  placeholder="Telefone"
+                  keyboardType="numeric"
+                  onChangeText={onChange}
+                  value={value}
+                  errorMessage={errors.phoneContact?.message}
+                />
+              )}
+            />
+
+            <Heading
+              color="yellow.400"
+              fontSize="sm"
+              mb={2}
+              alignSelf="flex-start"
+              mt={6}
+              fontFamily="heading"
+            >
+              Informações da confecção
+            </Heading>
+
+            <VStack mb={4}>
+              <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
+                Quer patrocinar?
+              </Text>
+              <Radio.Group
+                name="wantSponsor"
+                accessibilityLabel="patrocinar"
+                value={wantSponsor}
+                onChange={(e) => {
+                  setWantSponsor(e);
+                }}
+              >
+                <HStack space={4}>
+                  <Radio
+                    value="SIM"
+                    colorScheme="yellow"
+                    size="sm"
+                    my={1}
+                    _text={{
+                      color: "gray.100",
+                      fontSize: "sm",
+                      fontFamily: "body",
+                    }}
+                  >
+                    Sim
+                  </Radio>
+                  <Radio
+                    value="NÃO"
+                    colorScheme="yellow"
+                    size="sm"
+                    my={1}
+                    _text={{
+                      color: "gray.100",
+                      fontSize: "sm",
+                      fontFamily: "body",
+                    }}
+                  >
+                    Não
+                  </Radio>
+                </HStack>
+              </Radio.Group>
+            </VStack>
+
+            <Button
+              title="Atualizar"
+              mt={8}
+              onPress={handleSubmit(handleUserRegister)}
+              isLoading={isLoading}
+            />
+
+            <Button
+              title="Voltar"
+              variant="outline"
+              mt={6}
+              onPress={() => {
+                navigation.goBack();
+              }}
+            />
+          </VStack>
+        </ScrollView>
+      )}
+    </>
   );
 }

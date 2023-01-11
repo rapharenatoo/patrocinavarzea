@@ -15,6 +15,7 @@ type ChampionshipProps = {
   zone: string;
   qtdTeams: string;
   instagram: string;
+  cashReward: number;
   rewards: string;
   otherRewards?: string;
 };
@@ -28,6 +29,7 @@ export function ChampionshipCard({
   zone,
   qtdTeams,
   instagram,
+  cashReward,
   rewards,
   otherRewards,
 }: ChampionshipProps) {
@@ -74,9 +76,14 @@ export function ChampionshipCard({
         Instagram: {instagram}
       </Text>
 
-      <Text color="gray.100" fontSize="sm" numberOfLines={3} mt={2}>
-        Premiação: {rewards}{!!otherRewards && `, ${otherRewards}`}
+      <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
+        Prêmio em dinheiro: R$ {cashReward},00
       </Text>
+
+      <Text color="gray.100" fontSize="sm" numberOfLines={3} mt={2}>
+        Outras premiações: {rewards}{!!otherRewards && `, ${otherRewards}`}
+      </Text>
+
     </VStack>
   );
 }

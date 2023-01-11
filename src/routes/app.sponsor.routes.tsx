@@ -8,13 +8,14 @@ import {
 import { Home } from "../screens/Home";
 import { Profile } from "../screens/Profile";
 import { ChampionshipsList } from "../screens/ChampionshipsList";
-import { Championship } from "../screens/Championship";
+import { ClubList } from "../screens/ClubList";
 
 import HomeSvg from "../assets/home.svg";
 import HistorySvg from "../assets/history.svg";
 import ProfileSvg from "../assets/profile.svg";
 import ListSvg from "../assets/list.svg";
 import AddSvg from "../assets/add.svg";
+import CheckSvg from "../assets/checkbox.svg";
 
 type AppSponsorRoutes = {
   home: undefined;
@@ -68,11 +69,10 @@ export function AppSponsorRoutes() {
       />
       <Screen
         name="clubList"
-        component={Championship}
+        component={ClubList}
         options={{
-          tabBarButton: () => null,
           tabBarIcon: ({ color }) => (
-            <AddSvg fill={color} width={iconSize} height={iconSize} />
+            <CheckSvg fill={color} width={iconSize} height={iconSize} />
           ),
         }}
       />

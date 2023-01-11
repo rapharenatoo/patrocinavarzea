@@ -42,6 +42,7 @@ type UserChampionshipProps = {
   zone: string;
   instagram: string;
   qtdTeams: string;
+  cashReward: string;
   rewards: Array<string>;
   otherRewards?: string;
   createdAt: any;
@@ -69,7 +70,7 @@ const validationSchema = yup.object({
     .string()
     .required("Informe o telefone do organizador")
     .min(10, "O telefone deve ter pelo menos 10 digítos"),
-
+  cashReward: yup.number().required("Informe o prêmio em dinheiro"),
   date: yup.string().required("Informe a data do evento"),
   qtdTeams: yup.string().required("Informe a quantidade de times no evento"),
 });
@@ -108,6 +109,7 @@ export function FormChampionship() {
       instagram: "",
       zone: "",
       qtdTeams: "",
+      cashReward: "",
       rewards: [],
       otherRewards: "",
       createdAt: "",
@@ -393,6 +395,21 @@ export function FormChampionship() {
           )}
         />
 
+        <Controller
+          control={control}
+          name="cashReward"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              bg="gray.600"
+              placeholder="Premiação em dinheiro"
+              keyboardType="numeric"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.cashReward?.message}
+            />
+          )}
+        />
+
         <VStack>
           <Heading
             color="yellow.400"
@@ -402,7 +419,7 @@ export function FormChampionship() {
             mt={6}
             fontFamily="heading"
           >
-            Premiações:
+            Outras premiações:
           </Heading>
           <FormControl>
             <Checkbox.Group
@@ -440,19 +457,6 @@ export function FormChampionship() {
                 </Checkbox>
               </HStack>
               <HStack space={2}>
-                <Checkbox
-                  value="Dinheiro"
-                  my={2}
-                  colorScheme="yellow"
-                  _text={{
-                    mx: 2,
-                    color: "white",
-                    fontSize: "sm",
-                    fontFamily: "body",
-                  }}
-                >
-                  Dinheiro
-                </Checkbox>
                 <Checkbox
                   value="Jogo de Uniforme"
                   my={2}

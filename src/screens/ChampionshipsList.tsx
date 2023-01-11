@@ -46,6 +46,7 @@ type ChampionshipProps = {
   zone: string;
   qtdTeams: string;
   instagram: string;
+  cashReward: number;
   rewards: Array<string>;
   otherRewards?: string;
 };
@@ -151,6 +152,7 @@ export function ChampionshipsList() {
                 zone={item.zone}
                 qtdTeams={item.qtdTeams}
                 instagram={item.instagram}
+                cashReward={item.cashReward}
                 rewards={item.rewards.toString().replace(/,/g, ", ")}
                 otherRewards={item.otherRewards}
               />

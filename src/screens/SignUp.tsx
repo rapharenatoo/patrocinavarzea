@@ -74,7 +74,7 @@ export function SignUp() {
         auth().currentUser.sendEmailVerification();
 
         firestore()
-          .collection("club")
+          .collection(data.type) 
           .doc(auth().currentUser.uid)
           .set({
             name: data.name,

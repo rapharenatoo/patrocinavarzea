@@ -14,12 +14,13 @@ type ClubCard = ICheckboxGroupProps & {
   address: {
     zipCode: string;
     street: string;
-    number: string;
     neighborhood: string;
     state: string;
     city: string;
   };
+  numberAddress: string;
   zone: string;
+  category: string;
   wantSponsorship: string;
   isSponsorship: string;
 };
@@ -30,6 +31,7 @@ export function ClubCard({
   taxId,
   address,
   zone,
+  category,
   wantSponsorship,
   isSponsorship,
   ...rest
@@ -69,10 +71,13 @@ export function ClubCard({
       </Text>
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1}>
-        Região: Zona {zone}
+        Região: {zone}
       </Text>
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
+        Categoria: {category}
+      </Text>
+      <Text color="gray.100" fontSize="sm" numberOfLines={1}>
         Quer Patrocínio: {wantSponsorship}
       </Text>
       <Text color="gray.100" fontSize="sm" numberOfLines={1}>

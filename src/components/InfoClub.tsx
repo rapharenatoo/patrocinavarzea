@@ -34,6 +34,7 @@ type UserClubProps = {
   facebook: string;
   nameContact: string;
   phoneContact: string;
+  category: string;
   ownField: string;
   wantSponsorship: string;
   isSponsorship: string;
@@ -236,6 +237,15 @@ export function InfoClub() {
                   >
                     Informações gerais:
                   </Heading>
+                  <Text
+                    color="white"
+                    fontSize="sm"
+                    mb={1}
+                    fontFamily="body"
+                    numberOfLines={2}
+                  >
+                    Categoria: {infoClub[0]?.category}
+                  </Text>
                   <Text
                     color="white"
                     fontSize="sm"

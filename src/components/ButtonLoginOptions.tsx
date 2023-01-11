@@ -7,7 +7,7 @@ type Props = IButtonProps & {
 
 export function ButtonLoginOptions({ title, color, ...rest }: Props) {
   return (
-    <ButtonNativeBase
+    <ButtonNativeBase 
       w="full"
       h={12}
       bg="transparent"
@@ -15,7 +15,7 @@ export function ButtonLoginOptions({ title, color, ...rest }: Props) {
       borderColor={color === "primary" ? "white" : "yellow.400"}
       rounded="sm"
       _pressed={{
-        bg: color === "primary" ? "white" : "yellow.400",
+        bg: "gray.400",
       }}
       variant="outline"
       {...rest}

@@ -67,10 +67,10 @@ export function InfoConfection() {
   return (
     <>
       {isLoading ? (
-        <Skeleton /> 
+        <Skeleton />
       ) : (
         <>
-          {infoConfection.length === 0 ? (
+          {!infoConfection[0]?.taxId ? (
             <InfoEmpty />
           ) : (
             <ScrollView
@@ -96,7 +96,7 @@ export function InfoConfection() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    CPF / CNPJ: {infoConfection[0].taxId}
+                    CPF / CNPJ: {infoConfection[0]?.taxId}
                   </Text>
                   <Text
                     color="white"
@@ -105,7 +105,7 @@ export function InfoConfection() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    I.E.: {infoConfection[0].ie}
+                    I.E.: {infoConfection[0]?.ie}
                   </Text>
                   <Text
                     color="white"
@@ -123,7 +123,7 @@ export function InfoConfection() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Contato: {infoConfection[0].nameContact}
+                    Contato: {infoConfection[0]?.nameContact}
                   </Text>
                   <Text
                     color="white"
@@ -132,7 +132,7 @@ export function InfoConfection() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Telefone: {infoConfection[0].phoneContact}
+                    Telefone: {infoConfection[0]?.phoneContact}
                   </Text>
                 </VStack>
 
@@ -152,7 +152,7 @@ export function InfoConfection() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    CEP: {infoConfection[0].address?.zipCode}
+                    CEP: {infoConfection[0]?.address?.zipCode}
                   </Text>
                   <Text
                     color="white"
@@ -161,8 +161,8 @@ export function InfoConfection() {
                     fontFamily="body"
                     numberOfLines={2}
                   >
-                    {infoConfection[0].address?.street},{" "}
-                    {infoConfection[0].numberAddress}
+                    {infoConfection[0]?.address?.street},{" "}
+                    {infoConfection[0]?.numberAddress}
                   </Text>
                   <Text
                     color="white"
@@ -171,7 +171,7 @@ export function InfoConfection() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    {infoConfection[0].address?.neighborhood}
+                    {infoConfection[0]?.address?.neighborhood}
                   </Text>
                   <Text
                     color="white"
@@ -180,8 +180,8 @@ export function InfoConfection() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    {infoConfection[0].address?.city} -{" "}
-                    {infoConfection[0].address?.state}
+                    {infoConfection[0]?.address?.city} -{" "}
+                    {infoConfection[0]?.address?.state}
                   </Text>
                 </VStack>
 
@@ -201,7 +201,7 @@ export function InfoConfection() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Deseja patrocinar? {infoConfection[0].wantSponsor}
+                    Deseja patrocinar? {infoConfection[0]?.wantSponsor}
                   </Text>
                 </VStack>
 

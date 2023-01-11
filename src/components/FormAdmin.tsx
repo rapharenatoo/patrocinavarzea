@@ -13,6 +13,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
@@ -20,6 +22,8 @@ import { UserPhoto } from "./UserPhoto";
 import { Input } from "./Input";
 import { Button } from "./Button";
 import { Skeleton } from "./Skeleton";
+
+import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
 type UserAdminProps = {
   id: string;
@@ -36,7 +40,7 @@ const validationSchema = yup.object({
     .transform((value) => (!!value ? value : null)),
   phoneContact: yup
     .string()
-    .required("Obrigatório")
+    .required("Informe o telefone")
     .min(10, "O telefone deve ter pelo menos 10 digítos"),
 });
 
@@ -45,6 +49,7 @@ const PHOTO_SIZE = 24;
 export function FormAdmin() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
+  const [userPhoto, setUserPhoto] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
   const [infoAdmin, setInfoAdmin] = useState<UserAdminProps[]>([]);
@@ -83,6 +88,45 @@ export function FormAdmin() {
         : "",
     },
   });
+
+  async function handleUserPhotoSelect() {
+    setPhotoIsLoading(true);
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      });
+
+      if (photoSelected.canceled) {
+        return;
+      }
+
+      if (photoSelected.assets[0].uri) {
+        const photoInfo = await FileSystem.getInfoAsync(
+          photoSelected.assets[0].uri
+        );
+
+        if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
+          return toast.show({
+            title: "Essa imagem é muito grande. Escolha uma de até 5MB.",
+            placement: "top",
+            bgColor: "red.500",
+          });
+        }
+        await auth().currentUser.updateProfile({
+          photoURL: photoSelected.assets[0].uri,
+        });
+
+        setUserPhoto(photoSelected.assets[0].uri);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setPhotoIsLoading(false);
+    }
+  }
 
   async function handleUserRegister(data: UserAdminProps) {
     setIsLoading(true);
@@ -143,14 +187,16 @@ export function FormAdmin() {
               />
             ) : (
               <UserPhoto
-                source={{
-                  uri: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.xn4yG10rX6X4uhzIgvk93QAAAA%26pid%3DApi&f=1&ipt=2b07fac776e7f1bbd226db1e92657e3d67c649a75fb064d4ae1faa5b5edb51bf&ipo=images",
-                }}
+                source={
+                  auth().currentUser?.photoURL
+                    ? { uri: auth().currentUser?.photoURL }
+                    : DefaultUserPhotoImg
+                }
                 alt="Foto do usuário"
                 size={PHOTO_SIZE}
               />
             )}
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={handleUserPhotoSelect}>
               <Text
                 color="yellow.400"
                 fontWeight="bold"
@@ -201,7 +247,8 @@ export function FormAdmin() {
                   placeholder="Telefone"
                   keyboardType="numeric"
                   onChangeText={onChange}
-                  value={value}
+                  value={value} // HERE
+                  defaultValue={infoAdmin[0]?.phoneContact}
                   errorMessage={errors.phoneContact?.message}
                 />
               )}

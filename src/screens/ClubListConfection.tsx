@@ -49,20 +49,20 @@ type ClubProps = {
 
 type Sponsorships = Array<string>;
 
-type SponsorProps = {
+type ConfectionProps = {
   id: string;
   name: string;
   sponsorships: Sponsorships;
 };
 
-export function ClubList() {
+export function ClubListConfection() {
   const toast = useToast();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [textSearch, setTextSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [club, setClub] = useState<ClubProps[]>([]);
   const [selectedClub, setSelectedClub] = useState<Sponsorships>([]);
-  const [sponsor, setSponsor] = useState<SponsorProps[]>([]);
+  const [confection, setConfection] = useState<ConfectionProps[]>([]);
   const [list, setList] = useState(club);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -92,7 +92,7 @@ export function ClubList() {
 
   useEffect(() => {
     const subscriber = firestore()
-      .collection("sponsor")
+      .collection("confection")
       .where("email", "==", auth().currentUser.email)
       .onSnapshot((documentSnapshot) => {
         const data = documentSnapshot.docs.map((doc) => {
@@ -100,9 +100,9 @@ export function ClubList() {
             id: doc.id,
             ...doc.data(),
           };
-        }) as SponsorProps[];
+        }) as ConfectionProps[];
 
-        setSponsor(data);
+        setConfection(data);
       });
 
     return () => subscriber();
@@ -136,10 +136,11 @@ export function ClubList() {
     const to = ["bllackdev@gmail.com", "contato@patrocinavarzea.com.br"];
 
     email(to, {
-      subject: `Novos Patrocínios de ${sponsor[0].name}`,
-      body: `Desejo patrocinar o(s) seguinte(s) Clube(s) - Time(s): \n\n${selectedClub
+      subject: `Novos Patrocínios de ${confection[0].name}`,
+      body: `Olá! Sou uma confecção de uniformes.
+      \n\n\Desejo patrocinar o(s) seguinte(s) Clube(s) - Time(s): \n\n${selectedClub
         .toString()
-        .replace(/,/g, "\n")} \n\n\nAtenciosamente, \n\n${sponsor[0].name}`,
+        .replace(/,/g, "\n")} \n\n\nAtenciosamente, \n\n${confection[0].name}`,
       checkCanOpen: true,
     })
       .then(() => {
@@ -156,8 +157,8 @@ export function ClubList() {
 
   async function handleSponsorClubs() {
     await firestore()
-      .collection("sponsor")
-      .doc(sponsor[0]?.id)
+      .collection("confection")
+      .doc(confection[0]?.id)
       .set(
         {
           sponsorships: selectedClub,

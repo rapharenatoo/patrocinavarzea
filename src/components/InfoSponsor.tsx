@@ -37,7 +37,7 @@ type UserSponsorProps = {
   wantSponsor: string;
   categoryTeamsSponsor: Array<string>;
   sponsorshipType: Array<string>;
-  other: string;
+  otherSponsorship: string;
   sponsorships: Sponsorships[];
   createdAt: string;
 };
@@ -77,7 +77,7 @@ export function InfoSponsor() {
         <Skeleton />
       ) : (
         <>
-          {infoSponsor.length === 0 ? (
+          {!infoSponsor[0]?.taxId ? (
             <InfoEmpty />
           ) : (
             <ScrollView
@@ -208,17 +208,7 @@ export function InfoSponsor() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Deseja patrocinar? {infoSponsor[0].wantSponsor}
-                  </Text>
-                  <Text
-                    color="white"
-                    fontSize="sm"
-                    mb={1}
-                    fontFamily="body"
-                    numberOfLines={2}
-                  >
-                    Categoria(s) de patrocínio:{" "}
-                    {infoSponsor[0].categoryTeamsSponsor}
+                    Deseja patrocinar? {infoSponsor[0]?.wantSponsor}
                   </Text>
                   <Text
                     color="white"
@@ -227,7 +217,22 @@ export function InfoSponsor() {
                     fontFamily="body"
                     numberOfLines={3}
                   >
-                    Tipo(s) de patrocínio: {infoSponsor[0].sponsorshipType}
+                    Categoria(s) de patrocínio:{" "}
+                    {infoSponsor[0]?.categoryTeamsSponsor
+                      .toString()
+                      .replace(/,/g, ", ")}
+                  </Text>
+                  <Text
+                    color="white"
+                    fontSize="sm"
+                    mb={1}
+                    fontFamily="body"
+                    numberOfLines={3}
+                  >
+                    Tipo(s) de patrocínio:{" "}
+                    {infoSponsor[0]?.sponsorshipType
+                      .toString()
+                      .replace(/,/g, ", ")}
                   </Text>
                   {otherType ? (
                     <Text
@@ -237,7 +242,10 @@ export function InfoSponsor() {
                       fontFamily="body"
                       numberOfLines={2}
                     >
-                      Outro(s) tipo(s): {infoSponsor[0].other}
+                      Outro(s) tipo(s):{" "}
+                      {!!infoSponsor[0]?.otherSponsorship
+                        ? infoSponsor[0]?.otherSponsorship
+                        : "-"}
                     </Text>
                   ) : null}
                 </VStack>
@@ -251,8 +259,8 @@ export function InfoSponsor() {
                     resizeMode="center"
                   />
                 </Center>
-                
-                <Button title="Alterar" mt={4} onPress={() => {}} />
+
+                <Button title="Alterar" mt={4} onPress={handleGoProfile} />
               </VStack>
             </ScrollView>
           )}

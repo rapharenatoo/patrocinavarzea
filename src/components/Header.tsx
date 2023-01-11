@@ -1,16 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 import { TouchableOpacity } from "react-native";
-import { Heading, HStack, VStack, Text, Icon, useToast } from "native-base";
+import {
+  Heading,
+  HStack,
+  VStack,
+  Text,
+  Icon,
+  useToast,
+  Skeleton as SkeletonNative,
+} from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
 
 import { UserPhoto } from "./UserPhoto";
 import { AlertModal } from "../components/AlertModal";
 
-import defaultUserPhotoImg from "../assets/userPhotoDefault.png";
+import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
+
+const PHOTO_SIZE = 16;
 
 export function Header() {
   const [userPhoto, setUserPhoto] = useState(null);
+  const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const toast = useToast();
 
@@ -33,22 +44,26 @@ export function Header() {
   }
 
   useEffect(() => {
-    const photo = auth().currentUser?.photoURL
-      ? auth().currentUser.photoURL
-      : defaultUserPhotoImg;
+    const subscriber = () => {
+      auth().currentUser?.photoURL;
+      auth().currentUser?.displayName;
+    };
 
-    setUserPhoto(photo);
-  }, [auth()]);
+    return () => subscriber();
+  }, []);
 
   return (
     <HStack bg="gray.600" pt={12} pb={5} px={8} alignItems="center">
       <UserPhoto
-        source={{ uri: auth().currentUser.photoURL }}
+        source={
+          auth().currentUser?.photoURL
+            ? { uri: auth().currentUser?.photoURL }
+            : DefaultUserPhotoImg
+        }
         alt="Imagem do usuário"
-        size={16}
+        size={PHOTO_SIZE}
         mr={4}
       />
-
       <VStack flex={1} mr={2}>
         <Text color="white" fontSize="md">
           Olá,
@@ -60,7 +75,7 @@ export function Header() {
           fontFamily="heading"
           numberOfLines={2}
         >
-          {auth().currentUser.displayName}
+          {auth().currentUser?.displayName}
         </Heading>
       </VStack>
 

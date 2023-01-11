@@ -30,7 +30,7 @@ import { Skeleton } from "./Skeleton";
 import { SelectTaxId } from "../components/SelectTaxId";
 import { SelectZone } from "./SelectZone";
 
-import defaultUserPhotoImg from "../assets/userPhotoDefault.png";
+import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
 type DrawIdClub = {
   id: string;
@@ -60,6 +60,7 @@ type UserClubProps = {
   facebook?: string;
   nameContact?: string;
   phoneContact?: string;
+  category: string;
   ownField: string;
   wantSponsorship: string;
   isSponsorship: string;
@@ -113,6 +114,7 @@ export function FormClub() {
   const [ownField, setOwnField] = useState("NÃO");
   const [wantSponsorship, setWantSponsorship] = useState("SIM");
   const [isSponsorship, setIsSponsorship] = useState("NÃO");
+  const [category, setCategory] = useState("");
   const [drawId, setDrawId] = useState<DrawIdClub[]>([]);
   const [type, setType] = useState("");
   const ref = useRef<InputMask>(null);
@@ -194,6 +196,7 @@ export function FormClub() {
       phoneContact: !!infoClub[0]?.phoneContact
         ? infoClub[0]?.phoneContact
         : "",
+      category: !!infoClub[0]?.category ? infoClub[0]?.category : category,
       ownField: !!infoClub[0]?.ownField ? infoClub[0]?.ownField : ownField,
       wantSponsorship: !!infoClub[0]?.wantSponsorship
         ? infoClub[0]?.wantSponsorship
@@ -257,6 +260,7 @@ export function FormClub() {
       .set({
         ...data,
         email: auth().currentUser.email,
+        category: category,
         ownField: ownField,
         wantSponsorship: wantSponsorship,
         isSponsorship: isSponsorship,
@@ -328,9 +332,11 @@ export function FormClub() {
                 />
               ) : (
                 <UserPhoto
-                  source={{
-                    uri: userPhoto,
-                  }}
+                  source={
+                    auth().currentUser?.photoURL
+                      ? { uri: auth().currentUser?.photoURL }
+                      : DefaultUserPhotoImg
+                  }
                   alt="Foto do usuário"
                   size={PHOTO_SIZE}
                 />
@@ -650,6 +656,77 @@ export function FormClub() {
                 />
               )}
             />
+
+            <VStack mb={4}>
+              <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
+                Categoria:
+              </Text>
+              <Radio.Group
+                name="category"
+                accessibilityLabel="tem patrocínio"
+                value={category}
+                onChange={(e) => {
+                  setCategory(e);
+                }}
+              >
+                <HStack space={7}>
+                  <Radio
+                    value="Juvenil"
+                    colorScheme="yellow"
+                    size="sm"
+                    my={1}
+                    _text={{
+                      color: "gray.100",
+                      fontSize: "sm",
+                      fontFamily: "body",
+                    }}
+                  >
+                    Juvenil
+                  </Radio>
+                  <Radio
+                    value="Sport"
+                    colorScheme="yellow"
+                    size="sm"
+                    my={1}
+                    _text={{
+                      color: "gray.100",
+                      fontSize: "sm",
+                      fontFamily: "body",
+                    }}
+                  >
+                    Sport
+                  </Radio>
+                </HStack>
+                <HStack space={4}>
+                  <Radio
+                    value="Veterano"
+                    colorScheme="yellow"
+                    size="sm"
+                    my={1}
+                    _text={{
+                      color: "gray.100",
+                      fontSize: "sm",
+                      fontFamily: "body",
+                    }}
+                  >
+                    Veterano
+                  </Radio>
+                  <Radio
+                    value="Feminino"
+                    colorScheme="yellow"
+                    size="sm"
+                    my={1}
+                    _text={{
+                      color: "gray.100",
+                      fontSize: "sm",
+                      fontFamily: "body",
+                    }}
+                  >
+                    Feminino
+                  </Radio>
+                </HStack>
+              </Radio.Group>
+            </VStack>
 
             <VStack mb={4}>
               <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
