@@ -49,7 +49,7 @@ export function SelectZone({
       >
         <Select.Item
           label="Zona Norte"
-          value="norte"
+          value="Zona norte"
           backgroundColor="muted.800"
           _text={{
             color: "light.500",
@@ -57,7 +57,7 @@ export function SelectZone({
         />
         <Select.Item
           label="Zona Sul"
-          value="sul"
+          value="Zona sul"
           backgroundColor="muted.800"
           _text={{
             color: "light.500",
@@ -65,7 +65,7 @@ export function SelectZone({
         />
         <Select.Item
           label="Zona Oeste"
-          value="oeste"
+          value="Zona oeste"
           backgroundColor="muted.800"
           _text={{
             color: "light.500",
@@ -73,7 +73,7 @@ export function SelectZone({
         />
         <Select.Item
           label="Zona Leste"
-          value="leste"
+          value="Zona leste"
           backgroundColor="muted.800"
           _text={{
             color: "light.500",

@@ -48,10 +48,6 @@ export function InfoClub() {
   const [infoClub, setInfoClub] = useState<UserClubProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  function handleGoProfile() {
-    navigation.navigate("profile");
-  }
-
   useEffect(() => {
     const subscriber = firestore()
       .collection("club")
@@ -70,6 +66,10 @@ export function InfoClub() {
 
     return () => subscriber();
   }, []);
+
+  function handleGoProfile() {
+    navigation.navigate("profile");
+  }
 
   return (
     <>

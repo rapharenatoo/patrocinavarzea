@@ -27,7 +27,7 @@ import { UserPhoto } from "./UserPhoto";
 import { Input } from "./Input";
 import { Button } from "./Button";
 import { Skeleton } from "./Skeleton";
-import { SelectTaxId } from "../components/SelectTaxId";
+import { SelectTaxId } from "./SelectTaxId";
 import { SelectZone } from "./SelectZone";
 
 import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
@@ -69,36 +69,6 @@ type UserClubProps = {
   drawId: number;
 };
 
-const validationSchema = yup.object({
-  name: yup
-    .string()
-    .nullable()
-    .transform((value) => (!!value ? value : null)),
-  // type: yup.string().required("Selecione CPF ou CNPJ"),
-  taxId: yup.string().required("Informe o CPF / CNPJ"),
-  address: yup.object({
-    zipCode: yup
-      .string()
-      .required("Informe o CEP")
-      .min(8, "O CEP deve ter pelo menos 8 caracteres"),
-    street: yup.string().required("Informe o endereço"),
-    neighborhood: yup.string().required("Informe o bairro"),
-    state: yup.string().required("Informe o ES"),
-    city: yup.string().required("Informe o cidade"),
-  }),
-  numberAddress: yup.string().required("Informe o Nº"),
-  foundationDate: yup.string(),
-  zone: yup.string(),
-  clubColors: yup.string(),
-  instagram: yup.string(),
-  facebook: yup.string(),
-  nameContact: yup.string(),
-  phoneContact: yup
-    .string()
-    .min(10, "O telefone deve ter pelo menos 10 digítos"),
-  endDate: yup.string(),
-});
-
 type InputMask = TextInputMask & TextInputMaskMethods;
 
 const PHOTO_SIZE = 24;
@@ -111,10 +81,11 @@ export function FormClub() {
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
   const [infoClub, setInfoClub] = useState<UserClubProps[]>([]);
   const [userPhoto, setUserPhoto] = useState(null);
-  const [ownField, setOwnField] = useState("NÃO");
-  const [wantSponsorship, setWantSponsorship] = useState("SIM");
-  const [isSponsorship, setIsSponsorship] = useState("NÃO");
+  const [ownField, setOwnField] = useState("");
+  const [wantSponsorship, setWantSponsorship] = useState("");
+  const [isSponsorship, setIsSponsorship] = useState("");
   const [category, setCategory] = useState("");
+  const [zone, setZone] = useState("");
   const [drawId, setDrawId] = useState<DrawIdClub[]>([]);
   const [type, setType] = useState("");
   const ref = useRef<InputMask>(null);
@@ -134,6 +105,11 @@ export function FormClub() {
         }) as UserClubProps[];
 
         setInfoClub(data);
+        setOwnField(data[0]?.ownField);
+        setWantSponsorship(data[0]?.wantSponsorship);
+        setIsSponsorship(data[0]?.isSponsorship);
+        setCategory(data[0]?.category);
+        setZone(data[0]?.zone);
         setIsSkeletonLoading(false);
       });
 
@@ -159,6 +135,62 @@ export function FormClub() {
     return () => subscriber();
   }, []);
 
+  const validationSchema = yup.object({
+    name: yup
+      .string()
+      .nullable()
+      .transform((value) => (!!value ? value : null)),
+    // type: yup.string().required("Selecione CPF ou CNPJ"),
+    taxId: yup
+      .string()
+      .required("Informe o CPF / CNPJ")
+      .default(infoClub[0]?.taxId),
+    address: yup.object({
+      zipCode: yup
+        .string()
+        .required("Informe o CEP")
+        .min(8, "O CEP deve ter pelo menos 8 caracteres")
+        .default(infoClub[0]?.address?.zipCode),
+      street: yup
+        .string()
+        .required("Informe o endereço")
+        .default(infoClub[0]?.address?.street),
+      neighborhood: yup
+        .string()
+        .required("Informe o bairro")
+        .default(infoClub[0]?.address?.neighborhood),
+      state: yup
+        .string()
+        .required("Informe o ES")
+        .default(infoClub[0]?.address?.state),
+      city: yup
+        .string()
+        .required("Informe o cidade")
+        .default(infoClub[0]?.address?.city),
+    }),
+    numberAddress: yup
+      .string()
+      .required("Informe o Nº")
+      .default(infoClub[0]?.numberAddress),
+    zone: yup
+      .string()
+      .required("Informe a Região / Zona")
+      .default(infoClub[0]?.zone),
+    foundationDate: yup
+      .string()
+      .default(infoClub[0]?.foundationDate ? infoClub[0]?.foundationDate : ""),
+    clubColors: yup.string().default(infoClub[0]?.clubColors),
+    instagram: yup.string().default(infoClub[0]?.instagram),
+    facebook: yup.string().default(infoClub[0]?.facebook),
+    nameContact: yup.string().default(infoClub[0]?.nameContact),
+    phoneContact: yup
+      .string()
+      .min(10, "O telefone deve ter pelo menos 10 digítos")
+      .default(infoClub[0]?.phoneContact),
+    endDate: yup.string().default(infoClub[0]?.endDate),
+    
+  });
+
   const {
     control,
     handleSubmit,
@@ -168,43 +200,6 @@ export function FormClub() {
     defaultValues: {
       name: auth().currentUser.displayName,
       email: auth().currentUser.email,
-      taxId: !!infoClub[0]?.taxId ? infoClub[0]?.taxId : "",
-      address: {
-        zipCode: !!infoClub[0]?.address?.zipCode
-          ? infoClub[0]?.address?.zipCode
-          : "",
-        street: !!infoClub[0]?.address?.street
-          ? infoClub[0]?.address?.street
-          : "",
-        neighborhood: !!infoClub[0]?.address?.neighborhood
-          ? infoClub[0]?.address?.neighborhood
-          : "",
-        state: !!infoClub[0]?.address?.state ? infoClub[0]?.address?.state : "",
-        city: !!infoClub[0]?.address?.city ? infoClub[0]?.address?.city : "",
-      },
-      numberAddress: !!infoClub[0]?.numberAddress
-        ? infoClub[0]?.numberAddress
-        : "",
-      zone: !!infoClub[0]?.zone ? infoClub[0]?.zone : "",
-      foundationDate: !!infoClub[0]?.foundationDate
-        ? infoClub[0]?.foundationDate
-        : "",
-      clubColors: !!infoClub[0]?.clubColors ? infoClub[0]?.clubColors : "",
-      instagram: !!infoClub[0]?.instagram ? infoClub[0]?.instagram : "",
-      facebook: !!infoClub[0]?.facebook ? infoClub[0]?.facebook : "",
-      nameContact: !!infoClub[0]?.nameContact ? infoClub[0]?.nameContact : "",
-      phoneContact: !!infoClub[0]?.phoneContact
-        ? infoClub[0]?.phoneContact
-        : "",
-      category: !!infoClub[0]?.category ? infoClub[0]?.category : category,
-      ownField: !!infoClub[0]?.ownField ? infoClub[0]?.ownField : ownField,
-      wantSponsorship: !!infoClub[0]?.wantSponsorship
-        ? infoClub[0]?.wantSponsorship
-        : wantSponsorship,
-      isSponsorship: !!infoClub[0]?.isSponsorship
-        ? infoClub[0]?.isSponsorship
-        : isSponsorship,
-      endDate: !!infoClub[0]?.endDate ? infoClub[0]?.endDate : "",
     },
   });
 
@@ -360,8 +355,7 @@ export function FormClub() {
               alignSelf="flex-start"
               fontFamily="heading"
             >
-              Nº de registro:{" "}
-              {!!infoClub[0]?.drawId ? infoClub[0]?.drawId : "-"}
+              Nº de registro: {infoClub[0]?.drawId}
             </Heading>
             <Controller
               control={control}
@@ -402,8 +396,8 @@ export function FormClub() {
                   placeholder="E-mail"
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  onChangeText={onChange}
                   value={value}
+                  onChangeText={onChange}
                   isDisabled
                 />
               )}
@@ -496,8 +490,6 @@ export function FormClub() {
                       w={20}
                       bg="gray.600"
                       placeholder="ES"
-                      // autoCapitalize=""
-
                       onChangeText={onChange}
                       value={value}
                       defaultValue={infoClub[0]?.address?.state}
@@ -528,7 +520,7 @@ export function FormClub() {
               control={control}
               name="zone"
               render={({ field: { onChange, value } }) => (
-                <SelectZone zone={value} onChange={onChange} />
+                <SelectZone zone={zone} onChange={onChange} />
               )}
             />
 
@@ -665,6 +657,7 @@ export function FormClub() {
                 name="category"
                 accessibilityLabel="tem patrocínio"
                 value={category}
+                defaultValue={category}
                 onChange={(e) => {
                   setCategory(e);
                 }}
