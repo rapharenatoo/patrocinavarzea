@@ -1,0 +1,35 @@
+{
+  "cli": {
+    "version": ">= 3.3.2",
+    "requireCommit": false
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug"
+      }
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "preview2": {},
+    "production": {
+      "android": {
+        "credentialsSource": "local"
+      }
+    },
+    "google-production": {
+      "android": {
+        "credentialsSource": "local"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
