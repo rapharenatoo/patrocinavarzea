@@ -179,16 +179,23 @@ export function FormClub() {
     foundationDate: yup
       .string()
       .default(infoClub[0]?.foundationDate ? infoClub[0]?.foundationDate : ""),
-    clubColors: yup.string().default(infoClub[0]?.clubColors),
-    instagram: yup.string().default(infoClub[0]?.instagram),
-    facebook: yup.string().default(infoClub[0]?.facebook),
-    nameContact: yup.string().default(infoClub[0]?.nameContact),
+    clubColors: yup
+      .string()
+      .default(infoClub[0]?.clubColors ? infoClub[0]?.clubColors : ""),
+    instagram: yup
+      .string()
+      .default(infoClub[0]?.instagram ? infoClub[0]?.instagram : ""),
+    facebook: yup
+      .string()
+      .default(infoClub[0]?.facebook ? infoClub[0]?.facebook : ""),
+    nameContact: yup
+      .string()
+      .default(infoClub[0]?.nameContact ? infoClub[0]?.nameContact : ""),
     phoneContact: yup
       .string()
       .min(10, "O telefone deve ter pelo menos 10 digítos")
-      .default(infoClub[0]?.phoneContact),
+      .default(infoClub[0]?.phoneContact ? infoClub[0]?.phoneContact : ""),
     endDate: yup.string().default(infoClub[0]?.endDate),
-    
   });
 
   const {

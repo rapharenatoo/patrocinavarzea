@@ -33,7 +33,7 @@ export function Routes() {
   return (
     <Box flex={1} bg="gray.700">
       <NavigationContainer theme={theme}>
-        {user && user.emailVerified ? <AppClubRoutes /> : <AuthRoutes />}
+        {user && user.emailVerified ? <AppSponsorRoutes /> : <AuthRoutes />}
       </NavigationContainer>
     </Box>
   );

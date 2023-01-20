@@ -7,7 +7,7 @@ import { FormChampionship } from "../components/FormChampionship";
 export function Profile() {
   return (
     <>
-      <FormClub />
+      <FormSponsor />
     </>
   );
 }

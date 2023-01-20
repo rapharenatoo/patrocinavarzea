@@ -61,31 +61,6 @@ type UserSponsorProps = {
   createdAt: string;
 };
 
-const validationSchema = yup.object({
-  name: yup
-    .string()
-    .nullable()
-    .transform((value) => (!!value ? value : null)),
-  taxId: yup.string().required("Informe o CPF / CNPJ"),
-  ie: yup.string().required("Informe a inscrição estadual"),
-  address: yup.object({
-    zipCode: yup
-      .string()
-      .required("Informe o CEP")
-      .min(8, "O CEP deve ter pelo menos 8 caracteres"),
-    street: yup.string().required("Informe o endereço"),
-    neighborhood: yup.string().required("Informe o bairro"),
-    state: yup.string().required("Informe o ES"),
-    city: yup.string().required("Informe o cidade"),
-  }),
-  numberAddress: yup.string().required("Informe o Nº"),
-  foundationDate: yup.string(),
-  nameContact: yup.string(),
-  phoneContact: yup
-    .string()
-    .min(10, "O telefone deve ter pelo menos 10 digítos"),
-});
-
 const PHOTO_SIZE = 24;
 
 export function FormSponsor() {
@@ -96,8 +71,10 @@ export function FormSponsor() {
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
   const [infoSponsor, setInfoSponsor] = useState<UserSponsorProps[]>([]);
   const [userPhoto, setUserPhoto] = useState(null);
-  const [wantSponsor, setWantSponsor] = useState("SIM");
-  const [categoryTeamsSponsor, setCategoryTeamsSponsor] = useState<string[]>([]);
+  const [wantSponsor, setWantSponsor] = useState("");
+  const [categoryTeamsSponsor, setCategoryTeamsSponsor] = useState<string[]>(
+    []
+  );
   const [sponsorshipType, setSponsorshipType] = useState<string[]>([]);
   const [otherSponsorship, setOtherSponsorship] = useState(false);
   const [address, setAddress] = useState<Address>({
@@ -123,11 +100,68 @@ export function FormSponsor() {
         }) as UserSponsorProps[];
 
         setInfoSponsor(data);
+        setWantSponsor(data[0]?.wantSponsor);
+        setCategoryTeamsSponsor(data[0]?.categoryTeamsSponsor);
+        setSponsorshipType(data[0]?.sponsorshipType);
         setIsSkeletonLoading(false);
       });
 
     return () => subscriber();
   }, []);
+
+  const validationSchema = yup.object({
+    name: yup
+      .string()
+      .nullable()
+      .transform((value) => (!!value ? value : null)),
+    // type: yup.string().required("Selecione CPF ou CNPJ"),
+    taxId: yup
+      .string()
+      .required("Informe o CPF / CNPJ")
+      .default(infoSponsor[0]?.taxId),
+    ie: yup.string().required("Informe o I.E.").default(infoSponsor[0]?.ie),
+    address: yup.object({
+      zipCode: yup
+        .string()
+        .required("Informe o CEP")
+        .min(8, "O CEP deve ter pelo menos 8 caracteres")
+        .default(infoSponsor[0]?.address?.zipCode),
+      street: yup
+        .string()
+        .required("Informe o endereço")
+        .default(infoSponsor[0]?.address?.street),
+      neighborhood: yup
+        .string()
+        .required("Informe o bairro")
+        .default(infoSponsor[0]?.address?.neighborhood),
+      state: yup
+        .string()
+        .required("Informe o ES")
+        .default(infoSponsor[0]?.address?.state),
+      city: yup
+        .string()
+        .required("Informe o cidade")
+        .default(infoSponsor[0]?.address?.city),
+    }),
+    numberAddress: yup
+      .string()
+      .required("Informe o Nº")
+      .default(infoSponsor[0]?.numberAddress),
+    nameContact: yup
+      .string()
+      .default(infoSponsor[0]?.nameContact ? infoSponsor[0]?.nameContact : ""),
+    phoneContact: yup
+      .string()
+      .min(10, "O telefone deve ter pelo menos 10 digítos")
+      .default(
+        infoSponsor[0]?.phoneContact ? infoSponsor[0]?.phoneContact : ""
+      ),
+    otherSponsorship: yup
+      .string()
+      .default(
+        infoSponsor[0]?.otherSponsorship ? infoSponsor[0]?.otherSponsorship : ""
+      ),
+  });
 
   const {
     control,
@@ -138,43 +172,6 @@ export function FormSponsor() {
     defaultValues: {
       name: auth().currentUser.displayName,
       email: auth().currentUser.email,
-      taxId: !!infoSponsor[0]?.taxId ? infoSponsor[0]?.taxId : "",
-      ie: !!infoSponsor[0]?.ie ? infoSponsor[0]?.ie : "",
-      address: {
-        zipCode: !!infoSponsor[0]?.address?.zipCode
-          ? infoSponsor[0]?.address?.zipCode
-          : "",
-        street: !!infoSponsor[0]?.address?.street
-          ? infoSponsor[0]?.address?.street
-          : "",
-        neighborhood: !!infoSponsor[0]?.address?.neighborhood
-          ? infoSponsor[0]?.address?.neighborhood
-          : "",
-        state: !!infoSponsor[0]?.address?.state
-          ? infoSponsor[0]?.address?.state
-          : "",
-        city: !!infoSponsor[0]?.address?.city
-          ? infoSponsor[0]?.address?.city
-          : "",
-      },
-      numberAddress: !!infoSponsor[0]?.numberAddress
-        ? infoSponsor[0]?.numberAddress
-        : "",
-      nameContact: !!infoSponsor[0]?.nameContact
-        ? infoSponsor[0]?.nameContact
-        : "",
-      phoneContact: !!infoSponsor[0]?.phoneContact
-        ? infoSponsor[0]?.phoneContact
-        : "",
-      wantSponsor: !!infoSponsor[0]?.wantSponsor
-        ? infoSponsor[0]?.wantSponsor
-        : wantSponsor,
-      categoryTeamsSponsor: !!infoSponsor[0]?.categoryTeamsSponsor
-        ? infoSponsor[0]?.categoryTeamsSponsor
-        : categoryTeamsSponsor,
-      sponsorshipType: !!infoSponsor[0]?.sponsorshipType
-        ? infoSponsor[0]?.sponsorshipType
-        : sponsorshipType,
     },
   });
 
@@ -326,6 +323,7 @@ export function FormSponsor() {
                   keyboardType="numeric"
                   onChangeText={onChange}
                   value={value}
+                  defaultValue={infoSponsor[0]?.taxId}
                   errorMessage={errors.taxId?.message}
                 />
               )}
@@ -341,6 +339,7 @@ export function FormSponsor() {
                   keyboardType="numeric"
                   onChangeText={onChange}
                   value={value}
+                  defaultValue={infoSponsor[0]?.ie}
                   errorMessage={errors.ie?.message}
                 />
               )}
@@ -383,6 +382,7 @@ export function FormSponsor() {
                   keyboardType="numeric"
                   onChangeText={onChange}
                   value={value}
+                  defaultValue={infoSponsor[0]?.address?.zipCode}
                   errorMessage={errors.address?.zipCode?.message}
                 />
               )}
@@ -397,6 +397,7 @@ export function FormSponsor() {
                   placeholder="Endereço"
                   onChangeText={onChange}
                   value={value}
+                  defaultValue={infoSponsor[0]?.address?.street}
                   errorMessage={errors.address?.street?.message}
                 />
               )}
@@ -413,6 +414,7 @@ export function FormSponsor() {
                       placeholder="Nº"
                       onChangeText={onChange}
                       value={value}
+                      defaultValue={infoSponsor[0]?.numberAddress}
                       errorMessage={errors.numberAddress?.message}
                     />
                   )}
@@ -428,6 +430,7 @@ export function FormSponsor() {
                       placeholder="Bairro"
                       onChangeText={onChange}
                       value={value}
+                      defaultValue={infoSponsor[0]?.address?.neighborhood}
                       errorMessage={errors.address?.neighborhood?.message}
                     />
                   )}
@@ -447,6 +450,7 @@ export function FormSponsor() {
                       placeholder="ES"
                       onChangeText={onChange}
                       value={value}
+                      defaultValue={infoSponsor[0]?.address?.state}
                       errorMessage={errors.address?.state?.message}
                     />
                   )}
@@ -462,6 +466,7 @@ export function FormSponsor() {
                       placeholder="Cidade"
                       onChangeText={onChange}
                       value={value}
+                      defaultValue={infoSponsor[0]?.address?.city}
                       errorMessage={errors.address?.city?.message}
                     />
                   )}
@@ -487,9 +492,9 @@ export function FormSponsor() {
                 <Input
                   bg="gray.600"
                   placeholder="Nome do contato"
-                  keyboardType="numeric"
                   onChangeText={onChange}
                   value={value}
+                  defaultValue={infoSponsor[0]?.nameContact}
                   errorMessage={errors.nameContact?.message}
                 />
               )}
@@ -505,6 +510,7 @@ export function FormSponsor() {
                   keyboardType="numeric"
                   onChangeText={onChange}
                   value={value}
+                  defaultValue={infoSponsor[0]?.phoneContact}
                   errorMessage={errors.phoneContact?.message}
                 />
               )}
@@ -733,6 +739,7 @@ export function FormSponsor() {
                         placeholder="Outros patrocínios"
                         onChangeText={onChange}
                         value={value}
+                        defaultValue={infoSponsor[0]?.otherSponsorship}
                         errorMessage={errors.otherSponsorship?.message}
                       />
                     )}
