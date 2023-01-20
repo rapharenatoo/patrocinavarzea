@@ -53,31 +53,6 @@ type UserConfectionProps = {
   createdAt: string;
 };
 
-const validationSchema = yup.object({
-  name: yup
-    .string()
-    .nullable()
-    .transform((value) => (!!value ? value : null)),
-  // type: yup.string().required("Selecione CPF ou CNPJ"),
-  taxId: yup.string().required("Informe o CPF / CNPJ"),
-  ie: yup.string().required("Informe o I.E."),
-  address: yup.object({
-    zipCode: yup
-      .string()
-      .required("Informe o CEP")
-      .min(8, "O CEP deve ter pelo menos 8 caracteres"),
-    street: yup.string().required("Informe o endereço"),
-    neighborhood: yup.string().required("Informe o bairro"),
-    state: yup.string().required("Informe o ES"),
-    city: yup.string().required("Informe o cidade"),
-  }),
-  numberAddress: yup.string().required("Informe o Nº"),
-  nameContact: yup.string(),
-  phoneContact: yup
-    .string()
-    .min(10, "O telefone deve ter pelo menos 10 digítos"),
-});
-
 const PHOTO_SIZE = 24;
 
 export function FormConfection() {
@@ -86,7 +61,7 @@ export function FormConfection() {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
-  const [wantSponsor, setWantSponsor] = useState("NÃO");
+  const [wantSponsor, setWantSponsor] = useState("");
   const [userPhoto, setUserPhoto] = useState(null);
   const [infoConfection, setInfoConfection] = useState<UserConfectionProps[]>(
     []
@@ -114,11 +89,63 @@ export function FormConfection() {
         }) as UserConfectionProps[];
 
         setInfoConfection(data);
+        setWantSponsor(data[0]?.wantSponsor);
         setIsSkeletonLoading(false);
       });
 
     return () => subscriber();
   }, []);
+
+  const validationSchema = yup.object({
+    name: yup
+      .string()
+      .nullable()
+      .transform((value) => (!!value ? value : null)),
+    // type: yup.string().required("Selecione CPF ou CNPJ"),
+    taxId: yup
+      .string()
+      .required("Informe o CPF / CNPJ")
+      .default(infoConfection[0]?.taxId),
+    ie: yup.string().required("Informe o I.E.").default(infoConfection[0]?.ie),
+    address: yup.object({
+      zipCode: yup
+        .string()
+        .required("Informe o CEP")
+        .min(8, "O CEP deve ter pelo menos 8 caracteres")
+        .default(infoConfection[0]?.address?.zipCode),
+      street: yup
+        .string()
+        .required("Informe o endereço")
+        .default(infoConfection[0]?.address?.street),
+      neighborhood: yup
+        .string()
+        .required("Informe o bairro")
+        .default(infoConfection[0]?.address?.neighborhood),
+      state: yup
+        .string()
+        .required("Informe o ES")
+        .default(infoConfection[0]?.address?.state),
+      city: yup
+        .string()
+        .required("Informe o cidade")
+        .default(infoConfection[0]?.address?.city),
+    }),
+    numberAddress: yup
+      .string()
+      .required("Informe o Nº")
+      .default(infoConfection[0]?.numberAddress),
+    nameContact: yup
+      .string()
+      .default(
+        infoConfection[0]?.nameContact ? infoConfection[0]?.nameContact : ""
+      ),
+    phoneContact: yup
+      .string()
+      .min(10, "O telefone deve ter pelo menos 10 digítos")
+      .default(
+        infoConfection[0]?.phoneContact ? infoConfection[0]?.phoneContact : ""
+      ),
+  });
 
   const {
     control,
@@ -129,37 +156,6 @@ export function FormConfection() {
     defaultValues: {
       name: auth().currentUser.displayName,
       email: auth().currentUser.email,
-      taxId: !!infoConfection[0]?.taxId ? infoConfection[0]?.taxId : "",
-      ie: !!infoConfection[0]?.ie ? infoConfection[0]?.ie : "",
-      address: {
-        zipCode: !!infoConfection[0]?.address?.zipCode
-          ? infoConfection[0]?.address?.zipCode
-          : "",
-        street: !!infoConfection[0]?.address?.street
-          ? infoConfection[0]?.address?.street
-          : "",
-        neighborhood: !!infoConfection[0]?.address?.neighborhood
-          ? infoConfection[0]?.address?.neighborhood
-          : "",
-        state: !!infoConfection[0]?.address?.state
-          ? infoConfection[0]?.address?.state
-          : "",
-        city: !!infoConfection[0]?.address?.city
-          ? infoConfection[0]?.address?.city
-          : "",
-      },
-      numberAddress: !!infoConfection[0]?.numberAddress
-        ? infoConfection[0]?.numberAddress
-        : "",
-      nameContact: !!infoConfection[0]?.nameContact
-        ? infoConfection[0]?.nameContact
-        : "",
-      phoneContact: !!infoConfection[0]?.phoneContact
-        ? infoConfection[0]?.phoneContact
-        : "",
-      wantSponsor: !!infoConfection[0]?.wantSponsor
-        ? infoConfection[0]?.wantSponsor
-        : wantSponsor,
     },
   });
 
@@ -308,7 +304,8 @@ export function FormConfection() {
                   placeholder="CPF / CNPJ"
                   keyboardType="numeric"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
+                  defaultValue={infoConfection[0]?.taxId}
                   errorMessage={errors.taxId?.message}
                 />
               )}
@@ -323,7 +320,8 @@ export function FormConfection() {
                   placeholder="I.E."
                   keyboardType="numeric"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
+                  defaultValue={infoConfection[0]?.ie}
                   errorMessage={errors.ie?.message}
                 />
               )}
@@ -365,7 +363,8 @@ export function FormConfection() {
                   placeholder="CEP"
                   keyboardType="numeric"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
+                  defaultValue={infoConfection[0]?.address?.zipCode}
                   errorMessage={errors.address?.zipCode?.message}
                 />
               )}
@@ -379,7 +378,8 @@ export function FormConfection() {
                   bg="gray.600"
                   placeholder="Endereço"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
+                  defaultValue={infoConfection[0]?.address?.street}
                   errorMessage={errors.address?.street?.message}
                 />
               )}
@@ -395,7 +395,8 @@ export function FormConfection() {
                       bg="gray.600"
                       placeholder="Nº"
                       onChangeText={onChange}
-                      // value={value}
+                      value={value}
+                      defaultValue={infoConfection[0]?.numberAddress}
                       errorMessage={errors.numberAddress?.message}
                     />
                   )}
@@ -410,7 +411,8 @@ export function FormConfection() {
                       bg="gray.600"
                       placeholder="Bairro"
                       onChangeText={onChange}
-                      // value={value}
+                      value={value}
+                      defaultValue={infoConfection[0]?.address?.neighborhood}
                       errorMessage={errors.address?.neighborhood?.message}
                     />
                   )}
@@ -429,7 +431,8 @@ export function FormConfection() {
                       bg="gray.600"
                       placeholder="ES"
                       onChangeText={onChange}
-                      // value={value}
+                      value={value}
+                      defaultValue={infoConfection[0]?.address?.state}
                       errorMessage={errors.address?.state?.message}
                     />
                   )}
@@ -444,7 +447,8 @@ export function FormConfection() {
                       bg="gray.600"
                       placeholder="Cidade"
                       onChangeText={onChange}
-                      // value={value}
+                      value={value}
+                      defaultValue={infoConfection[0]?.address?.city}
                       errorMessage={errors.address?.city?.message}
                     />
                   )}
@@ -471,7 +475,8 @@ export function FormConfection() {
                   bg="gray.600"
                   placeholder="Nome do contato"
                   onChangeText={onChange}
-                  // value={value}
+                  value={value}
+                  defaultValue={infoConfection[0]?.nameContact}
                   errorMessage={errors.nameContact?.message}
                 />
               )}
@@ -487,6 +492,7 @@ export function FormConfection() {
                   keyboardType="numeric"
                   onChangeText={onChange}
                   value={value}
+                  defaultValue={infoConfection[0]?.phoneContact}
                   errorMessage={errors.phoneContact?.message}
                 />
               )}
