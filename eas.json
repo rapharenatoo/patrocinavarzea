@@ -20,12 +20,12 @@
     "preview2": {},
     "production": {
       "android": {
-        "credentialsSource": "local"
+        "credentialsSource": "remote"
       }
     },
     "google-production": {
       "android": {
-        "credentialsSource": "local"
+        "credentialsSource": "remote"
       }
     }
   },

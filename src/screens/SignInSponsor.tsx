@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -7,22 +6,21 @@ import {
   Center,
   Heading,
   ScrollView,
-  useToast,
   Text,
 } from "native-base";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import auth from "@react-native-firebase/auth";
 
 import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
+
+import { useAuth } from "../hooks/auth";
 
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 
 import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
-import { CLUB } from "../utils/constants";
 
 type UserProps = {
   email: string;
@@ -38,9 +36,8 @@ const signUpSchema = yup.object({
 });
 
 export function SignInSponsor() {
-  const toast = useToast();
+  const { signIn, isLogging } = useAuth();
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
-  const [isLoading, setIsLoading] = useState(false);
   const {
     control,
     handleSubmit,
@@ -58,50 +55,7 @@ export function SignInSponsor() {
   }
 
   async function handleSignIn(data: UserProps) {
-    setIsLoading(true);
-
-    await auth()
-      .signInWithEmailAndPassword(data.email, data.password)
-      .then(({ user }) => {
-        const isEmailVerify = user.emailVerified;
-        if (!isEmailVerify) {
-          const messageError = toast.show({
-            title:
-              "A verificação do seu email ainda está pendente. Acesse seu e-mail para concluir o cadastro!",
-            placement: "top",
-            bgColor: "red.500",
-          });
-          return messageError;
-        }
-      })
-      .catch((error) => {
-        setIsLoading(false);
-
-        const errorCode = error.code;
-        if (
-          errorCode == "auth/wrong-password" ||
-          errorCode == "auth/user-not-found"
-        ) {
-          const messageError = toast.show({
-            title: "O email e/ou a senha inválida.",
-            placement: "top",
-            bgColor: "red.500",
-          });
-          return messageError;
-        } else if (errorCode === "auth/network-request-failed") {
-          const messageError = toast.show({
-            title:
-              "Parece que você não está conectado a uma rede! Verifique sua conexão e tente novamente.",
-            placement: "top",
-            bgColor: "red.500",
-          });
-          return messageError;
-        }
-        console.log(errorCode);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    signIn(data.email, data.password, "sponsor");
   }
 
   return (
@@ -164,7 +118,7 @@ export function SignInSponsor() {
           <Button
             title="Acessar conta"
             onPress={handleSubmit(handleSignIn)}
-            isLoading={isLoading}
+            isLoading={isLogging}
           />
 
           <TouchableOpacity onPress={handleGoResetPassword}>
