@@ -11,6 +11,7 @@ type User = {
 
 type AuthContextData = {
   signIn: (email: string, password: string, type: string) => Promise<void>;
+  signOut: () => void;
   isLogging: boolean;
   user: User | null;
 };
@@ -99,10 +100,27 @@ function AuthProvider({ children }: AuthProviderProps) {
       });
   }
 
+  async function signOut() {
+    await auth()
+      .signOut()
+      .then(() => {})
+      .catch((error) => {
+        const errorCode = error.code;
+        const messageError = toast.show({
+          title: `Algo deu errado. Tente novamente mais tarde! Código: ${errorCode}`,
+          placement: "top",
+          color: "red.500",
+        });
+        return messageError;
+      });
+    setUser(null);
+  }
+
   return (
     <AuthContext.Provider
       value={{
         signIn,
+        signOut,
         isLogging,
         user,
       }}

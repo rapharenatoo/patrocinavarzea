@@ -1,16 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { TouchableOpacity } from "react-native";
-import {
-  Heading,
-  HStack,
-  VStack,
-  Text,
-  Icon,
-  useToast,
-  Skeleton as SkeletonNative,
-} from "native-base";
+import { Heading, HStack, VStack, Text, Icon } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
+
+import { useAuth } from "../hooks/auth";
 
 import { UserPhoto } from "./UserPhoto";
 import { AlertModal } from "../components/AlertModal";
@@ -20,27 +14,14 @@ import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
 const PHOTO_SIZE = 16;
 
 export function Header() {
-  const [userPhoto, setUserPhoto] = useState(null);
-  const [photoIsLoading, setPhotoIsLoading] = useState(false);
+  const { signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const toast = useToast();
 
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef(null);
 
   function handleLogout() {
-    auth()
-      .signOut()
-      .then(() => {})
-      .catch((error) => {
-        const errorCode = error.code;
-        const messageError = toast.show({
-          title: `Algo deu errado. Tente novamente mais tarde! Código: ${errorCode}`,
-          placement: "top",
-          color: "red.500",
-        });
-        return messageError;
-      });
+    signOut();
   }
 
   useEffect(() => {
