@@ -1,4 +1,4 @@
-package com.patrocinavarzea;
+package com.bllackdev.patrocinavarzea;
 
 import android.os.Build;
 import android.os.Bundle;

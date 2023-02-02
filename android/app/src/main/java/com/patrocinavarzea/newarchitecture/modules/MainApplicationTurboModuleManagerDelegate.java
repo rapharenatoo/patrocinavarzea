@@ -1,4 +1,4 @@
-package com.patrocinavarzea.newarchitecture.modules;
+package com.bllackdev.patrocinavarzea.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

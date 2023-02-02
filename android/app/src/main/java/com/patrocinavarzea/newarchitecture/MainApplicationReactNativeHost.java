@@ -1,4 +1,4 @@
-package com.patrocinavarzea.newarchitecture;
+package com.bllackdev.patrocinavarzea.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -20,9 +20,9 @@ import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.patrocinavarzea.BuildConfig;
-import com.patrocinavarzea.newarchitecture.components.MainComponentsRegistry;
-import com.patrocinavarzea.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.bllackdev.patrocinavarzea.BuildConfig;
+import com.bllackdev.patrocinavarzea.newarchitecture.components.MainComponentsRegistry;
+import com.bllackdev.patrocinavarzea.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

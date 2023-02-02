@@ -1,4 +1,4 @@
-package com.patrocinavarzea.newarchitecture.components;
+package com.bllackdev.patrocinavarzea.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

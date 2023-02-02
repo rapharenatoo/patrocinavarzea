@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:849948842277:android:b3262e7d4ebf8c3e1b22cc",
         "android_client_info": {
-          "package_name": "com.patrocinavarzea"
+          "package_name": "com.bllackdev.patrocinavarzea"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "849948842277-a9dvl7n3adauj40n75s8vh2h1u4esmdm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.patrocinavarzea",
+            "package_name": "com.bllackdev.patrocinavarzea",
             "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
@@ -46,7 +46,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:849948842277:android:c5ead42df6dadf191b22cc",
         "android_client_info": {
-          "package_name": "com.patrocinavarzeamobile"
+          "package_name": "com.bllackdev.patrocinavarzeamobile"
         }
       },
       "oauth_client": [
