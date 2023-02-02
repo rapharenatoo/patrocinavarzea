@@ -1,12 +1,9 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 import { useToast } from "native-base";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect } from "react";
 
 type User = {
   id: string;
@@ -33,6 +30,8 @@ function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
 
   async function signIn(email: string, password: string, type: string) {
+    const USER_COLLECTION = `@patrocinavarzea:${type}`;
+
     setIsLogging(true);
 
     auth()
@@ -52,7 +51,7 @@ function AuthProvider({ children }: AuthProviderProps) {
           .collection(type)
           .doc(user.uid)
           .get()
-          .then((profile) => {
+          .then(async (profile) => {
             const { name, type } = profile.data() as User;
             if (profile.exists) {
               const userData = {
@@ -60,6 +59,11 @@ function AuthProvider({ children }: AuthProviderProps) {
                 name: name,
                 type,
               };
+
+              await AsyncStorage.setItem(
+                USER_COLLECTION,
+                JSON.stringify(userData)
+              );
               setUser(userData);
             }
           })
@@ -142,6 +146,71 @@ function AuthProvider({ children }: AuthProviderProps) {
       });
     setUser(null);
   }
+
+  let USER_COLLECTION_LOAD;
+
+  async function loadAdminUserStoreData() {
+    USER_COLLECTION_LOAD = "@patrocinavarzea:admin";
+    setIsLogging(true);
+
+    const storedUser = await AsyncStorage.getItem(USER_COLLECTION_LOAD);
+
+    if (storedUser) {
+      const userData = JSON.parse(storedUser) as User;
+      setUser(userData);
+    }
+
+    setIsLogging(false);
+  }
+
+  async function loadClubUserStoreData() {
+    USER_COLLECTION_LOAD = "@patrocinavarzea:club";
+    setIsLogging(true);
+
+    const storedUser = await AsyncStorage.getItem(USER_COLLECTION_LOAD);
+
+    if (storedUser) {
+      const userData = JSON.parse(storedUser) as User;
+      setUser(userData);
+    }
+
+    setIsLogging(false);
+  }
+
+  async function loadSponsorUserStoreData() {
+    USER_COLLECTION_LOAD = "@patrocinavarzea:sponsor";
+    setIsLogging(true);
+
+    const storedUser = await AsyncStorage.getItem(USER_COLLECTION_LOAD);
+
+    if (storedUser) {
+      const userData = JSON.parse(storedUser) as User;
+      setUser(userData);
+    }
+
+    setIsLogging(false);
+  }
+
+  async function loadConfectionUserStoreData() {
+    USER_COLLECTION_LOAD = "@patrocinavarzea:confection";
+    setIsLogging(true);
+
+    const storedUser = await AsyncStorage.getItem(USER_COLLECTION_LOAD);
+
+    if (storedUser) {
+      const userData = JSON.parse(storedUser) as User;
+      setUser(userData);
+    }
+
+    setIsLogging(false);
+  }
+
+  useEffect(() => {
+    loadAdminUserStoreData();
+    loadClubUserStoreData();
+    loadSponsorUserStoreData();
+    loadConfectionUserStoreData();
+  }, []);
 
   return (
     <AuthContext.Provider
