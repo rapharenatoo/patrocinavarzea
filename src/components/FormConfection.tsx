@@ -101,7 +101,6 @@ export function FormConfection() {
       .string()
       .nullable()
       .transform((value) => (!!value ? value : null)),
-    // type: yup.string().required("Selecione CPF ou CNPJ"),
     taxId: yup
       .string()
       .required("Informe o CPF / CNPJ")
@@ -208,6 +207,7 @@ export function FormConfection() {
       .set({
         ...data,
         wantSponsor: wantSponsor,
+        type: "confection",
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {

@@ -30,19 +30,9 @@ type UserAdminProps = {
   name: string;
   email: string;
   phoneContact: string;
+  type: string;
   createdAt: any;
 };
-
-const validationSchema = yup.object({
-  name: yup
-    .string()
-    .nullable()
-    .transform((value) => (!!value ? value : null)),
-  phoneContact: yup
-    .string()
-    .required("Informe o telefone")
-    .min(10, "O telefone deve ter pelo menos 10 digítos"),
-});
 
 const PHOTO_SIZE = 24;
 
@@ -74,6 +64,17 @@ export function FormAdmin() {
     return () => subscriber();
   }, []);
 
+  const validationSchema = yup.object({
+    name: yup
+      .string()
+      .nullable()
+      .transform((value) => (!!value ? value : null)),
+    phoneContact: yup
+      .string()
+      .min(10, "O telefone deve ter pelo menos 10 digítos")
+      .default(infoAdmin[0]?.phoneContact ? infoAdmin[0]?.phoneContact : ""),
+  });
+
   const {
     control,
     handleSubmit,
@@ -83,9 +84,7 @@ export function FormAdmin() {
     defaultValues: {
       name: auth().currentUser.displayName,
       email: auth().currentUser.email,
-      phoneContact: !!infoAdmin[0]?.phoneContact
-        ? infoAdmin[0]?.phoneContact
-        : "",
+      type: "admin",
     },
   });
 
@@ -137,6 +136,7 @@ export function FormAdmin() {
       .set({
         ...data,
         email: auth().currentUser.email,
+        type: "admin",
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
@@ -247,7 +247,7 @@ export function FormAdmin() {
                   placeholder="Telefone"
                   keyboardType="numeric"
                   onChangeText={onChange}
-                  value={value} // HERE
+                  value={value}
                   defaultValue={infoAdmin[0]?.phoneContact}
                   errorMessage={errors.phoneContact?.message}
                 />

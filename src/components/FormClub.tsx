@@ -140,7 +140,6 @@ export function FormClub() {
       .string()
       .nullable()
       .transform((value) => (!!value ? value : null)),
-    // type: yup.string().required("Selecione CPF ou CNPJ"),
     taxId: yup
       .string()
       .required("Informe o CPF / CNPJ")
@@ -267,6 +266,7 @@ export function FormClub() {
         wantSponsorship: wantSponsorship,
         isSponsorship: isSponsorship,
         drawId: getDrawId,
+        type: "club",
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {

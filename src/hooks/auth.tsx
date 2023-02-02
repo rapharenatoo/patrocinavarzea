@@ -1,4 +1,9 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+} from "react";
 import { useToast } from "native-base";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
@@ -33,7 +38,6 @@ function AuthProvider({ children }: AuthProviderProps) {
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(({ user }) => {
-        console.log("User: ", `${user} \n\n`);
         if (user.emailVerified === false) {
           const messageError = toast.show({
             title:
@@ -50,7 +54,6 @@ function AuthProvider({ children }: AuthProviderProps) {
           .get()
           .then((profile) => {
             const { name, type } = profile.data() as User;
-            console.log("Profile: ", `${profile} \n\n`);
             if (profile.exists) {
               const userData = {
                 id: user.uid,
@@ -58,15 +61,39 @@ function AuthProvider({ children }: AuthProviderProps) {
                 type,
               };
               setUser(userData);
-              console.log("Data: ", userData);
             }
           })
           .catch((error) => {
+            const errorCode = error.code;
+            if (error === "auth/unknown") {
+              const messageError = toast.show({
+                title:
+                  "Usuário não encontrado. Verifique E-MAIL, SENHA e a CATEGORIA que está tentando acessar!",
+                placement: "top",
+                bgColor: "red.500",
+                duration: 15000,
+              });
+              return messageError;
+            }
+
+            if (errorCode === undefined) {
+              const messageError = toast.show({
+                title:
+                  "Usuário não encontrado. Verifique E-MAIL, SENHA e a CATEGORIA que está tentando acessar!",
+                placement: "top",
+                bgColor: "red.500",
+                duration: 15000,
+              });
+
+              return messageError;
+            }
+
             const messageError = toast.show({
               title: "Não foi possível buscar os dados do usuário.",
               placement: "top",
               bgColor: "red.500",
             });
+            console.log(errorCode);
             return messageError;
           });
       })

@@ -47,6 +47,7 @@ type UserSponsorProps = {
   id: string;
   name: string;
   email: string;
+  type: string;
   taxId: string;
   ie: string;
   address: Address;
@@ -114,7 +115,6 @@ export function FormSponsor() {
       .string()
       .nullable()
       .transform((value) => (!!value ? value : null)),
-    // type: yup.string().required("Selecione CPF ou CNPJ"),
     taxId: yup
       .string()
       .required("Informe o CPF / CNPJ")
@@ -226,6 +226,7 @@ export function FormSponsor() {
         wantSponsor: wantSponsor,
         categoryTeamsSponsor: categoryTeamsSponsor,
         sponsorshipType: sponsorshipType,
+        type: "sponsor",
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
