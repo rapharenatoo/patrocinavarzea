@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -89,6 +89,13 @@ export function FormClub() {
   const [drawId, setDrawId] = useState<DrawIdClub[]>([]);
   const [type, setType] = useState("");
   const ref = useRef<InputMask>(null);
+  const [address, setAddress] = useState<Address>({
+    zipCode: "",
+    street: "",
+    neighborhood: "",
+    state: "",
+    city: "",
+  });
 
   useEffect(() => {
     setIsSkeletonLoading(true);
@@ -110,6 +117,13 @@ export function FormClub() {
         setIsSponsorship(data[0]?.isSponsorship);
         setCategory(data[0]?.category);
         setZone(data[0]?.zone);
+        setAddress({
+          zipCode: data[0]?.address?.zipCode,
+          street: data[0]?.address?.street,
+          neighborhood: data[0]?.address?.neighborhood,
+          state: data[0]?.address?.state,
+          city: data[0]?.address?.city,
+        });
         setIsSkeletonLoading(false);
       });
 
@@ -252,6 +266,31 @@ export function FormClub() {
     ? Number(drawId[0]?.drawId) + 1
     : Number(infoClub[0]?.drawId);
 
+  const getAddressFromApi = useCallback(() => {
+    const code = address.zipCode?.replace(/[^0-9]/g, "");
+
+    if (code?.length !== 8) {
+      return;
+    }
+
+    const url = `https://viacep.com.br/ws/${code}/json/`;
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((data: any) => {
+        setAddress({
+          zipCode: data.cep,
+          street: data.logradouro,
+          neighborhood: data.bairro,
+          state: data.uf,
+          city: data.localidade,
+        });
+      })
+      .catch((error) => {
+        console.log("Error: ", error);
+      });
+  }, [address?.zipCode]);
+
   async function handleUserRegister(data: UserClubProps) {
     setIsLoading(true);
 
@@ -261,6 +300,13 @@ export function FormClub() {
       .set({
         ...data,
         email: auth().currentUser.email,
+        address: {
+          zipCode: address.zipCode,
+          street: address.street,
+          neighborhood: address.neighborhood,
+          state: address.state,
+          city: address.city,
+        },
         category: category,
         ownField: ownField,
         wantSponsorship: wantSponsorship,
@@ -429,8 +475,14 @@ export function FormClub() {
                   bg="gray.600"
                   placeholder="CEP"
                   keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
+                  onEndEditing={() => getAddressFromApi()}
+                  onChangeText={(value) => {
+                    setAddress((old) => ({
+                      ...old,
+                      zipCode: value,
+                    }));
+                  }}
+                  value={address.zipCode}
                   defaultValue={infoClub[0]?.address?.zipCode}
                   errorMessage={errors.address?.zipCode?.message}
                 />
@@ -444,8 +496,13 @@ export function FormClub() {
                 <Input
                   bg="gray.600"
                   placeholder="Endereço"
-                  onChangeText={onChange}
-                  value={value}
+                  onChangeText={(value) => {
+                    setAddress((old) => ({
+                      ...old,
+                      street: value,
+                    }));
+                  }}
+                  value={address.street}
                   defaultValue={infoClub[0]?.address?.street}
                   errorMessage={errors.address?.street?.message}
                 />
@@ -477,8 +534,13 @@ export function FormClub() {
                     <Input
                       bg="gray.600"
                       placeholder="Bairro"
-                      onChangeText={onChange}
-                      value={value}
+                      onChangeText={(value) => {
+                        setAddress((old) => ({
+                          ...old,
+                          neighborhood: value,
+                        }));
+                      }}
+                      value={address.neighborhood}
                       defaultValue={infoClub[0]?.address?.neighborhood}
                       errorMessage={errors.address?.neighborhood?.message}
                     />
@@ -497,8 +559,13 @@ export function FormClub() {
                       w={20}
                       bg="gray.600"
                       placeholder="ES"
-                      onChangeText={onChange}
-                      value={value}
+                      onChangeText={(value) => {
+                        setAddress((old) => ({
+                          ...old,
+                          state: value,
+                        }));
+                      }}
+                      value={address.state}
                       defaultValue={infoClub[0]?.address?.state}
                       errorMessage={errors.address?.state?.message}
                     />
@@ -513,8 +580,13 @@ export function FormClub() {
                     <Input
                       bg="gray.600"
                       placeholder="Cidade"
-                      onChangeText={onChange}
-                      value={value}
+                      onChangeText={(value) => {
+                        setAddress((old) => ({
+                          ...old,
+                          city: value,
+                        }));
+                      }}
+                      value={address.city}
                       defaultValue={infoClub[0]?.address?.city}
                       errorMessage={errors.address?.city?.message}
                     />

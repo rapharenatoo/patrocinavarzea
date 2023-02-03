@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -104,6 +104,13 @@ export function FormSponsor() {
         setWantSponsor(data[0]?.wantSponsor);
         setCategoryTeamsSponsor(data[0]?.categoryTeamsSponsor);
         setSponsorshipType(data[0]?.sponsorshipType);
+        setAddress({
+          zipCode: data[0]?.address?.zipCode,
+          street: data[0]?.address?.street,
+          neighborhood: data[0]?.address?.neighborhood,
+          state: data[0]?.address?.state,
+          city: data[0]?.address?.city,
+        });
         setIsSkeletonLoading(false);
       });
 
@@ -215,6 +222,31 @@ export function FormSponsor() {
     }
   }
 
+  const getAddressFromApi = useCallback(() => {
+    const code = address.zipCode?.replace(/[^0-9]/g, "");
+
+    if (code?.length !== 8) {
+      return;
+    }
+
+    const url = `https://viacep.com.br/ws/${code}/json/`;
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((data: any) => {
+        setAddress({
+          zipCode: data.cep,
+          street: data.logradouro,
+          neighborhood: data.bairro,
+          state: data.uf,
+          city: data.localidade,
+        });
+      })
+      .catch((error) => {
+        console.log("Error: ", error);
+      });
+  }, [address?.zipCode]);
+
   async function handleUserRegister(data: UserSponsorProps) {
     setIsLoading(true);
 
@@ -223,6 +255,13 @@ export function FormSponsor() {
       .doc(infoSponsor[0]?.id)
       .set({
         ...data,
+        address: {
+          zipCode: address.zipCode,
+          street: address.street,
+          neighborhood: address.neighborhood,
+          state: address.state,
+          city: address.city,
+        },
         wantSponsor: wantSponsor,
         categoryTeamsSponsor: categoryTeamsSponsor,
         sponsorshipType: sponsorshipType,
@@ -381,8 +420,14 @@ export function FormSponsor() {
                   bg="gray.600"
                   placeholder="CEP"
                   keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
+                  onEndEditing={() => getAddressFromApi()}
+                  onChangeText={(value) => {
+                    setAddress((old) => ({
+                      ...old,
+                      zipCode: value,
+                    }));
+                  }}
+                  value={address.zipCode}
                   defaultValue={infoSponsor[0]?.address?.zipCode}
                   errorMessage={errors.address?.zipCode?.message}
                 />
@@ -396,8 +441,13 @@ export function FormSponsor() {
                 <Input
                   bg="gray.600"
                   placeholder="Endereço"
-                  onChangeText={onChange}
-                  value={value}
+                  onChangeText={(value) => {
+                    setAddress((old) => ({
+                      ...old,
+                      street: value,
+                    }));
+                  }}
+                  value={address.street}
                   defaultValue={infoSponsor[0]?.address?.street}
                   errorMessage={errors.address?.street?.message}
                 />
@@ -429,8 +479,12 @@ export function FormSponsor() {
                     <Input
                       bg="gray.600"
                       placeholder="Bairro"
-                      onChangeText={onChange}
-                      value={value}
+                      onChangeText={(value) => {
+                        setAddress((old) => ({
+                          ...old,
+                          neighborhood: value,
+                        }));
+                      }}
                       defaultValue={infoSponsor[0]?.address?.neighborhood}
                       errorMessage={errors.address?.neighborhood?.message}
                     />
@@ -449,8 +503,13 @@ export function FormSponsor() {
                       w={20}
                       bg="gray.600"
                       placeholder="ES"
-                      onChangeText={onChange}
-                      value={value}
+                      onChangeText={(value) => {
+                        setAddress((old) => ({
+                          ...old,
+                          state: value,
+                        }));
+                      }}
+                      value={address.state}
                       defaultValue={infoSponsor[0]?.address?.state}
                       errorMessage={errors.address?.state?.message}
                     />
@@ -465,8 +524,13 @@ export function FormSponsor() {
                     <Input
                       bg="gray.600"
                       placeholder="Cidade"
-                      onChangeText={onChange}
-                      value={value}
+                      onChangeText={(value) => {
+                        setAddress((old) => ({
+                          ...old,
+                          city: value,
+                        }));
+                      }}
+                      value={address.city}
                       defaultValue={infoSponsor[0]?.address?.city}
                       errorMessage={errors.address?.city?.message}
                     />

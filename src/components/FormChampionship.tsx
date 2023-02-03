@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
@@ -17,7 +17,6 @@ import auth from "@react-native-firebase/auth";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
-import { UserPhoto } from "./UserPhoto";
 import { Input } from "./Input";
 import { Button } from "./Button";
 import { SelectZone } from "./SelectZone";
@@ -76,12 +75,18 @@ const validationSchema = yup.object({
 });
 
 export function FormChampionship() {
+  const toast = useToast();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [isLoading, setIsLoading] = useState(false);
   const [rewards, setRewards] = useState([]);
   const [otherRewards, setOtherRewards] = useState(false);
-  const toast = useToast();
-
+  const [address, setAddress] = useState<Address>({
+    zipCode: "",
+    street: "",
+    neighborhood: "",
+    state: "",
+    city: "",
+  });
   const isOtherRewards = () => {
     return String(rewards.find((element) => element === "Outro"));
   };
@@ -116,6 +121,31 @@ export function FormChampionship() {
     },
   });
 
+  const getAddressFromApi = useCallback(() => {
+    const code = address.zipCode?.replace(/[^0-9]/g, "");
+
+    if (code?.length !== 8) {
+      return;
+    }
+
+    const url = `https://viacep.com.br/ws/${code}/json/`;
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((data: any) => {
+        setAddress({
+          zipCode: data.cep,
+          street: data.logradouro,
+          neighborhood: data.bairro,
+          state: data.uf,
+          city: data.localidade,
+        });
+      })
+      .catch((error) => {
+        console.log("Error: ", error);
+      });
+  }, [address?.zipCode]);
+
   async function handleRegister(data: UserChampionshipProps) {
     setIsLoading(true);
 
@@ -123,6 +153,13 @@ export function FormChampionship() {
       .collection("championship")
       .add({
         ...data,
+        address: {
+          zipCode: address.zipCode,
+          street: address.street,
+          neighborhood: address.neighborhood,
+          state: address.state,
+          city: address.city,
+        },
         rewards: rewards,
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
@@ -244,8 +281,14 @@ export function FormChampionship() {
               bg="gray.600"
               placeholder="CEP"
               keyboardType="numeric"
-              onChangeText={onChange}
-              value={value}
+              onEndEditing={() => getAddressFromApi()}
+              onChangeText={(value) => {
+                setAddress((old) => ({
+                  ...old,
+                  zipCode: value,
+                }));
+              }}
+              value={address.zipCode}
               errorMessage={errors.address?.zipCode?.message}
             />
           )}
@@ -258,8 +301,13 @@ export function FormChampionship() {
             <Input
               bg="gray.600"
               placeholder="Endereço"
-              onChangeText={onChange}
-              value={value}
+              onChangeText={(value) => {
+                setAddress((old) => ({
+                  ...old,
+                  street: value,
+                }));
+              }}
+              value={address.street}
               errorMessage={errors.address?.street?.message}
             />
           )}
@@ -289,8 +337,13 @@ export function FormChampionship() {
                 <Input
                   bg="gray.600"
                   placeholder="Bairro"
-                  onChangeText={onChange}
-                  value={value}
+                  onChangeText={(value) => {
+                    setAddress((old) => ({
+                      ...old,
+                      neighborhood: value,
+                    }));
+                  }}
+                  value={address.neighborhood}
                   errorMessage={errors.address?.neighborhood?.message}
                 />
               )}
@@ -308,8 +361,13 @@ export function FormChampionship() {
                   w={20}
                   bg="gray.600"
                   placeholder="ES"
-                  onChangeText={onChange}
-                  value={value}
+                  onChangeText={(value) => {
+                    setAddress((old) => ({
+                      ...old,
+                      state: value,
+                    }));
+                  }}
+                  value={address.state}
                   errorMessage={errors.address?.state?.message}
                 />
               )}
@@ -323,8 +381,13 @@ export function FormChampionship() {
                 <Input
                   bg="gray.600"
                   placeholder="Cidade"
-                  onChangeText={onChange}
-                  value={value}
+                  onChangeText={(value) => {
+                    setAddress((old) => ({
+                      ...old,
+                      city: value,
+                    }));
+                  }}
+                  value={address.city}
                   errorMessage={errors.address?.city?.message}
                 />
               )}
