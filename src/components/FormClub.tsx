@@ -426,13 +426,13 @@ export function FormClub() {
               )}
             />
 
-            <Controller
+            {/* <Controller
               control={control}
               name="taxIdType"
               render={({ field: { onChange, value } }) => (
                 <SelectTaxId type={value} onChange={onChange} />
               )}
-            />
+            /> */}
 
             <Controller
               control={control}

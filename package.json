@@ -1,6 +1,6 @@
 {
   "name": "patrocinavarzea",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "main": "index.js",
   "scripts": {
     "start": "expo start --dev-client",
