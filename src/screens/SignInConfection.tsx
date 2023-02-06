@@ -12,7 +12,6 @@ import { useAuth } from "../hooks/auth";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 
-import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
 
 type UserProps = {
@@ -56,16 +55,9 @@ export function SignInConfection() {
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
-      bg="gray.700"
+      bg="gray.800"
     >
       <VStack flex={1} px={10} pb={10}>
-        <Image
-          source={BackgroundImg}
-          defaultSource={BackgroundImg}
-          alt="Fundo preto com faixas amarelas"
-          resizeMode="repeat"
-          position="absolute"
-        />
         <Center mt={20} mb={10}>
           <Image
             source={IllustrationImg}

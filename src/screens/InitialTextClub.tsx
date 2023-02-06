@@ -5,7 +5,6 @@ import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
 import { Button } from "../components/Button";
 
-import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
 
 export function InitialTextClub() {
@@ -19,16 +18,9 @@ export function InitialTextClub() {
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
-      bg="gray.700"
+      bg="gray.800"
     >
       <VStack flex={1} px={6} pb={10}>
-        <Image
-          source={BackgroundImg}
-          defaultSource={BackgroundImg}
-          alt="Fundo preto com faixas amarelas"
-          resizeMode="contain"
-          position="absolute"
-        />
         <Center mt={10} mb={4}>
           <Image
             source={IllustrationImg}

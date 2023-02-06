@@ -59,7 +59,7 @@ export function InfoAdmin() {
             <ScrollView
               contentContainerStyle={{ flexGrow: 1 }}
               showsVerticalScrollIndicator={false}
-              bg="gray.700"
+              bg="gray.800"
               pt={5}
             >
               <VStack flex={1} px={6} pb={10}>

@@ -17,7 +17,6 @@ import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 
-import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
 
 type FormDataPros = {
@@ -40,8 +39,8 @@ export function RetryEmailVerify() {
     resolver: yupResolver(signUpSchema),
   });
 
-  function handleGoSignIn() {
-    navigation.navigate("signIn");
+  function handleGoBack() {
+    navigation.navigate("loginOptions");
   }
 
   async function handleRetryEmailVerify(data: FormDataPros) {
@@ -52,16 +51,9 @@ export function RetryEmailVerify() {
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
-      bg="gray.700"
+      bg="gray.800"
     >
       <VStack flex={1} px={10} pb={10}>
-        <Image
-          source={BackgroundImg}
-          defaultSource={BackgroundImg}
-          alt="Fundo preto com faixas amarelas"
-          resizeMode="repeat"
-          position="absolute"
-        />
         <Center mt={20} mb={10}>
           <Image
             source={IllustrationImg}
@@ -109,7 +101,7 @@ export function RetryEmailVerify() {
           title="Voltar para o início"
           variant="outline"
           mt={24}
-          onPress={handleGoSignIn}
+          onPress={handleGoBack}
         />
       </VStack>
     </ScrollView>

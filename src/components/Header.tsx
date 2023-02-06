@@ -41,6 +41,7 @@ export function Header() {
             ? { uri: auth().currentUser?.photoURL }
             : DefaultUserPhotoImg
         }
+        defaultSource={DefaultUserPhotoImg}
         alt="Imagem do usuário"
         size={PHOTO_SIZE}
         mr={4}

@@ -20,7 +20,6 @@ import { SelectSingUp } from "../components/SelectSingUp";
 import { Input } from "../components/Input";
 import { Button } from "../components/Button";
 
-import BackgroundImg from "../assets/background.png";
 import IllustrationImg from "../assets/icon.png";
 
 type FormDataPros = {
@@ -74,7 +73,7 @@ export function SignUp() {
         auth().currentUser.sendEmailVerification();
 
         firestore()
-          .collection(data.type) 
+          .collection(data.type)
           .doc(auth().currentUser.uid)
           .set({
             name: data.name,
@@ -141,16 +140,9 @@ export function SignUp() {
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
-      bg="gray.700"
+      bg="gray.800"
     >
       <VStack flex={1} px={10} pb={10}>
-        <Image
-          source={BackgroundImg}
-          defaultSource={BackgroundImg}
-          alt="Fundo preto com faixas amarelas"
-          resizeMode="repeat"
-          position="absolute"
-        />
         <Center mt={8} mb={4}>
           <Image
             source={IllustrationImg}
