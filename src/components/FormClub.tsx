@@ -50,6 +50,7 @@ type UserClubProps = {
   name: string;
   email: string;
   type: string;
+  taxIdType: string;
   taxId: string;
   address?: Address;
   numberAddress?: string;
@@ -87,6 +88,7 @@ export function FormClub() {
   const [category, setCategory] = useState("");
   const [zone, setZone] = useState("");
   const [drawId, setDrawId] = useState<DrawIdClub[]>([]);
+  const [taxIdType, setTaxIdType] = useState("cnpj");
   const [type, setType] = useState("");
   const ref = useRef<InputMask>(null);
   const [address, setAddress] = useState<Address>({
@@ -421,6 +423,14 @@ export function FormClub() {
                   value={value}
                   errorMessage={errors.name?.message}
                 />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="taxIdType"
+              render={({ field: { onChange, value } }) => (
+                <SelectTaxId type={value} onChange={onChange} />
               )}
             />
 
