@@ -32,6 +32,7 @@ type UserSponsorProps = {
   ie: string;
   address: Address;
   numberAddress: string;
+  complementAddress?: string;
   nameContact: string;
   phoneContact: string;
   wantSponsor: string;
@@ -189,6 +190,15 @@ export function InfoSponsor() {
                   >
                     {infoSponsor[0].address?.city} -{" "}
                     {infoSponsor[0].address?.state}
+                  </Text>
+                  <Text
+                    color="white"
+                    fontSize="sm"
+                    mb={1}
+                    fontFamily="body"
+                    numberOfLines={1}
+                  >
+                    {infoSponsor[0].complementAddress}
                   </Text>
                 </VStack>
 

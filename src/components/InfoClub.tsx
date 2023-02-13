@@ -27,6 +27,7 @@ type UserClubProps = {
   taxId: string;
   address: Address;
   numberAddress?: string;
+  complementAddress?: string;
   foundationDate: string;
   zone: string;
   clubColors: string;
@@ -187,6 +188,15 @@ export function InfoClub() {
                     numberOfLines={1}
                   >
                     {infoClub[0]?.address?.city} - {infoClub[0]?.address?.state}
+                  </Text>
+                  <Text
+                    color="white"
+                    fontSize="sm"
+                    mb={1}
+                    fontFamily="body"
+                    numberOfLines={1}
+                  >
+                    {infoClub[0]?.complementAddress}
                   </Text>
                   <Text
                     color="white"

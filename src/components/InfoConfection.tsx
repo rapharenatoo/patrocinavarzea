@@ -28,6 +28,7 @@ type UserConfectionProps = {
   ie?: number;
   address: Address;
   numberAddress?: string;
+  complementAddress?: string;
   nameContact?: string;
   phoneContact?: string;
   wantSponsor: string;
@@ -182,6 +183,15 @@ export function InfoConfection() {
                   >
                     {infoConfection[0]?.address?.city} -{" "}
                     {infoConfection[0]?.address?.state}
+                  </Text>
+                  <Text
+                    color="white"
+                    fontSize="sm"
+                    mb={1}
+                    fontFamily="body"
+                    numberOfLines={1}
+                  >
+                    {infoConfection[0]?.complementAddress}
                   </Text>
                 </VStack>
 
