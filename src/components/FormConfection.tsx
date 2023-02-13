@@ -47,6 +47,7 @@ type UserConfectionProps = {
   ie?: string;
   address: Address;
   numberAddress?: string;
+  complementAddress?: string;
   nameContact?: string;
   phoneContact?: string;
   wantSponsor: string;
@@ -140,6 +141,9 @@ export function FormConfection() {
       .string()
       .required("Informe o Nº")
       .default(infoConfection[0]?.numberAddress),
+    complementAddress: yup
+      .string()
+      .default(infoConfection[0]?.complementAddress),
     nameContact: yup
       .string()
       .default(
@@ -205,30 +209,30 @@ export function FormConfection() {
     }
   }
 
-  const getAddressFromApi = useCallback(() => {
-    const code = address.zipCode?.replace(/[^0-9]/g, "");
+  // const getAddressFromApi = useCallback(() => {
+  //   const code = address.zipCode?.replace(/[^0-9]/g, "");
 
-    if (code?.length !== 8) {
-      return;
-    }
+  //   if (code?.length !== 8) {
+  //     return;
+  //   }
 
-    const url = `https://viacep.com.br/ws/${code}/json/`;
+  //   const url = `https://viacep.com.br/ws/${code}/json/`;
 
-    fetch(url)
-      .then((res) => res.json())
-      .then((data: any) => {
-        setAddress({
-          zipCode: data.cep,
-          street: data.logradouro,
-          neighborhood: data.bairro,
-          state: data.uf,
-          city: data.localidade,
-        });
-      })
-      .catch((error) => {
-        console.log("Error: ", error);
-      });
-  }, [address?.zipCode]);
+  //   fetch(url)
+  //     .then((res) => res.json())
+  //     .then((data: any) => {
+  //       setAddress({
+  //         zipCode: data.cep,
+  //         street: data.logradouro,
+  //         neighborhood: data.bairro,
+  //         state: data.uf,
+  //         city: data.localidade,
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.log("Error: ", error);
+  //     });
+  // }, [address?.zipCode]);
 
   async function handleUserRegister(data: UserConfectionProps) {
     setIsLoading(true);
@@ -238,13 +242,13 @@ export function FormConfection() {
       .doc(infoConfection[0]?.id)
       .set({
         ...data,
-        address: {
-          zipCode: address.zipCode,
-          street: address.street,
-          neighborhood: address.neighborhood,
-          state: address.state,
-          city: address.city,
-        },
+        // address: {
+        //   zipCode: address.zipCode,
+        //   street: address.street,
+        //   neighborhood: address.neighborhood,
+        //   state: address.state,
+        //   city: address.city,
+        // },
         wantSponsor: wantSponsor,
         type: "confection",
         createdAt: firestore.FieldValue.serverTimestamp(),
@@ -401,14 +405,17 @@ export function FormConfection() {
                   bg="gray.600"
                   placeholder="CEP"
                   keyboardType="numeric"
-                  onEndEditing={() => getAddressFromApi()}
-                  onChangeText={(value) => {
-                    setAddress((old) => ({
-                      ...old,
-                      zipCode: value,
-                    }));
-                  }}
-                  value={address.zipCode}
+                  // onEndEditing={() => getAddressFromApi()}
+                  onChangeText={
+                    onChange
+                    //   (value) => {
+                    //   setAddress((old) => ({
+                    //     ...old,
+                    //     zipCode: value,
+                    //   }));
+                    // }
+                  }
+                  value={value}
                   defaultValue={infoConfection[0]?.address?.zipCode}
                   errorMessage={errors.address?.zipCode?.message}
                 />
@@ -422,13 +429,16 @@ export function FormConfection() {
                 <Input
                   bg="gray.600"
                   placeholder="Endereço"
-                  onChangeText={(value) => {
-                    setAddress((old) => ({
-                      ...old,
-                      street: value,
-                    }));
-                  }}
-                  value={address.street}
+                  onChangeText={
+                    onChange
+                    //   (value) => {
+                    //   setAddress((old) => ({
+                    //     ...old,
+                    //     street: value,
+                    //   }));
+                    // }
+                  }
+                  value={value}
                   defaultValue={infoConfection[0]?.address?.street}
                   errorMessage={errors.address?.street?.message}
                 />
@@ -460,13 +470,16 @@ export function FormConfection() {
                     <Input
                       bg="gray.600"
                       placeholder="Bairro"
-                      onChangeText={(value) => {
-                        setAddress((old) => ({
-                          ...old,
-                          neighborhood: value,
-                        }));
-                      }}
-                      value={address.neighborhood}
+                      onChangeText={
+                        onChange
+                        //   (value) => {
+                        //   setAddress((old) => ({
+                        //     ...old,
+                        //     neighborhood: value,
+                        //   }));
+                        // }
+                      }
+                      value={value}
                       defaultValue={infoConfection[0]?.address?.neighborhood}
                       errorMessage={errors.address?.neighborhood?.message}
                     />
@@ -520,6 +533,21 @@ export function FormConfection() {
                 />
               </HStack>
             </HStack>
+
+            <Controller
+              control={control}
+              name="complementAddress"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  bg="gray.600"
+                  placeholder="Complemento"
+                  onChangeText={onChange}
+                  value={value}
+                  defaultValue={infoConfection[0]?.complementAddress}
+                  errorMessage={errors.complementAddress?.message}
+                />
+              )}
+            />
 
             <Heading
               color="yellow.400"

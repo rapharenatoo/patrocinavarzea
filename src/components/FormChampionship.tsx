@@ -38,6 +38,7 @@ type UserChampionshipProps = {
   date: string;
   address: Address;
   numberAddress?: string;
+  complementAddress?: string;
   zone: string;
   instagram: string;
   qtdTeams: string;
@@ -64,6 +65,7 @@ const validationSchema = yup.object({
     city: yup.string().required("Informe o cidade"),
   }),
   numberAddress: yup.string().required("Informe o Nº"),
+  complementAddress: yup.string(),
   organizer: yup.string().required("Informe o nome do organizador"),
   phoneOrganizer: yup
     .string()
@@ -121,30 +123,30 @@ export function FormChampionship() {
     },
   });
 
-  const getAddressFromApi = useCallback(() => {
-    const code = address.zipCode?.replace(/[^0-9]/g, "");
+  // const getAddressFromApi = useCallback(() => {
+  //   const code = address.zipCode?.replace(/[^0-9]/g, "");
 
-    if (code?.length !== 8) {
-      return;
-    }
+  //   if (code?.length !== 8) {
+  //     return;
+  //   }
 
-    const url = `https://viacep.com.br/ws/${code}/json/`;
+  //   const url = `https://viacep.com.br/ws/${code}/json/`;
 
-    fetch(url)
-      .then((res) => res.json())
-      .then((data: any) => {
-        setAddress({
-          zipCode: data.cep,
-          street: data.logradouro,
-          neighborhood: data.bairro,
-          state: data.uf,
-          city: data.localidade,
-        });
-      })
-      .catch((error) => {
-        console.log("Error: ", error);
-      });
-  }, [address?.zipCode]);
+  //   fetch(url)
+  //     .then((res) => res.json())
+  //     .then((data: any) => {
+  //       setAddress({
+  //         zipCode: data.cep,
+  //         street: data.logradouro,
+  //         neighborhood: data.bairro,
+  //         state: data.uf,
+  //         city: data.localidade,
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.log("Error: ", error);
+  //     });
+  // }, [address?.zipCode]);
 
   async function handleRegister(data: UserChampionshipProps) {
     setIsLoading(true);
@@ -153,13 +155,13 @@ export function FormChampionship() {
       .collection("championship")
       .add({
         ...data,
-        address: {
-          zipCode: address.zipCode,
-          street: address.street,
-          neighborhood: address.neighborhood,
-          state: address.state,
-          city: address.city,
-        },
+        // address: {
+        //   zipCode: address.zipCode,
+        //   street: address.street,
+        //   neighborhood: address.neighborhood,
+        //   state: address.state,
+        //   city: address.city,
+        // },
         rewards: rewards,
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
@@ -281,14 +283,17 @@ export function FormChampionship() {
               bg="gray.600"
               placeholder="CEP"
               keyboardType="numeric"
-              onEndEditing={() => getAddressFromApi()}
-              onChangeText={(value) => {
-                setAddress((old) => ({
-                  ...old,
-                  zipCode: value,
-                }));
-              }}
-              value={address.zipCode}
+              // onEndEditing={() => getAddressFromApi()}
+              onChangeText={
+                onChange
+                // (value) => {
+                //   setAddress((old) => ({
+                //     ...old,
+                //     zipCode: value,
+                //   }));
+                // }
+              }
+              value={value}
               errorMessage={errors.address?.zipCode?.message}
             />
           )}
@@ -301,13 +306,16 @@ export function FormChampionship() {
             <Input
               bg="gray.600"
               placeholder="Endereço"
-              onChangeText={(value) => {
-                setAddress((old) => ({
-                  ...old,
-                  street: value,
-                }));
-              }}
-              value={address.street}
+              onChangeText={
+                onChange
+                //   (value) => {
+                //   setAddress((old) => ({
+                //     ...old,
+                //     street: value,
+                //   }));
+                // }
+              }
+              value={value}
               errorMessage={errors.address?.street?.message}
             />
           )}
@@ -337,13 +345,16 @@ export function FormChampionship() {
                 <Input
                   bg="gray.600"
                   placeholder="Bairro"
-                  onChangeText={(value) => {
-                    setAddress((old) => ({
-                      ...old,
-                      neighborhood: value,
-                    }));
-                  }}
-                  value={address.neighborhood}
+                  onChangeText={
+                    onChange
+                    // (value) => {
+                    // setAddress((old) => ({
+                    //   ...old,
+                    //   neighborhood: value,
+                    // }));
+                    // }
+                  }
+                  value={value}
                   errorMessage={errors.address?.neighborhood?.message}
                 />
               )}
@@ -361,13 +372,16 @@ export function FormChampionship() {
                   w={20}
                   bg="gray.600"
                   placeholder="ES"
-                  onChangeText={(value) => {
-                    setAddress((old) => ({
-                      ...old,
-                      state: value,
-                    }));
-                  }}
-                  value={address.state}
+                  onChangeText={
+                    onChange
+                    //   (value) => {
+                    //   setAddress((old) => ({
+                    //     ...old,
+                    //     state: value,
+                    //   }));
+                    // }
+                  }
+                  value={value}
                   errorMessage={errors.address?.state?.message}
                 />
               )}
@@ -381,12 +395,15 @@ export function FormChampionship() {
                 <Input
                   bg="gray.600"
                   placeholder="Cidade"
-                  onChangeText={(value) => {
-                    setAddress((old) => ({
-                      ...old,
-                      city: value,
-                    }));
-                  }}
+                  onChangeText={
+                    onChange
+                    //   (value) => {
+                    //   setAddress((old) => ({
+                    //     ...old,
+                    //     city: value,
+                    //   }));
+                    // }
+                  }
                   value={address.city}
                   errorMessage={errors.address?.city?.message}
                 />
@@ -394,6 +411,20 @@ export function FormChampionship() {
             />
           </HStack>
         </HStack>
+
+        <Controller
+          control={control}
+          name="complementAddress"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              bg="gray.600"
+              placeholder="Complemento"
+              onChangeText={onChange}
+              value={value}
+              errorMessage={errors.complementAddress?.message}
+            />
+          )}
+        />
 
         <Controller
           control={control}
