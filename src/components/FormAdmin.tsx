@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity } from "react-native";
+import { TextInput, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
@@ -22,6 +22,7 @@ import { UserPhoto } from "./UserPhoto";
 import { Input } from "./Input";
 import { Button } from "./Button";
 import { Skeleton } from "./Skeleton";
+import { InputMask } from "./InputMask";
 
 import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
@@ -242,14 +243,32 @@ export function FormAdmin() {
               control={control}
               name="phoneContact"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
+                <InputMask
                   placeholder="Telefone"
-                  keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
+                  type="cel-phone"
+                  options={{
+                    maskType: "BRL",
+                    withDDD: true,
+                    dddMask: "(99) ",
+                  }}
+                  value={
+                    infoAdmin[0]?.phoneContact
+                      ? infoAdmin[0]?.phoneContact
+                      : value
+                  }
+                  onChange={onChange}
                   defaultValue={infoAdmin[0]?.phoneContact}
                   errorMessage={errors.phoneContact?.message}
+                  getElement={function (): TextInput {
+                    throw new Error("Function not implemented.");
+                  }}
+                  getRawValue={function (): string {
+                    throw new Error("Function not implemented.");
+                  }}
+                  isValid={function (): boolean {
+                    throw new Error("Function not implemented.");
+                  }}
+                  keyboardType="numeric"
                 />
               )}
             />

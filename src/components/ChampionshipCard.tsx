@@ -77,7 +77,7 @@ export function ChampionshipCard({
       </Text>
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
-        Prêmio em dinheiro: R$ {cashReward},00
+        Prêmio em dinheiro: {cashReward}
       </Text>
 
       <Text color="gray.100" fontSize="sm" numberOfLines={3} mt={2}>

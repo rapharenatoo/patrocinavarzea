@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { TouchableOpacity } from "react-native";
+import { TextInput, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
@@ -17,18 +17,21 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
-import uuid from "react-native-uuid";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import { TextInputMask, TextInputMaskMethods } from "react-native-masked-text";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
 import { UserPhoto } from "./UserPhoto";
 import { Input } from "./Input";
 import { Button } from "./Button";
-import { Skeleton } from "./Skeleton";
+import { InputMask } from "./InputMask";
+import { InputMaskTaxId } from "./InputMaskTaxId";
 
 import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
+import { Skeleton } from "./Skeleton";
+import { SelectTaxId } from "./SelectTaxId";
 
 type Address = {
   zipCode?: string;
@@ -43,6 +46,7 @@ type UserConfectionProps = {
   name: string;
   email: string;
   type: string;
+  taxIdType: string;
   taxId: string;
   ie?: string;
   address: Address;
@@ -54,6 +58,8 @@ type UserConfectionProps = {
   createdAt: string;
 };
 
+type InputMask = TextInputMask & TextInputMaskMethods;
+
 const PHOTO_SIZE = 24;
 
 export function FormConfection() {
@@ -63,6 +69,7 @@ export function FormConfection() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
   const [wantSponsor, setWantSponsor] = useState("");
+  const [taxIdType, setTaxIdType] = useState("cnpj");
   const [userPhoto, setUserPhoto] = useState(null);
   const [infoConfection, setInfoConfection] = useState<UserConfectionProps[]>(
     []
@@ -90,6 +97,7 @@ export function FormConfection() {
         }) as UserConfectionProps[];
 
         setInfoConfection(data);
+        setTaxIdType(data[0]?.taxIdType);
         setWantSponsor(data[0]?.wantSponsor);
         setAddress({
           zipCode: data[0]?.address?.zipCode,
@@ -242,6 +250,8 @@ export function FormConfection() {
       .doc(infoConfection[0]?.id)
       .set({
         ...data,
+        email: auth().currentUser.email,
+        taxIdType: taxIdType,
         // address: {
         //   zipCode: address.zipCode,
         //   street: address.street,
@@ -336,36 +346,85 @@ export function FormConfection() {
               )}
             />
 
-            {/* <Input bg="gray.600" placeholder="PF ou PJ" /> */}
+            <SelectTaxId
+              type={taxIdType}
+              onChange={setTaxIdType}
+              defaultValue={taxIdType}
+              errorMessage={errors.taxIdType?.message}
+            />
 
             <Controller
               control={control}
               name="taxId"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
-                  placeholder="CPF / CNPJ"
-                  keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
-                  defaultValue={infoConfection[0]?.taxId}
-                  errorMessage={errors.taxId?.message}
-                />
-              )}
+              render={({ field: { onChange, value } }) =>
+                taxIdType === "cnpj" ? (
+                  <InputMaskTaxId
+                    placeholder="CNPJ"
+                    type={"cnpj"}
+                    value={
+                      infoConfection[0]?.taxId
+                        ? infoConfection[0]?.taxId
+                        : value
+                    }
+                    onChangeText={onChange}
+                    defaultValue={infoConfection[0]?.taxId}
+                    errorMessage={errors.taxId?.message}
+                    getElement={function (): TextInput {
+                      throw new Error("Function not implemented.");
+                    }}
+                    getRawValue={function (): string {
+                      throw new Error("Function not implemented.");
+                    }}
+                    isValid={function (): boolean {
+                      throw new Error("Function not implemented.");
+                    }}
+                  />
+                ) : (
+                  <InputMaskTaxId
+                    placeholder="CPF"
+                    type={"cpf"}
+                    value={
+                      infoConfection[0]?.taxId
+                        ? infoConfection[0]?.taxId
+                        : value
+                    }
+                    onChangeText={onChange}
+                    defaultValue={infoConfection[0]?.taxId}
+                    errorMessage={errors.taxId?.message}
+                    getElement={function (): TextInput {
+                      throw new Error("Function not implemented.");
+                    }}
+                    getRawValue={function (): string {
+                      throw new Error("Function not implemented.");
+                    }}
+                    isValid={function (): boolean {
+                      throw new Error("Function not implemented.");
+                    }}
+                  />
+                )
+              }
             />
 
             <Controller
               control={control}
               name="ie"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
+                <InputMaskTaxId
                   placeholder="I.E."
-                  keyboardType="numeric"
+                  type={"only-numbers"}
+                  value={infoConfection[0]?.ie ? infoConfection[0]?.ie : value}
                   onChangeText={onChange}
-                  value={value}
                   defaultValue={infoConfection[0]?.ie}
                   errorMessage={errors.ie?.message}
+                  getElement={function (): TextInput {
+                    throw new Error("Function not implemented.");
+                  }}
+                  getRawValue={function (): string {
+                    throw new Error("Function not implemented.");
+                  }}
+                  isValid={function (): boolean {
+                    throw new Error("Function not implemented.");
+                  }}
                 />
               )}
             />
@@ -401,23 +460,27 @@ export function FormConfection() {
               control={control}
               name="address.zipCode"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
+                <InputMask
                   placeholder="CEP"
-                  keyboardType="numeric"
-                  // onEndEditing={() => getAddressFromApi()}
-                  onChangeText={
-                    onChange
-                    //   (value) => {
-                    //   setAddress((old) => ({
-                    //     ...old,
-                    //     zipCode: value,
-                    //   }));
-                    // }
+                  type="zip-code"
+                  value={
+                    infoConfection[0]?.address?.zipCode
+                      ? infoConfection[0]?.address?.zipCode
+                      : value
                   }
-                  value={value}
+                  onChange={onChange}
                   defaultValue={infoConfection[0]?.address?.zipCode}
                   errorMessage={errors.address?.zipCode?.message}
+                  getElement={function (): TextInput {
+                    throw new Error("Function not implemented.");
+                  }}
+                  getRawValue={function (): string {
+                    throw new Error("Function not implemented.");
+                  }}
+                  isValid={function (): boolean {
+                    throw new Error("Function not implemented.");
+                  }}
+                  keyboardType="numeric"
                 />
               )}
             />
@@ -579,14 +642,32 @@ export function FormConfection() {
               control={control}
               name="phoneContact"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
+                <InputMask
                   placeholder="Telefone"
-                  keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
+                  type="cel-phone"
+                  options={{
+                    maskType: "BRL",
+                    withDDD: true,
+                    dddMask: "(99) ",
+                  }}
+                  value={
+                    infoConfection[0]?.phoneContact
+                      ? infoConfection[0]?.phoneContact
+                      : value
+                  }
+                  onChange={onChange}
                   defaultValue={infoConfection[0]?.phoneContact}
                   errorMessage={errors.phoneContact?.message}
+                  getElement={function (): TextInput {
+                    throw new Error("Function not implemented.");
+                  }}
+                  getRawValue={function (): string {
+                    throw new Error("Function not implemented.");
+                  }}
+                  isValid={function (): boolean {
+                    throw new Error("Function not implemented.");
+                  }}
+                  keyboardType="numeric"
                 />
               )}
             />

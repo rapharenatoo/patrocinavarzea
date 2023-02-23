@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { TouchableOpacity } from "react-native";
+import { TextInput, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
@@ -29,6 +29,8 @@ import { Button } from "./Button";
 import { Skeleton } from "./Skeleton";
 import { SelectTaxId } from "./SelectTaxId";
 import { SelectZone } from "./SelectZone";
+import { InputMask } from "./InputMask";
+import { InputMaskTaxId } from "./InputMaskTaxId";
 
 import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
@@ -90,8 +92,6 @@ export function FormClub() {
   const [zone, setZone] = useState("");
   const [drawId, setDrawId] = useState<DrawIdClub[]>([]);
   const [taxIdType, setTaxIdType] = useState("cnpj");
-  const [type, setType] = useState("");
-  const ref = useRef<InputMask>(null);
   const [address, setAddress] = useState<Address>({
     zipCode: "",
     street: "",
@@ -115,6 +115,7 @@ export function FormClub() {
         }) as UserClubProps[];
 
         setInfoClub(data);
+        setTaxIdType(data[0]?.taxIdType);
         setOwnField(data[0]?.ownField);
         setWantSponsorship(data[0]?.wantSponsorship);
         setIsSponsorship(data[0]?.isSponsorship);
@@ -160,7 +161,11 @@ export function FormClub() {
     taxId: yup
       .string()
       .required("Informe o CPF / CNPJ")
-      .default(infoClub[0]?.taxId),
+      .default(String(infoClub[0]?.taxId)),
+    taxIdType: yup
+      .string()
+
+      .default(infoClub[0]?.taxIdType),
     address: yup.object({
       zipCode: yup
         .string()
@@ -304,6 +309,7 @@ export function FormClub() {
       .set({
         ...data,
         email: auth().currentUser.email,
+        taxIdType: taxIdType,
         // address: {
         //   zipCode: address.zipCode,
         //   street: address.street,
@@ -348,23 +354,6 @@ export function FormClub() {
         setIsLoading(false);
       });
   }
-
-  // const validateTaxId = () => {
-  //   const taxIdIsValid = ref.current?.isValid();
-
-  //   if (!taxIdIsValid && typeTaxId === "cpf") {
-  //     Alert.alert(
-  //       "Dados inválidos",
-  //       "O CPF é inválido!\nPor gentileza, insira um CPF válido para continuar."
-  //     );
-  //   }
-  //   if (!taxIdIsValid && typeTaxId === "cnpj") {
-  //     Alert.alert(
-  //       "Dados inválidos",
-  //       "O CNPJ é inválido!\nPor gentileza, insira um CNPJ válido para continuar."
-  //     );
-  //   }
-  // };
 
   return (
     <>
@@ -428,28 +417,55 @@ export function FormClub() {
               )}
             />
 
-            {/* <Controller
-              control={control}
-              name="taxIdType"
-              render={({ field: { onChange, value } }) => (
-                <SelectTaxId type={value} onChange={onChange} />
-              )}
-            /> */}
+            <SelectTaxId
+              type={taxIdType}
+              onChange={setTaxIdType}
+              defaultValue={taxIdType}
+              errorMessage={errors.taxIdType?.message}
+            />
 
             <Controller
               control={control}
               name="taxId"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
-                  placeholder="CPF / CNPJ"
-                  keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
-                  defaultValue={infoClub[0]?.taxId}
-                  errorMessage={errors.taxId?.message}
-                />
-              )}
+              render={({ field: { onChange, value } }) =>
+                taxIdType === "cnpj" ? (
+                  <InputMaskTaxId
+                    placeholder="CNPJ"
+                    type={"cnpj"}
+                    value={infoClub[0]?.taxId ? infoClub[0]?.taxId : value}
+                    onChangeText={onChange}
+                    defaultValue={infoClub[0]?.taxId}
+                    errorMessage={errors.taxId?.message}
+                    getElement={function (): TextInput {
+                      throw new Error("Function not implemented.");
+                    }}
+                    getRawValue={function (): string {
+                      throw new Error("Function not implemented.");
+                    }}
+                    isValid={function (): boolean {
+                      throw new Error("Function not implemented.");
+                    }}
+                  />
+                ) : (
+                  <InputMaskTaxId
+                    placeholder="CPF"
+                    type={"cpf"}
+                    value={infoClub[0]?.taxId ? infoClub[0]?.taxId : value}
+                    onChangeText={onChange}
+                    defaultValue={infoClub[0]?.taxId}
+                    errorMessage={errors.taxId?.message}
+                    getElement={function (): TextInput {
+                      throw new Error("Function not implemented.");
+                    }}
+                    getRawValue={function (): string {
+                      throw new Error("Function not implemented.");
+                    }}
+                    isValid={function (): boolean {
+                      throw new Error("Function not implemented.");
+                    }}
+                  />
+                )
+              }
             />
 
             <Controller
@@ -483,23 +499,27 @@ export function FormClub() {
               control={control}
               name="address.zipCode"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
+                <InputMask
                   placeholder="CEP"
-                  keyboardType="numeric"
-                  // onEndEditing={() => getAddressFromApi()}
-                  onChangeText={
-                    onChange
-                    //   (value) => {
-                    //   setAddress((old) => ({
-                    //     ...old,
-                    //     zipCode: value,
-                    //   }));
-                    // }
+                  type="zip-code"
+                  value={
+                    infoClub[0]?.address?.zipCode
+                      ? infoClub[0]?.address?.zipCode
+                      : value
                   }
-                  value={value}
+                  onChange={onChange}
                   defaultValue={infoClub[0]?.address?.zipCode}
                   errorMessage={errors.address?.zipCode?.message}
+                  getElement={function (): TextInput {
+                    throw new Error("Function not implemented.");
+                  }}
+                  getRawValue={function (): string {
+                    throw new Error("Function not implemented.");
+                  }}
+                  isValid={function (): boolean {
+                    throw new Error("Function not implemented.");
+                  }}
+                  keyboardType="numeric"
                 />
               )}
             />
@@ -520,7 +540,7 @@ export function FormClub() {
                     //   }));
                     // }
                   }
-                  value={address.street}
+                  value={value}
                   defaultValue={infoClub[0]?.address?.street}
                   errorMessage={errors.address?.street?.message}
                 />
@@ -561,7 +581,7 @@ export function FormClub() {
                         //   }));
                         // }
                       }
-                      value={address.neighborhood}
+                      value={value}
                       defaultValue={infoClub[0]?.address?.neighborhood}
                       errorMessage={errors.address?.neighborhood?.message}
                     />
@@ -613,7 +633,7 @@ export function FormClub() {
                         //   }));
                         // }
                       }
-                      value={address.city}
+                      value={value}
                       defaultValue={infoClub[0]?.address?.city}
                       errorMessage={errors.address?.city?.message}
                     />
@@ -716,14 +736,32 @@ export function FormClub() {
               control={control}
               name="phoneContact"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
+                <InputMask
                   placeholder="Telefone"
-                  keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
+                  type="cel-phone"
+                  options={{
+                    maskType: "BRL",
+                    withDDD: true,
+                    dddMask: "(99) ",
+                  }}
+                  value={
+                    infoClub[0]?.phoneContact
+                      ? infoClub[0]?.phoneContact
+                      : value
+                  }
+                  onChange={onChange}
                   defaultValue={infoClub[0]?.phoneContact}
                   errorMessage={errors.phoneContact?.message}
+                  getElement={function (): TextInput {
+                    throw new Error("Function not implemented.");
+                  }}
+                  getRawValue={function (): string {
+                    throw new Error("Function not implemented.");
+                  }}
+                  isValid={function (): boolean {
+                    throw new Error("Function not implemented.");
+                  }}
+                  keyboardType="numeric"
                 />
               )}
             />
@@ -743,14 +781,30 @@ export function FormClub() {
               control={control}
               name="foundationDate"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
+                <InputMask
                   placeholder="Data de fundação"
-                  keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
+                  type={"datetime"}
+                  options={{
+                    format: "DD/MM/YYYY",
+                  }}
+                  value={
+                    infoClub[0]?.foundationDate
+                      ? infoClub[0]?.foundationDate
+                      : value
+                  }
+                  onChange={onChange}
                   defaultValue={infoClub[0]?.foundationDate}
                   errorMessage={errors.foundationDate?.message}
+                  getElement={function (): TextInput {
+                    throw new Error("Function not implemented.");
+                  }}
+                  getRawValue={function (): string {
+                    throw new Error("Function not implemented.");
+                  }}
+                  isValid={function (): boolean {
+                    throw new Error("Function not implemented.");
+                  }}
+                  keyboardType="numeric"
                 />
               )}
             />
@@ -976,14 +1030,26 @@ export function FormClub() {
                 control={control}
                 name="endDate"
                 render={({ field: { onChange, value } }) => (
-                  <Input
-                    bg="gray.600"
+                  <InputMask
                     placeholder="Término do patrocínio"
-                    keyboardType="numeric"
-                    onChangeText={onChange}
-                    value={value}
+                    type={"datetime"}
+                    options={{
+                      format: "DD/MM/YYYY",
+                    }}
+                    value={infoClub[0]?.endDate ? infoClub[0]?.endDate : value}
+                    onChange={onChange}
                     defaultValue={infoClub[0]?.endDate}
                     errorMessage={errors.endDate?.message}
+                    getElement={function (): TextInput {
+                      throw new Error("Function not implemented.");
+                    }}
+                    getRawValue={function (): string {
+                      throw new Error("Function not implemented.");
+                    }}
+                    isValid={function (): boolean {
+                      throw new Error("Function not implemented.");
+                    }}
+                    keyboardType="numeric"
                   />
                 )}
               />

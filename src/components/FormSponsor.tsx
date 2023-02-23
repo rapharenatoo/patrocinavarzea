@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { TextInput, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
@@ -21,6 +21,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
+import { TextInputMask, TextInputMaskMethods } from "react-native-masked-text";
 
 import { AppNavigatorRoutesProps } from "../routes/app.sponsor.routes";
 
@@ -28,6 +29,8 @@ import { UserPhoto } from "./UserPhoto";
 import { Input } from "./Input";
 import { Button } from "./Button";
 import { Skeleton } from "./Skeleton";
+import { InputMask } from "./InputMask";
+import { InputMaskTaxId } from "./InputMaskTaxId";
 
 import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
@@ -48,6 +51,7 @@ type UserSponsorProps = {
   name: string;
   email: string;
   type: string;
+  taxIdType: string;
   taxId: string;
   ie: string;
   address: Address;
@@ -63,6 +67,8 @@ type UserSponsorProps = {
   createdAt: string;
 };
 
+type InputMask = TextInputMask & TextInputMaskMethods;
+
 const PHOTO_SIZE = 24;
 
 export function FormSponsor() {
@@ -74,6 +80,7 @@ export function FormSponsor() {
   const [infoSponsor, setInfoSponsor] = useState<UserSponsorProps[]>([]);
   const [userPhoto, setUserPhoto] = useState(null);
   const [wantSponsor, setWantSponsor] = useState("");
+  const [taxIdType, setTaxIdType] = useState("cnpj");
   const [categoryTeamsSponsor, setCategoryTeamsSponsor] = useState<string[]>(
     []
   );
@@ -102,6 +109,7 @@ export function FormSponsor() {
         }) as UserSponsorProps[];
 
         setInfoSponsor(data);
+        setTaxIdType(data[0]?.taxIdType);
         setWantSponsor(data[0]?.wantSponsor);
         setCategoryTeamsSponsor(data[0]?.categoryTeamsSponsor);
         setSponsorshipType(data[0]?.sponsorshipType);
@@ -260,6 +268,8 @@ export function FormSponsor() {
       .doc(infoSponsor[0]?.id)
       .set({
         ...data,
+        email: auth().currentUser.email,
+        taxIdType: taxIdType,
         // address: {
         //   zipCode: address.zipCode,
         //   street: address.street,
@@ -356,36 +366,75 @@ export function FormSponsor() {
               )}
             />
 
-            {/* <Input bg="gray.600" placeholder="PF ou PJ" /> */}
-
             <Controller
               control={control}
               name="taxId"
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
-                  placeholder="CPF / CNPJ"
-                  keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
-                  defaultValue={infoSponsor[0]?.taxId}
-                  errorMessage={errors.taxId?.message}
-                />
-              )}
+              render={({ field: { onChange, value } }) =>
+                taxIdType === "cnpj" ? (
+                  <InputMaskTaxId
+                    placeholder="CNPJ"
+                    type={"cnpj"}
+                    value={
+                      infoSponsor[0]?.taxId ? infoSponsor[0]?.taxId : value
+                    }
+                    onChangeText={onChange}
+                    defaultValue={infoSponsor[0]?.taxId}
+                    errorMessage={errors.taxId?.message}
+                    getElement={function (): TextInput {
+                      throw new Error("Function not implemented.");
+                    }}
+                    getRawValue={function (): string {
+                      throw new Error("Function not implemented.");
+                    }}
+                    isValid={function (): boolean {
+                      throw new Error("Function not implemented.");
+                    }}
+                  />
+                ) : (
+                  <InputMaskTaxId
+                    placeholder="CPF"
+                    type={"cpf"}
+                    value={
+                      infoSponsor[0]?.taxId ? infoSponsor[0]?.taxId : value
+                    }
+                    onChangeText={onChange}
+                    defaultValue={infoSponsor[0]?.taxId}
+                    errorMessage={errors.taxId?.message}
+                    getElement={function (): TextInput {
+                      throw new Error("Function not implemented.");
+                    }}
+                    getRawValue={function (): string {
+                      throw new Error("Function not implemented.");
+                    }}
+                    isValid={function (): boolean {
+                      throw new Error("Function not implemented.");
+                    }}
+                  />
+                )
+              }
             />
 
             <Controller
               control={control}
               name="ie"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
+                <InputMask
                   placeholder="I.E."
-                  keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
+                  type={"only-numbers"}
+                  value={infoSponsor[0]?.ie ? infoSponsor[0]?.ie : value}
+                  onChange={onChange}
                   defaultValue={infoSponsor[0]?.ie}
                   errorMessage={errors.ie?.message}
+                  getElement={function (): TextInput {
+                    throw new Error("Function not implemented.");
+                  }}
+                  getRawValue={function (): string {
+                    throw new Error("Function not implemented.");
+                  }}
+                  isValid={function (): boolean {
+                    throw new Error("Function not implemented.");
+                  }}
+                  keyboardType="numeric"
                 />
               )}
             />
@@ -421,23 +470,27 @@ export function FormSponsor() {
               control={control}
               name="address.zipCode"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
+                <InputMask
                   placeholder="CEP"
-                  keyboardType="numeric"
-                  // onEndEditing={() => getAddressFromApi}
-                  onChangeText={
-                    onChange
-                    // (value) => {
-                    // setAddress((old) => ({
-                    //   ...old,
-                    //   zipCode: value,
-                    // }));
-                    // }
+                  type="zip-code"
+                  value={
+                    infoSponsor[0]?.address?.zipCode
+                      ? infoSponsor[0]?.address?.zipCode
+                      : value
                   }
-                  value={value}
+                  onChange={onChange}
                   defaultValue={infoSponsor[0]?.address?.zipCode}
                   errorMessage={errors.address?.zipCode?.message}
+                  getElement={function (): TextInput {
+                    throw new Error("Function not implemented.");
+                  }}
+                  getRawValue={function (): string {
+                    throw new Error("Function not implemented.");
+                  }}
+                  isValid={function (): boolean {
+                    throw new Error("Function not implemented.");
+                  }}
+                  keyboardType="numeric"
                 />
               )}
             />
@@ -559,7 +612,7 @@ export function FormSponsor() {
                 />
               </HStack>
             </HStack>
-            
+
             <Controller
               control={control}
               name="complementAddress"
@@ -605,14 +658,32 @@ export function FormSponsor() {
               control={control}
               name="phoneContact"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  bg="gray.600"
+                <InputMask
                   placeholder="Telefone"
-                  keyboardType="numeric"
-                  onChangeText={onChange}
-                  value={value}
+                  type="cel-phone"
+                  options={{
+                    maskType: "BRL",
+                    withDDD: true,
+                    dddMask: "(99) ",
+                  }}
+                  value={
+                    infoSponsor[0]?.phoneContact
+                      ? infoSponsor[0]?.phoneContact
+                      : value
+                  }
+                  onChange={onChange}
                   defaultValue={infoSponsor[0]?.phoneContact}
                   errorMessage={errors.phoneContact?.message}
+                  getElement={function (): TextInput {
+                    throw new Error("Function not implemented.");
+                  }}
+                  getRawValue={function (): string {
+                    throw new Error("Function not implemented.");
+                  }}
+                  isValid={function (): boolean {
+                    throw new Error("Function not implemented.");
+                  }}
+                  keyboardType="numeric"
                 />
               )}
             />

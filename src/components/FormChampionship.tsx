@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
+import { TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
@@ -14,12 +15,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
+import { TextInputMask } from "react-native-masked-text";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
 import { Input } from "./Input";
 import { Button } from "./Button";
 import { SelectZone } from "./SelectZone";
+import { InputMask } from "./InputMask";
 
 type Address = {
   zipCode?: string;
@@ -113,6 +116,7 @@ export function FormChampionship() {
         city: "",
       },
       numberAddress: "",
+      complementAddress: "",
       instagram: "",
       zone: "",
       qtdTeams: "",
@@ -253,13 +257,27 @@ export function FormChampionship() {
           control={control}
           name="phoneOrganizer"
           render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
+            <InputMask
               placeholder="Telefone"
-              keyboardType="numeric"
-              onChangeText={onChange}
+              type="cel-phone"
+              options={{
+                maskType: "BRL",
+                withDDD: true,
+                dddMask: "(99) ",
+              }}
               value={value}
+              onChange={onChange}
               errorMessage={errors.phoneOrganizer?.message}
+              getElement={function (): TextInput {
+                throw new Error("Function not implemented.");
+              }}
+              getRawValue={function (): string {
+                throw new Error("Function not implemented.");
+              }}
+              isValid={function (): boolean {
+                throw new Error("Function not implemented.");
+              }}
+              keyboardType="numeric"
             />
           )}
         />
@@ -279,22 +297,22 @@ export function FormChampionship() {
           control={control}
           name="address.zipCode"
           render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
+            <InputMask
               placeholder="CEP"
-              keyboardType="numeric"
-              // onEndEditing={() => getAddressFromApi()}
-              onChangeText={
-                onChange
-                // (value) => {
-                //   setAddress((old) => ({
-                //     ...old,
-                //     zipCode: value,
-                //   }));
-                // }
-              }
+              type="zip-code"
               value={value}
+              onChange={onChange}
               errorMessage={errors.address?.zipCode?.message}
+              getElement={function (): TextInput {
+                throw new Error("Function not implemented.");
+              }}
+              getRawValue={function (): string {
+                throw new Error("Function not implemented.");
+              }}
+              isValid={function (): boolean {
+                throw new Error("Function not implemented.");
+              }}
+              keyboardType="numeric"
             />
           )}
         />
@@ -463,13 +481,25 @@ export function FormChampionship() {
           control={control}
           name="date"
           render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
+            <InputMask
               placeholder="Data do evento"
-              keyboardType="numeric"
-              onChangeText={onChange}
+              type={"datetime"}
+              options={{
+                format: "DD/MM/YYYY",
+              }}
               value={value}
+              onChange={onChange}
               errorMessage={errors.date?.message}
+              getElement={function (): TextInput {
+                throw new Error("Function not implemented.");
+              }}
+              getRawValue={function (): string {
+                throw new Error("Function not implemented.");
+              }}
+              isValid={function (): boolean {
+                throw new Error("Function not implemented.");
+              }}
+              keyboardType="numeric"
             />
           )}
         />
@@ -500,6 +530,36 @@ export function FormChampionship() {
               onChangeText={onChange}
               value={value}
               errorMessage={errors.cashReward?.message}
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          name="cashReward"
+          render={({ field: { onChange, value } }) => (
+            <InputMask
+              placeholder="Premiação em dinheiro"
+              type={"money"}
+              options={{
+                precision: 2,
+                separator: ",",
+                delimiter: ".",
+                unit: "R$",
+                suffixUnit: "",
+              }}
+              value={value}
+              onChange={onChange}
+              errorMessage={errors.cashReward?.message}
+              getElement={function (): TextInput {
+                throw new Error("Function not implemented.");
+              }}
+              getRawValue={function (): string {
+                throw new Error("Function not implemented.");
+              }}
+              isValid={function (): boolean {
+                throw new Error("Function not implemented.");
+              }}
+              keyboardType="numeric"
             />
           )}
         />
