@@ -11,6 +11,8 @@ import {
   Heading,
   HStack,
   Radio,
+  FormControl,
+  Checkbox,
 } from "native-base";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
@@ -64,7 +66,7 @@ type UserClubProps = {
   facebook?: string;
   nameContact?: string;
   phoneContact?: string;
-  category: string;
+  category: Array<string>;
   ownField: string;
   wantSponsorship: string;
   isSponsorship: string;
@@ -88,7 +90,7 @@ export function FormClub() {
   const [ownField, setOwnField] = useState("");
   const [wantSponsorship, setWantSponsorship] = useState("");
   const [isSponsorship, setIsSponsorship] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState<string[]>([]);
   const [zone, setZone] = useState("");
   const [drawId, setDrawId] = useState<DrawIdClub[]>([]);
   const [taxIdType, setTaxIdType] = useState("cnpj");
@@ -828,72 +830,75 @@ export function FormClub() {
               <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
                 Categoria:
               </Text>
-              <Radio.Group
-                name="category"
-                accessibilityLabel="tem patrocínio"
-                value={category}
-                defaultValue={category}
-                onChange={(e) => {
-                  setCategory(e);
-                }}
-              >
-                <HStack space={7}>
-                  <Radio
-                    value="Juvenil"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Juvenil
-                  </Radio>
-                  <Radio
-                    value="Sport"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Sport
-                  </Radio>
-                </HStack>
-                <HStack space={4}>
-                  <Radio
-                    value="Veterano"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Veterano
-                  </Radio>
-                  <Radio
-                    value="Feminino"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Feminino
-                  </Radio>
-                </HStack>
-              </Radio.Group>
+              <FormControl>
+                <Checkbox.Group
+                  accessibilityLabel="Categoria:"
+                  defaultValue={category}
+                  onChange={setCategory}
+                  value={category}
+                >
+                  <HStack space={5}>
+                    <Checkbox
+                      value="Juvenil"
+                      my={2}
+                      colorScheme="yellow"
+                      _text={{
+                        mx: 2,
+                        color: "white",
+                        fontSize: "sm",
+                        fontFamily: "body",
+                      }}
+                    >
+                      Juvenil
+                    </Checkbox>
+                    <Checkbox
+                      value="Sport"
+                      my={2}
+                      colorScheme="yellow"
+                      _text={{
+                        mx: 2,
+                        color: "white",
+                        fontSize: "sm",
+                        fontFamily: "body",
+                      }}
+                    >
+                      Sport
+                    </Checkbox>
+                  </HStack>
+                  <HStack space={2}>
+                    <Checkbox
+                      value="Veterano"
+                      my={2}
+                      colorScheme="yellow"
+                      _text={{
+                        mx: 2,
+                        color: "white",
+                        fontSize: "sm",
+                        fontFamily: "body",
+                      }}
+                    >
+                      Veterano
+                    </Checkbox>
+                    <Checkbox
+                      value="Feminino"
+                      my={2}
+                      colorScheme="yellow"
+                      _text={{
+                        mx: 2,
+                        color: "white",
+                        fontSize: "sm",
+                        fontFamily: "body",
+                      }}
+                    >
+                      Feminino
+                    </Checkbox>
+                  </HStack>
+                </Checkbox.Group>
+
+                <FormControl.ErrorMessage _text={{ color: "red.500" }}>
+                  {errors.category?.message}
+                </FormControl.ErrorMessage>
+              </FormControl>
             </VStack>
 
             <VStack mb={4}>

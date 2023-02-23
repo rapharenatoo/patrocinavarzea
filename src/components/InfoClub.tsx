@@ -35,7 +35,7 @@ type UserClubProps = {
   facebook: string;
   nameContact: string;
   phoneContact: string;
-  category: string;
+  category: Array<string>;
   ownField: string;
   wantSponsorship: string;
   isSponsorship: string;
@@ -254,7 +254,8 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={2}
                   >
-                    Categoria: {infoClub[0]?.category}
+                    Categoria:{" "}
+                    {infoClub[0]?.category.toString().replace(/,/g, ", ")}
                   </Text>
                   <Text
                     color="white"
