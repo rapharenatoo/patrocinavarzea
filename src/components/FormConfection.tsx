@@ -10,7 +10,6 @@ import {
   VStack,
   Heading,
   HStack,
-  Radio,
 } from "native-base";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,6 +19,9 @@ import auth from "@react-native-firebase/auth";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { TextInputMask, TextInputMaskMethods } from "react-native-masked-text";
+import BouncyCheckboxGroup, {
+  ICheckboxButton,
+} from "react-native-bouncy-checkbox-group";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
@@ -28,10 +30,10 @@ import { Input } from "./Input";
 import { Button } from "./Button";
 import { InputMask } from "./InputMask";
 import { InputMaskTaxId } from "./InputMaskTaxId";
-
-import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
 import { Skeleton } from "./Skeleton";
 import { SelectTaxId } from "./SelectTaxId";
+
+import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
 type Address = {
   zipCode?: string;
@@ -68,7 +70,7 @@ export function FormConfection() {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
-  const [wantSponsor, setWantSponsor] = useState("");
+  const [wantSponsor, setWantSponsor] = useState("Não");
   const [taxIdType, setTaxIdType] = useState("cnpj");
   const [userPhoto, setUserPhoto] = useState(null);
   const [infoConfection, setInfoConfection] = useState<UserConfectionProps[]>(
@@ -81,6 +83,17 @@ export function FormConfection() {
     state: "",
     city: "",
   });
+
+  const staticValueRadioButton = [
+    {
+      id: 0,
+      text: "Sim",
+    },
+    {
+      id: 1,
+      text: "Não",
+    },
+  ];
 
   useEffect(() => {
     setIsSkeletonLoading(true);
@@ -687,43 +700,32 @@ export function FormConfection() {
               <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
                 Quer patrocinar?
               </Text>
-              <Radio.Group
-                name="wantSponsor"
-                accessibilityLabel="patrocinar"
-                value={wantSponsor}
-                onChange={(e) => {
-                  setWantSponsor(e);
+              <BouncyCheckboxGroup
+                data={staticValueRadioButton}
+                initial={wantSponsor === "Sim" ? 0 : 1}
+                style={{
+                  borderColor: "#eab308",
+                  marginTop: 2,
                 }}
-              >
-                <HStack space={4}>
-                  <Radio
-                    value="SIM"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Sim
-                  </Radio>
-                  <Radio
-                    value="NÃO"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Não
-                  </Radio>
-                </HStack>
-              </Radio.Group>
+                checkboxProps={{
+                  fillColor: "#eab308",
+                  unfillColor: "white",
+                  iconStyle: {
+                    borderColor: "#eab308",
+                  },
+                  size: 20,
+                  textStyle: {
+                    textDecorationLine: "none",
+                    fontFamily: "Roboto_400Regular",
+                    color: "white",
+                    fontSize: 14,
+                    marginRight: 20,
+                  },
+                }}
+                onChange={(selectedItem: ICheckboxButton) => {
+                  setWantSponsor(String(selectedItem.text));
+                }}
+              />
             </VStack>
 
             <Button

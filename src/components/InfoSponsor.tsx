@@ -36,9 +36,16 @@ type UserSponsorProps = {
   nameContact: string;
   phoneContact: string;
   wantSponsor: string;
-  categoryTeamsSponsor: Array<string>;
-  sponsorshipType: Array<string>;
-  otherSponsorship: string;
+  categoryJuvenile: boolean;
+  categorySport: boolean;
+  categoryVeteran: boolean;
+  categoryFemale: boolean;
+  sponsorSleeve: boolean;
+  sponsorFront: boolean;
+  sponsorBack: boolean;
+  sponsorProducts: boolean;
+  sponsorOther: boolean;
+  sponsorOtherDescription: string;
   sponsorships: Sponsorships[];
   createdAt: string;
 };
@@ -47,7 +54,6 @@ export function InfoSponsor() {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [infoSponsor, setInfoSponsor] = useState<UserSponsorProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [otherType, setOtherType] = useState(false);
 
   function handleGoProfile() {
     navigation.navigate("profile");
@@ -228,9 +234,10 @@ export function InfoSponsor() {
                     numberOfLines={3}
                   >
                     Categoria(s) de patrocínio:{" "}
-                    {infoSponsor[0]?.categoryTeamsSponsor
-                      .toString()
-                      .replace(/,/g, ", ")}
+                    {infoSponsor[0]?.categoryJuvenile ? "Juvenil " : ""}
+                    {infoSponsor[0]?.categorySport ? "Sport " : ""}
+                    {infoSponsor[0]?.categoryVeteran ? "Veterano " : ""}
+                    {infoSponsor[0]?.categoryFemale ? "Feminino " : ""}
                   </Text>
                   <Text
                     color="white"
@@ -240,11 +247,14 @@ export function InfoSponsor() {
                     numberOfLines={3}
                   >
                     Tipo(s) de patrocínio:{" "}
-                    {infoSponsor[0]?.sponsorshipType
-                      .toString()
-                      .replace(/,/g, ", ")}
+                    {infoSponsor[0]?.sponsorSleeve ? "Manga " : ""}
+                    {infoSponsor[0]?.sponsorFront ? "Frente " : ""}
+                    {infoSponsor[0]?.sponsorBack ? "Costas " : ""}
+                    {infoSponsor[0]?.sponsorProducts
+                      ? "Doação de Produtos "
+                      : ""}
                   </Text>
-                  {otherType ? (
+                  {infoSponsor[0]?.sponsorOther ? (
                     <Text
                       color="white"
                       fontSize="sm"
@@ -253,8 +263,8 @@ export function InfoSponsor() {
                       numberOfLines={2}
                     >
                       Outro(s) tipo(s):{" "}
-                      {!!infoSponsor[0]?.otherSponsorship
-                        ? infoSponsor[0]?.otherSponsorship
+                      {!!infoSponsor[0]?.sponsorOtherDescription
+                        ? infoSponsor[0]?.sponsorOtherDescription
                         : "-"}
                     </Text>
                   ) : null}

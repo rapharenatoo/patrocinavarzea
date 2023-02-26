@@ -10,9 +10,7 @@ import {
   VStack,
   Heading,
   HStack,
-  Radio,
   FormControl,
-  Checkbox,
 } from "native-base";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
@@ -22,6 +20,10 @@ import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import { TextInputMask, TextInputMaskMethods } from "react-native-masked-text";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import BouncyCheckboxGroup, {
+  ICheckboxButton,
+} from "react-native-bouncy-checkbox-group";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
@@ -66,7 +68,10 @@ type UserClubProps = {
   facebook?: string;
   nameContact?: string;
   phoneContact?: string;
-  category: Array<string>;
+  categoryJuvenile: boolean;
+  categorySport: boolean;
+  categoryVeteran: boolean;
+  categoryFemale: boolean;
   ownField: string;
   wantSponsorship: string;
   isSponsorship: string;
@@ -87,10 +92,13 @@ export function FormClub() {
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
   const [infoClub, setInfoClub] = useState<UserClubProps[]>([]);
   const [userPhoto, setUserPhoto] = useState(null);
-  const [ownField, setOwnField] = useState("");
-  const [wantSponsorship, setWantSponsorship] = useState("");
-  const [isSponsorship, setIsSponsorship] = useState("");
-  const [category, setCategory] = useState<string[]>([]);
+  const [ownField, setOwnField] = useState("Não");
+  const [wantSponsorship, setWantSponsorship] = useState("Sim");
+  const [isSponsorship, setIsSponsorship] = useState("Não");
+  const [categoryJuvenile, setCategoryJuvenile] = useState(false);
+  const [categorySport, setCategorySport] = useState(false);
+  const [categoryVeteran, setCategoryVeteran] = useState(false);
+  const [categoryFemale, setCategoryFemale] = useState(false);
   const [zone, setZone] = useState("");
   const [drawId, setDrawId] = useState<DrawIdClub[]>([]);
   const [taxIdType, setTaxIdType] = useState("cnpj");
@@ -101,6 +109,18 @@ export function FormClub() {
     state: "",
     city: "",
   });
+  let bouncyCheckboxRef: BouncyCheckbox | null = null;
+
+  const staticValueRadioButton = [
+    {
+      id: 0,
+      text: "Sim",
+    },
+    {
+      id: 1,
+      text: "Não",
+    },
+  ];
 
   useEffect(() => {
     setIsSkeletonLoading(true);
@@ -121,7 +141,10 @@ export function FormClub() {
         setOwnField(data[0]?.ownField);
         setWantSponsorship(data[0]?.wantSponsorship);
         setIsSponsorship(data[0]?.isSponsorship);
-        setCategory(data[0]?.category);
+        setCategoryJuvenile(data[0]?.categoryJuvenile);
+        setCategorySport(data[0]?.categorySport);
+        setCategoryVeteran(data[0]?.categoryVeteran);
+        setCategoryFemale(data[0]?.categoryFemale);
         setZone(data[0]?.zone);
         setAddress({
           zipCode: data[0]?.address?.zipCode,
@@ -166,7 +189,6 @@ export function FormClub() {
       .default(String(infoClub[0]?.taxId)),
     taxIdType: yup
       .string()
-
       .default(infoClub[0]?.taxIdType),
     address: yup.object({
       zipCode: yup
@@ -319,7 +341,10 @@ export function FormClub() {
         //   state: address.state,
         //   city: address.city,
         // },
-        category: category,
+        categoryJuvenile: categoryJuvenile,
+        categorySport: categorySport,
+        categoryVeteran: categoryVeteran,
+        categoryFemale: categoryFemale,
         ownField: ownField,
         wantSponsorship: wantSponsorship,
         isSponsorship: isSponsorship,
@@ -831,72 +856,82 @@ export function FormClub() {
                 Categoria:
               </Text>
               <FormControl>
-                <Checkbox.Group
-                  accessibilityLabel="Categoria:"
-                  defaultValue={category}
-                  onChange={setCategory}
-                  value={category}
-                >
-                  <HStack space={5}>
-                    <Checkbox
-                      value="Juvenil"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Juvenil
-                    </Checkbox>
-                    <Checkbox
-                      value="Sport"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Sport
-                    </Checkbox>
-                  </HStack>
-                  <HStack space={2}>
-                    <Checkbox
-                      value="Veterano"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Veterano
-                    </Checkbox>
-                    <Checkbox
-                      value="Feminino"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Feminino
-                    </Checkbox>
-                  </HStack>
-                </Checkbox.Group>
+                <HStack space={6} mt={2}>
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Juvenil"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={categoryJuvenile}
+                    onPress={() => setCategoryJuvenile(!categoryJuvenile)}
+                  />
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Sport"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={categorySport}
+                    onPress={() => setCategorySport(!categorySport)}
+                  />
+                </HStack>
+
+                <HStack space={3} mt={2}>
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Veterano"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={categoryVeteran}
+                    onPress={() => setCategoryVeteran(!categoryVeteran)}
+                  />
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Feminino"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={categoryFemale}
+                    onPress={() => setCategoryFemale(!categoryFemale)}
+                  />
+                </HStack>
 
                 <FormControl.ErrorMessage _text={{ color: "red.500" }}>
-                  {errors.category?.message}
+                  {/* {errors.category?.message} */}
                 </FormControl.ErrorMessage>
               </FormControl>
             </VStack>
@@ -905,132 +940,102 @@ export function FormClub() {
               <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
                 Campo próprio?
               </Text>
-              <Radio.Group
-                name="ownField"
-                accessibilityLabel="campo próprio"
-                value={ownField}
-                onChange={(e) => {
-                  setOwnField(e);
-                }}
-              >
-                <HStack space={4}>
-                  <Radio
-                    value="SIM"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Sim
-                  </Radio>
-                  <Radio
-                    value="NÃO"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Não
-                  </Radio>
-                </HStack>
-              </Radio.Group>
+
+              <HStack space={4}>
+                <BouncyCheckboxGroup
+                  data={staticValueRadioButton}
+                  initial={ownField === "Sim" ? 0 : 1}
+                  style={{
+                    borderColor: "#eab308",
+                    marginTop: 2,
+                  }}
+                  checkboxProps={{
+                    fillColor: "#eab308",
+                    unfillColor: "white",
+                    iconStyle: {
+                      borderColor: "#eab308",
+                    },
+                    size: 20,
+                    textStyle: {
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                      marginRight: 20,
+                    },
+                  }}
+                  onChange={(selectedItem: ICheckboxButton) => {
+                    setOwnField(String(selectedItem.text));
+                  }}
+                />
+              </HStack>
             </VStack>
 
             <VStack mb={4}>
               <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
                 Deseja receber patrocínio?
               </Text>
-              <Radio.Group
-                name="wantSponsorship"
-                accessibilityLabel="receber patrocínio"
-                value={wantSponsorship}
-                onChange={(e) => {
-                  setWantSponsorship(e);
+              <BouncyCheckboxGroup
+                data={staticValueRadioButton}
+                initial={wantSponsorship === "Sim" ? 0 : 1}
+                style={{
+                  borderColor: "#eab308",
+                  marginTop: 2,
                 }}
-              >
-                <HStack space={4}>
-                  <Radio
-                    value="SIM"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Sim
-                  </Radio>
-                  <Radio
-                    value="NÃO"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Não
-                  </Radio>
-                </HStack>
-              </Radio.Group>
+                checkboxProps={{
+                  fillColor: "#eab308",
+                  unfillColor: "white",
+                  iconStyle: {
+                    borderColor: "#eab308",
+                  },
+                  size: 20,
+                  textStyle: {
+                    textDecorationLine: "none",
+                    fontFamily: "Roboto_400Regular",
+                    color: "white",
+                    fontSize: 14,
+                    marginRight: 20,
+                  },
+                }}
+                onChange={(selectedItem: ICheckboxButton) => {
+                  setWantSponsorship(String(selectedItem.text));
+                }}
+              />
             </VStack>
 
             <VStack mb={4}>
               <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
                 Tem patrocínio?
               </Text>
-              <Radio.Group
-                name="isSponsorship"
-                accessibilityLabel="tem patrocínio"
-                value={isSponsorship}
-                onChange={(e) => {
-                  setIsSponsorship(e);
+              <BouncyCheckboxGroup
+                data={staticValueRadioButton}
+                initial={isSponsorship === "Sim" ? 0 : 1}
+                style={{
+                  borderColor: "#eab308",
+                  marginTop: 2,
                 }}
-              >
-                <HStack space={4}>
-                  <Radio
-                    value="SIM"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Sim
-                  </Radio>
-                  <Radio
-                    value="NÃO"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Não
-                  </Radio>
-                </HStack>
-              </Radio.Group>
+                checkboxProps={{
+                  fillColor: "#eab308",
+                  unfillColor: "white",
+                  iconStyle: {
+                    borderColor: "#eab308",
+                  },
+                  size: 20,
+                  textStyle: {
+                    textDecorationLine: "none",
+                    fontFamily: "Roboto_400Regular",
+                    color: "white",
+                    fontSize: 14,
+                    marginRight: 20,
+                  },
+                }}
+                onChange={(selectedItem: ICheckboxButton) => {
+                  setIsSponsorship(String(selectedItem.text));
+                }}
+              />
             </VStack>
 
-            {isSponsorship === "SIM" && (
+            {isSponsorship === "Sim" && (
               <Controller
                 control={control}
                 name="endDate"

@@ -7,7 +7,6 @@ import {
   VStack,
   Heading,
   HStack,
-  Checkbox,
   FormControl,
 } from "native-base";
 import { useForm, Controller } from "react-hook-form";
@@ -15,7 +14,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
-import { TextInputMask } from "react-native-masked-text";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
@@ -46,8 +45,11 @@ type UserChampionshipProps = {
   instagram: string;
   qtdTeams: string;
   cashReward: string;
-  rewards: Array<string>;
-  otherRewards?: string;
+  rewardsTrophy: boolean;
+  rewardsMedals: boolean;
+  rewardsUniform: boolean;
+  rewardsOther: boolean;
+  rewardsOtherDescription?: string;
   createdAt: any;
 };
 
@@ -83,8 +85,10 @@ export function FormChampionship() {
   const toast = useToast();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [isLoading, setIsLoading] = useState(false);
-  const [rewards, setRewards] = useState([]);
-  const [otherRewards, setOtherRewards] = useState(false);
+  const [rewardsTrophy, setRewardsTrophy] = useState(false);
+  const [rewardsMedals, setRewardsMedals] = useState(false);
+  const [rewardsUniform, setRewardsUniform] = useState(false);
+  const [rewardsOther, setRewardsOther] = useState(false);
   const [address, setAddress] = useState<Address>({
     zipCode: "",
     street: "",
@@ -92,9 +96,7 @@ export function FormChampionship() {
     state: "",
     city: "",
   });
-  const isOtherRewards = () => {
-    return String(rewards.find((element) => element === "Outro"));
-  };
+  let bouncyCheckboxRef: BouncyCheckbox | null = null;
 
   const {
     control,
@@ -121,8 +123,11 @@ export function FormChampionship() {
       zone: "",
       qtdTeams: "",
       cashReward: "",
-      rewards: [],
-      otherRewards: "",
+      rewardsTrophy: false,
+      rewardsMedals: false,
+      rewardsUniform: false,
+      rewardsOther: false,
+      rewardsOtherDescription: "",
       createdAt: "",
     },
   });
@@ -166,7 +171,10 @@ export function FormChampionship() {
         //   state: address.state,
         //   city: address.city,
         // },
-        rewards: rewards,
+        rewardsTrophy: rewardsTrophy,
+        rewardsMedals: rewardsMedals,
+        rewardsUniform: rewardsUniform,
+        rewardsOther: rewardsOther,
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
       .then(() => {
@@ -523,20 +531,6 @@ export function FormChampionship() {
           control={control}
           name="cashReward"
           render={({ field: { onChange, value } }) => (
-            <Input
-              bg="gray.600"
-              placeholder="Premiação em dinheiro"
-              keyboardType="numeric"
-              onChangeText={onChange}
-              value={value}
-              errorMessage={errors.cashReward?.message}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="cashReward"
-          render={({ field: { onChange, value } }) => (
             <InputMask
               placeholder="Premiação em dinheiro"
               type={"money"}
@@ -576,89 +570,95 @@ export function FormChampionship() {
             Outras premiações:
           </Heading>
           <FormControl>
-            <Checkbox.Group
-              accessibilityLabel="Premiações"
-              defaultValue={rewards}
-              onChange={setRewards}
-              value={rewards}
-            >
-              <HStack space={5}>
-                <Checkbox
-                  value="Troféu"
-                  my={2}
-                  colorScheme="yellow"
-                  _text={{
-                    mx: 2,
-                    color: "white",
-                    fontSize: "sm",
-                    fontFamily: "body",
-                  }}
-                >
-                  Trófeu
-                </Checkbox>
-                <Checkbox
-                  value="Medalhas"
-                  my={2}
-                  colorScheme="yellow"
-                  _text={{
-                    mx: 2,
-                    color: "white",
-                    fontSize: "sm",
-                    fontFamily: "body",
-                  }}
-                >
-                  Medalhas
-                </Checkbox>
-              </HStack>
-              <HStack space={2}>
-                <Checkbox
-                  value="Jogo de Uniforme"
-                  my={2}
-                  colorScheme="yellow"
-                  _text={{
-                    mx: 2,
-                    color: "white",
-                    fontSize: "sm",
-                    fontFamily: "body",
-                  }}
-                >
-                  Jogo de Uniforme
-                </Checkbox>
-              </HStack>
-            </Checkbox.Group>
-            <Checkbox
-              value="other"
-              isChecked={otherRewards}
-              onChange={setOtherRewards}
-              mt={2}
-              mb={4}
-              colorScheme="yellow"
-              _text={{
-                mx: 2,
+            <HStack space={5}>
+              <BouncyCheckbox
+                size={20}
+                fillColor="#eab308"
+                unfillColor="#FFFFFF"
+                text="Trófeu"
+                iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                textStyle={{
+                  textDecorationLine: "none",
+                  fontFamily: "Roboto_400Regular",
+                  color: "white",
+                  fontSize: 14,
+                }}
+                ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                isChecked={rewardsTrophy}
+                onPress={() => setRewardsTrophy(!rewardsTrophy)}
+              />
+              <BouncyCheckbox
+                size={20}
+                fillColor="#eab308"
+                unfillColor="#FFFFFF"
+                text="Medalhas"
+                iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                textStyle={{
+                  textDecorationLine: "none",
+                  fontFamily: "Roboto_400Regular",
+                  color: "white",
+                  fontSize: 14,
+                }}
+                ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                isChecked={rewardsMedals}
+                onPress={() => setRewardsMedals(!rewardsMedals)}
+              />
+            </HStack>
+            <HStack space={2}>
+              <BouncyCheckbox
+                size={20}
+                fillColor="#eab308"
+                unfillColor="#FFFFFF"
+                text="Jogo de Uniforme"
+                iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                textStyle={{
+                  textDecorationLine: "none",
+                  fontFamily: "Roboto_400Regular",
+                  color: "white",
+                  fontSize: 14,
+                }}
+                ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                isChecked={rewardsUniform}
+                onPress={() => setRewardsUniform(!rewardsUniform)}
+              />
+            </HStack>
+            <BouncyCheckbox
+              size={20}
+              fillColor="#eab308"
+              unfillColor="#FFFFFF"
+              text="Outro"
+              iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+              innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+              textStyle={{
+                textDecorationLine: "none",
+                fontFamily: "Roboto_400Regular",
                 color: "white",
-                fontSize: "sm",
-                fontFamily: "body",
+                fontSize: 14,
               }}
-            >
-              Outro
-            </Checkbox>
-            {otherRewards && (
+              ref={(ref: any) => (bouncyCheckboxRef = ref)}
+              isChecked={rewardsOther}
+              onPress={() => setRewardsOther(!rewardsOther)}
+            />
+            {rewardsOther && (
               <Controller
                 control={control}
-                name="otherRewards"
+                name="rewardsOtherDescription"
                 render={({ field: { onChange, value } }) => (
                   <Input
                     bg="gray.600"
                     placeholder="Outros prêmios"
                     onChangeText={onChange}
                     value={value}
-                    errorMessage={errors.otherRewards?.message}
+                    errorMessage={errors.rewardsOtherDescription?.message}
                   />
                 )}
               />
             )}
             <FormControl.ErrorMessage _text={{ color: "red.500" }}>
-              {errors.rewards?.message}
+              {/* {errors.rewards?.message} */}
             </FormControl.ErrorMessage>
           </FormControl>
         </VStack>

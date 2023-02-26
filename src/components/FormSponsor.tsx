@@ -10,9 +10,7 @@ import {
   VStack,
   Heading,
   HStack,
-  Radio,
   FormControl,
-  Checkbox,
 } from "native-base";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
@@ -22,6 +20,10 @@ import * as yup from "yup";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import { TextInputMask, TextInputMaskMethods } from "react-native-masked-text";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import BouncyCheckboxGroup, {
+  ICheckboxButton,
+} from "react-native-bouncy-checkbox-group";
 
 import { AppNavigatorRoutesProps } from "../routes/app.sponsor.routes";
 
@@ -31,6 +33,7 @@ import { Button } from "./Button";
 import { Skeleton } from "./Skeleton";
 import { InputMask } from "./InputMask";
 import { InputMaskTaxId } from "./InputMaskTaxId";
+import { SelectTaxId } from "./SelectTaxId";
 
 import DefaultUserPhotoImg from "../assets/userPhotoDefault.png";
 
@@ -60,9 +63,16 @@ type UserSponsorProps = {
   nameContact: string;
   phoneContact: string;
   wantSponsor: string;
-  categoryTeamsSponsor: Array<string>;
-  sponsorshipType: Array<string>;
-  otherSponsorship: string;
+  categoryJuvenile: boolean;
+  categorySport: boolean;
+  categoryVeteran: boolean;
+  categoryFemale: boolean;
+  sponsorSleeve: boolean;
+  sponsorFront: boolean;
+  sponsorBack: boolean;
+  sponsorProducts: boolean;
+  sponsorOther: boolean;
+  sponsorOtherDescription: string;
   sponsorships: Sponsorships[];
   createdAt: string;
 };
@@ -79,13 +89,17 @@ export function FormSponsor() {
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
   const [infoSponsor, setInfoSponsor] = useState<UserSponsorProps[]>([]);
   const [userPhoto, setUserPhoto] = useState(null);
-  const [wantSponsor, setWantSponsor] = useState("");
+  const [wantSponsor, setWantSponsor] = useState("Sim");
   const [taxIdType, setTaxIdType] = useState("cnpj");
-  const [categoryTeamsSponsor, setCategoryTeamsSponsor] = useState<string[]>(
-    []
-  );
-  const [sponsorshipType, setSponsorshipType] = useState<string[]>([]);
-  const [otherSponsorship, setOtherSponsorship] = useState(false);
+  const [categoryJuvenile, setCategoryJuvenile] = useState(false);
+  const [categorySport, setCategorySport] = useState(false);
+  const [categoryVeteran, setCategoryVeteran] = useState(false);
+  const [categoryFemale, setCategoryFemale] = useState(false);
+  const [sponsorSleeve, setSponsorSleeve] = useState(false);
+  const [sponsorFront, setSponsorFront] = useState(false);
+  const [sponsorBack, setSponsorBack] = useState(false);
+  const [sponsorProducts, setSponsorProducts] = useState(false);
+  const [sponsorOther, setSponsorOther] = useState(false);
   const [address, setAddress] = useState<Address>({
     zipCode: "",
     street: "",
@@ -93,6 +107,18 @@ export function FormSponsor() {
     state: "",
     city: "",
   });
+  let bouncyCheckboxRef: BouncyCheckbox | null = null;
+
+  const staticValueRadioButton = [
+    {
+      id: 0,
+      text: "Sim",
+    },
+    {
+      id: 1,
+      text: "Não",
+    },
+  ];
 
   useEffect(() => {
     setIsSkeletonLoading(true);
@@ -111,8 +137,15 @@ export function FormSponsor() {
         setInfoSponsor(data);
         setTaxIdType(data[0]?.taxIdType);
         setWantSponsor(data[0]?.wantSponsor);
-        setCategoryTeamsSponsor(data[0]?.categoryTeamsSponsor);
-        setSponsorshipType(data[0]?.sponsorshipType);
+        setCategoryJuvenile(data[0]?.categoryJuvenile);
+        setCategorySport(data[0]?.categorySport);
+        setCategoryVeteran(data[0]?.categoryVeteran);
+        setCategoryFemale(data[0]?.categoryFemale);
+        setSponsorSleeve(data[0]?.sponsorSleeve);
+        setSponsorFront(data[0]?.sponsorFront);
+        setSponsorBack(data[0]?.sponsorBack);
+        setSponsorProducts(data[0]?.sponsorProducts);
+        setSponsorOther(data[0]?.sponsorOther);
         setAddress({
           zipCode: data[0]?.address?.zipCode,
           street: data[0]?.address?.street,
@@ -135,6 +168,7 @@ export function FormSponsor() {
       .string()
       .required("Informe o CPF / CNPJ")
       .default(infoSponsor[0]?.taxId),
+    taxIdType: yup.string().default(infoSponsor[0]?.taxIdType),
     ie: yup.string().required("Informe o I.E.").default(infoSponsor[0]?.ie),
     address: yup.object({
       zipCode: yup
@@ -173,10 +207,12 @@ export function FormSponsor() {
       .default(
         infoSponsor[0]?.phoneContact ? infoSponsor[0]?.phoneContact : ""
       ),
-    otherSponsorship: yup
+    sponsorOtherDescription: yup
       .string()
       .default(
-        infoSponsor[0]?.otherSponsorship ? infoSponsor[0]?.otherSponsorship : ""
+        infoSponsor[0]?.sponsorOtherDescription
+          ? infoSponsor[0]?.sponsorOtherDescription
+          : ""
       ),
   });
 
@@ -278,8 +314,15 @@ export function FormSponsor() {
         //   city: address.city,
         // },
         wantSponsor: wantSponsor,
-        categoryTeamsSponsor: categoryTeamsSponsor,
-        sponsorshipType: sponsorshipType,
+        categoryJuvenile: categoryJuvenile,
+        categorySport: categorySport,
+        categoryVeteran: categoryVeteran,
+        categoryFemale: categoryFemale,
+        sponsorSleeve: sponsorSleeve,
+        sponsorFront: sponsorFront,
+        sponsorBack: sponsorBack,
+        sponsorProducts: sponsorProducts,
+        sponsorOther: sponsorOther,
         type: "sponsor",
         createdAt: firestore.FieldValue.serverTimestamp(),
       })
@@ -364,6 +407,13 @@ export function FormSponsor() {
                   errorMessage={errors.name?.message}
                 />
               )}
+            />
+
+            <SelectTaxId
+              type={taxIdType}
+              onChange={setTaxIdType}
+              defaultValue={taxIdType}
+              errorMessage={errors.taxIdType?.message}
             />
 
             <Controller
@@ -703,43 +753,32 @@ export function FormSponsor() {
               <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
                 Deseja patrocinar?
               </Text>
-              <Radio.Group
-                name="wantSponsor"
-                accessibilityLabel="patrocinar"
-                value={wantSponsor}
-                onChange={(e) => {
-                  setWantSponsor(e);
+              <BouncyCheckboxGroup
+                data={staticValueRadioButton}
+                initial={wantSponsor === "Sim" ? 0 : 1}
+                style={{
+                  borderColor: "#eab308",
+                  marginTop: 2,
                 }}
-              >
-                <HStack space={4}>
-                  <Radio
-                    value="SIM"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Sim
-                  </Radio>
-                  <Radio
-                    value="NÃO"
-                    colorScheme="yellow"
-                    size="sm"
-                    my={1}
-                    _text={{
-                      color: "gray.100",
-                      fontSize: "sm",
-                      fontFamily: "body",
-                    }}
-                  >
-                    Não
-                  </Radio>
-                </HStack>
-              </Radio.Group>
+                checkboxProps={{
+                  fillColor: "#eab308",
+                  unfillColor: "white",
+                  iconStyle: {
+                    borderColor: "#eab308",
+                  },
+                  size: 20,
+                  textStyle: {
+                    textDecorationLine: "none",
+                    fontFamily: "Roboto_400Regular",
+                    color: "white",
+                    fontSize: 14,
+                    marginRight: 20,
+                  },
+                }}
+                onChange={(selectedItem: ICheckboxButton) => {
+                  setWantSponsor(String(selectedItem.text));
+                }}
+              />
             </VStack>
 
             <VStack mb={4}>
@@ -747,72 +786,81 @@ export function FormSponsor() {
                 Quantidade de times à patrtocinar:
               </Text>
               <FormControl>
-                <Checkbox.Group
-                  accessibilityLabel="tipos de times para patrocinar"
-                  defaultValue={categoryTeamsSponsor}
-                  onChange={setCategoryTeamsSponsor}
-                  value={categoryTeamsSponsor}
-                >
-                  <HStack space={5}>
-                    <Checkbox
-                      value="Juvenil"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Juvenil
-                    </Checkbox>
-                    <Checkbox
-                      value="Sport"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Sport
-                    </Checkbox>
-                  </HStack>
-                  <HStack space={2}>
-                    <Checkbox
-                      value="Veterano"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Veterano
-                    </Checkbox>
-                    <Checkbox
-                      value="Feminino"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Feminino
-                    </Checkbox>
-                  </HStack>
-                </Checkbox.Group>
+                <HStack space={6} mt={2}>
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Juvenil"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={categoryJuvenile}
+                    onPress={() => setCategoryJuvenile(!categoryJuvenile)}
+                  />
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Sport"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={categorySport}
+                    onPress={() => setCategorySport(!categorySport)}
+                  />
+                </HStack>
 
+                <HStack space={3} mt={2}>
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Veterano"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={categoryVeteran}
+                    onPress={() => setCategoryVeteran(!categoryVeteran)}
+                  />
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Feminino"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={categoryFemale}
+                    onPress={() => setCategoryFemale(!categoryFemale)}
+                  />
+                </HStack>
                 <FormControl.ErrorMessage _text={{ color: "red.500" }}>
-                  {errors.categoryTeamsSponsor?.message}
+                  {/* {errors.categoryTeamsSponsor?.message} */}
                 </FormControl.ErrorMessage>
               </FormControl>
             </VStack>
@@ -822,104 +870,115 @@ export function FormSponsor() {
                 Tipo de patrocínio:
               </Text>
               <FormControl>
-                <Checkbox.Group
-                  accessibilityLabel="tipos de times para patrocinar"
-                  defaultValue={sponsorshipType}
-                  onChange={setSponsorshipType}
-                  value={sponsorshipType}
-                >
-                  <HStack space={5}>
-                    <Checkbox
-                      value="Manga"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Manga
-                    </Checkbox>
-                    <Checkbox
-                      value="Frente"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Frente
-                    </Checkbox>
-                  </HStack>
-                  <HStack space={5}>
-                    <Checkbox
-                      value="Costas"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Costas
-                    </Checkbox>
-                    <Checkbox
-                      value="Doação de produtos"
-                      my={2}
-                      colorScheme="yellow"
-                      _text={{
-                        mx: 2,
-                        color: "white",
-                        fontSize: "sm",
-                        fontFamily: "body",
-                      }}
-                    >
-                      Doação de produtos
-                    </Checkbox>
-                  </HStack>
-                </Checkbox.Group>
-                <Checkbox
-                  value="other"
-                  isChecked={otherSponsorship}
-                  onChange={setOtherSponsorship}
-                  mt={2}
-                  mb={4}
-                  colorScheme="yellow"
-                  _text={{
-                    mx: 2,
+                <HStack space={5} mt={2}>
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Manga"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={sponsorSleeve}
+                    onPress={() => setSponsorSleeve(!sponsorSleeve)}
+                  />
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Frente"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={sponsorFront}
+                    onPress={() => setSponsorFront(!sponsorFront)}
+                  />
+                </HStack>
+                <HStack space={5} mt={2} mb={2}>
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Costas"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={sponsorBack}
+                    onPress={() => setSponsorBack(!sponsorBack)}
+                  />
+                  <BouncyCheckbox
+                    size={20}
+                    fillColor="#eab308"
+                    unfillColor="#FFFFFF"
+                    text="Doação de produtos"
+                    iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                    innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                    textStyle={{
+                      textDecorationLine: "none",
+                      fontFamily: "Roboto_400Regular",
+                      color: "white",
+                      fontSize: 14,
+                    }}
+                    ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                    isChecked={sponsorProducts}
+                    onPress={() => setSponsorProducts(!sponsorProducts)}
+                  />
+                </HStack>
+                <BouncyCheckbox
+                  size={20}
+                  fillColor="#eab308"
+                  unfillColor="#FFFFFF"
+                  text="Outro"
+                  iconStyle={{ borderColor: "#eab308", borderRadius: 4 }}
+                  innerIconStyle={{ borderWidth: 2, borderRadius: 4 }}
+                  textStyle={{
+                    textDecorationLine: "none",
+                    fontFamily: "Roboto_400Regular",
                     color: "white",
-                    fontSize: "sm",
-                    fontFamily: "body",
+                    fontSize: 14,
                   }}
-                >
-                  Outro
-                </Checkbox>
-                {otherSponsorship && (
+                  ref={(ref: any) => (bouncyCheckboxRef = ref)}
+                  isChecked={sponsorOther}
+                  onPress={() => setSponsorOther(!sponsorOther)}
+                />
+                {sponsorOther && (
                   <Controller
                     control={control}
-                    name="otherSponsorship"
+                    name="sponsorOtherDescription"
                     render={({ field: { onChange, value } }) => (
                       <Input
                         bg="gray.600"
+                        mt={2}
                         placeholder="Outros patrocínios"
                         onChangeText={onChange}
                         value={value}
-                        defaultValue={infoSponsor[0]?.otherSponsorship}
-                        errorMessage={errors.otherSponsorship?.message}
+                        defaultValue={infoSponsor[0]?.sponsorOtherDescription}
+                        errorMessage={errors.sponsorOtherDescription?.message}
                       />
                     )}
                   />
                 )}
 
                 <FormControl.ErrorMessage _text={{ color: "red.500" }}>
-                  {errors.sponsorshipType?.message}
+                  {/* {errors.sponsorshipType?.message} */}
                 </FormControl.ErrorMessage>
               </FormControl>
             </VStack>
