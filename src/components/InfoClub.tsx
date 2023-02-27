@@ -257,10 +257,10 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={2}
                   >
-                    Categoria: {infoClub[0]?.categoryJuvenile ? "Juvenil " : ""}
-                    {infoClub[0]?.categorySport ? "Sport " : ""}
-                    {infoClub[0]?.categoryVeteran ? "Veterano " : ""}
-                    {infoClub[0]?.categoryFemale ? "Feminino " : ""}
+                    Categoria: {infoClub[0]?.categoryJuvenile ? "Juvenil   " : ""}
+                    {infoClub[0]?.categorySport ? "Sport   " : ""}
+                    {infoClub[0]?.categoryVeteran ? "Veterano   " : ""}
+                    {infoClub[0]?.categoryFemale ? "Feminino   " : ""}
                   </Text>
                   <Text
                     color="white"

@@ -137,14 +137,26 @@ export function FormClub() {
         }) as UserClubProps[];
 
         setInfoClub(data);
-        setTaxIdType(data[0]?.taxIdType);
-        setOwnField(data[0]?.ownField);
-        setWantSponsorship(data[0]?.wantSponsorship);
-        setIsSponsorship(data[0]?.isSponsorship);
-        setCategoryJuvenile(data[0]?.categoryJuvenile);
-        setCategorySport(data[0]?.categorySport);
-        setCategoryVeteran(data[0]?.categoryVeteran);
-        setCategoryFemale(data[0]?.categoryFemale);
+        setTaxIdType(data[0]?.taxIdType ? data[0]?.taxIdType : "cnpj");
+        setOwnField(data[0]?.ownField ? data[0]?.ownField : "Não");
+        setWantSponsorship(
+          data[0]?.wantSponsorship ? data[0]?.wantSponsorship : "Sim"
+        );
+        setIsSponsorship(
+          data[0]?.isSponsorship ? data[0]?.isSponsorship : "Não"
+        );
+        setCategoryJuvenile(
+          data[0]?.categoryJuvenile ? data[0]?.categoryJuvenile : false
+        );
+        setCategorySport(
+          data[0]?.categorySport ? data[0]?.categorySport : false
+        );
+        setCategoryVeteran(
+          data[0]?.categoryVeteran ? data[0]?.categoryVeteran : false
+        );
+        setCategoryFemale(
+          data[0]?.categoryFemale ? data[0]?.categoryFemale : false
+        );
         setZone(data[0]?.zone);
         setAddress({
           zipCode: data[0]?.address?.zipCode,
@@ -187,9 +199,7 @@ export function FormClub() {
       .string()
       .required("Informe o CPF / CNPJ")
       .default(String(infoClub[0]?.taxId)),
-    taxIdType: yup
-      .string()
-      .default(infoClub[0]?.taxIdType),
+    taxIdType: yup.string().default(infoClub[0]?.taxIdType),
     address: yup.object({
       zipCode: yup
         .string()

@@ -76,7 +76,7 @@ const validationSchema = yup.object({
     .string()
     .required("Informe o telefone do organizador")
     .min(10, "O telefone deve ter pelo menos 10 digítos"),
-  cashReward: yup.number().required("Informe o prêmio em dinheiro"),
+  cashReward: yup.string().required("Informe o prêmio em dinheiro"),
   date: yup.string().required("Informe a data do evento"),
   qtdTeams: yup.string().required("Informe a quantidade de times no evento"),
 });
@@ -430,7 +430,7 @@ export function FormChampionship() {
                     //   }));
                     // }
                   }
-                  value={address.city}
+                  value={value}
                   errorMessage={errors.address?.city?.message}
                 />
               )}
@@ -538,7 +538,7 @@ export function FormChampionship() {
                 precision: 2,
                 separator: ",",
                 delimiter: ".",
-                unit: "R$",
+                unit: "R$ ",
                 suffixUnit: "",
               }}
               value={value}
@@ -570,7 +570,7 @@ export function FormChampionship() {
             Outras premiações:
           </Heading>
           <FormControl>
-            <HStack space={5}>
+            <HStack space={5} mt={2}>
               <BouncyCheckbox
                 size={20}
                 fillColor="#eab308"
@@ -606,7 +606,7 @@ export function FormChampionship() {
                 onPress={() => setRewardsMedals(!rewardsMedals)}
               />
             </HStack>
-            <HStack space={2}>
+            <HStack space={2} mt={2} mb={2}>
               <BouncyCheckbox
                 size={20}
                 fillColor="#eab308"
@@ -649,6 +649,7 @@ export function FormChampionship() {
                 render={({ field: { onChange, value } }) => (
                   <Input
                     bg="gray.600"
+                    mt={2}
                     placeholder="Outros prêmios"
                     onChangeText={onChange}
                     value={value}

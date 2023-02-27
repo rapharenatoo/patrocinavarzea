@@ -110,15 +110,15 @@ export function FormConfection() {
         }) as UserConfectionProps[];
 
         setInfoConfection(data);
-        setTaxIdType(data[0]?.taxIdType);
-        setWantSponsor(data[0]?.wantSponsor);
-        setAddress({
-          zipCode: data[0]?.address?.zipCode,
-          street: data[0]?.address?.street,
-          neighborhood: data[0]?.address?.neighborhood,
-          state: data[0]?.address?.state,
-          city: data[0]?.address?.city,
-        });
+        setTaxIdType(data[0]?.taxIdType ? data[0]?.taxIdType : "cnpj");
+        setWantSponsor(data[0]?.wantSponsor ? data[0]?.wantSponsor : "Não");
+        // setAddress({
+        //   zipCode: data[0]?.address?.zipCode,
+        //   street: data[0]?.address?.street,
+        //   neighborhood: data[0]?.address?.neighborhood,
+        //   state: data[0]?.address?.state,
+        //   city: data[0]?.address?.city,
+        // });
         setIsSkeletonLoading(false);
       });
 
@@ -304,6 +304,7 @@ export function FormConfection() {
       .finally(() => {
         setIsLoading(false);
       });
+    setIsLoading(false);
   }
 
   return (
@@ -574,13 +575,16 @@ export function FormConfection() {
                       w={20}
                       bg="gray.600"
                       placeholder="ES"
-                      onChangeText={(value) => {
-                        setAddress((old) => ({
-                          ...old,
-                          state: value,
-                        }));
-                      }}
-                      value={address.state}
+                      onChangeText={
+                        onChange
+                        // (value) => {
+                        // setAddress((old) => ({
+                        //   ...old,
+                        //   state: value,
+                        // }));
+                        // }
+                      }
+                      value={value}
                       defaultValue={infoConfection[0]?.address?.state}
                       errorMessage={errors.address?.state?.message}
                     />
@@ -595,13 +599,16 @@ export function FormConfection() {
                     <Input
                       bg="gray.600"
                       placeholder="Cidade"
-                      onChangeText={(value) => {
-                        setAddress((old) => ({
-                          ...old,
-                          city: value,
-                        }));
-                      }}
-                      value={address.city}
+                      onChangeText={
+                        onChange
+                        //   (value) => {
+                        //   setAddress((old) => ({
+                        //     ...old,
+                        //     city: value,
+                        //   }));
+                        // }
+                      }
+                      value={value}
                       defaultValue={infoConfection[0]?.address?.city}
                       errorMessage={errors.address?.city?.message}
                     />

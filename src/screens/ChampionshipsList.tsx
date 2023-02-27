@@ -47,8 +47,11 @@ type ChampionshipProps = {
   qtdTeams: string;
   instagram: string;
   cashReward: number;
-  rewards: Array<string>;
-  otherRewards?: string;
+  rewardsTrophy: boolean;
+  rewardsMedals: boolean;
+  rewardsUniform: boolean;
+  rewardsOther: boolean;
+  rewardsOtherDescription?: string;
 };
 
 export function ChampionshipsList() {
@@ -153,8 +156,11 @@ export function ChampionshipsList() {
                 qtdTeams={item.qtdTeams}
                 instagram={item.instagram}
                 cashReward={item.cashReward}
-                rewards={item.rewards.toString().replace(/,/g, ", ")}
-                otherRewards={item.otherRewards}
+                rewardsTrophy={item.rewardsTrophy}
+                rewardsMedals={item.rewardsMedals}
+                rewardsUniform={item.rewardsUniform}
+                rewardsOther={item.rewardsOther}
+                rewardsOtherDescription={item.rewardsOtherDescription}
               />
             )}
             showsVerticalScrollIndicator={false}

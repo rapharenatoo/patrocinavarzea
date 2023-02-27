@@ -16,8 +16,11 @@ type ChampionshipProps = {
   qtdTeams: string;
   instagram: string;
   cashReward: number;
-  rewards: string;
-  otherRewards?: string;
+  rewardsTrophy: boolean;
+  rewardsMedals: boolean;
+  rewardsUniform: boolean;
+  rewardsOther: boolean;
+  rewardsOtherDescription?: string;
 };
 
 export function ChampionshipCard({
@@ -30,8 +33,11 @@ export function ChampionshipCard({
   qtdTeams,
   instagram,
   cashReward,
-  rewards,
-  otherRewards,
+  rewardsTrophy,
+  rewardsMedals,
+  rewardsUniform,
+  rewardsOther,
+  rewardsOtherDescription,
 }: ChampionshipProps) {
   return (
     <VStack px={5} py={4} mt={3} bg="gray.600" rounded="md">
@@ -81,9 +87,11 @@ export function ChampionshipCard({
       </Text>
 
       <Text color="gray.100" fontSize="sm" numberOfLines={3} mt={2}>
-        Outras premiações: {rewards}{!!otherRewards && `, ${otherRewards}`}
+        Outras premiações: {rewardsTrophy ? "Troféu   " : ""}
+        {rewardsMedals ? "Medalhas   " : ""}
+        {rewardsUniform ? "Jogo de uniforme   " : ""}
+        {rewardsOther && ` ${rewardsOtherDescription}`}
       </Text>
-
     </VStack>
   );
 }

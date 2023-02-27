@@ -135,17 +135,29 @@ export function FormSponsor() {
         }) as UserSponsorProps[];
 
         setInfoSponsor(data);
-        setTaxIdType(data[0]?.taxIdType);
-        setWantSponsor(data[0]?.wantSponsor);
-        setCategoryJuvenile(data[0]?.categoryJuvenile);
-        setCategorySport(data[0]?.categorySport);
-        setCategoryVeteran(data[0]?.categoryVeteran);
-        setCategoryFemale(data[0]?.categoryFemale);
-        setSponsorSleeve(data[0]?.sponsorSleeve);
-        setSponsorFront(data[0]?.sponsorFront);
-        setSponsorBack(data[0]?.sponsorBack);
-        setSponsorProducts(data[0]?.sponsorProducts);
-        setSponsorOther(data[0]?.sponsorOther);
+        setTaxIdType(data[0]?.taxIdType ? data[0]?.taxIdType : "cnpj");
+        setWantSponsor(data[0]?.wantSponsor ? data[0]?.wantSponsor : "Sim");
+        setCategoryJuvenile(
+          data[0]?.categoryJuvenile ? data[0]?.categoryJuvenile : false
+        );
+        setCategorySport(
+          data[0]?.categorySport ? data[0]?.categorySport : false
+        );
+        setCategoryVeteran(
+          data[0]?.categoryVeteran ? data[0]?.categoryVeteran : false
+        );
+        setCategoryFemale(
+          data[0]?.categoryFemale ? data[0]?.categoryFemale : false
+        );
+        setSponsorSleeve(
+          data[0]?.sponsorSleeve ? data[0]?.sponsorSleeve : false
+        );
+        setSponsorFront(data[0]?.sponsorFront ? data[0]?.sponsorFront : false);
+        setSponsorBack(data[0]?.sponsorBack ? data[0]?.sponsorBack : false);
+        setSponsorProducts(
+          data[0]?.sponsorProducts ? data[0]?.sponsorProducts : false
+        );
+        setSponsorOther(data[0]?.sponsorOther ? data[0]?.sponsorOther : false);
         setAddress({
           zipCode: data[0]?.address?.zipCode,
           street: data[0]?.address?.street,

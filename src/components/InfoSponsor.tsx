@@ -234,10 +234,10 @@ export function InfoSponsor() {
                     numberOfLines={3}
                   >
                     Categoria(s) de patrocínio:{" "}
-                    {infoSponsor[0]?.categoryJuvenile ? "Juvenil " : ""}
-                    {infoSponsor[0]?.categorySport ? "Sport " : ""}
-                    {infoSponsor[0]?.categoryVeteran ? "Veterano " : ""}
-                    {infoSponsor[0]?.categoryFemale ? "Feminino " : ""}
+                    {infoSponsor[0]?.categoryJuvenile ? "Juvenil   " : ""}
+                    {infoSponsor[0]?.categorySport ? "Sport   " : ""}
+                    {infoSponsor[0]?.categoryVeteran ? "Veterano   " : ""}
+                    {infoSponsor[0]?.categoryFemale ? "Feminino   " : ""}
                   </Text>
                   <Text
                     color="white"
@@ -247,9 +247,9 @@ export function InfoSponsor() {
                     numberOfLines={3}
                   >
                     Tipo(s) de patrocínio:{" "}
-                    {infoSponsor[0]?.sponsorSleeve ? "Manga " : ""}
-                    {infoSponsor[0]?.sponsorFront ? "Frente " : ""}
-                    {infoSponsor[0]?.sponsorBack ? "Costas " : ""}
+                    {infoSponsor[0]?.sponsorSleeve ? "Manga   " : ""}
+                    {infoSponsor[0]?.sponsorFront ? "Frente   " : ""}
+                    {infoSponsor[0]?.sponsorBack ? "Costas   " : ""}
                     {infoSponsor[0]?.sponsorProducts
                       ? "Doação de Produtos "
                       : ""}

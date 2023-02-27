@@ -17,27 +17,29 @@ export function Routes() {
   theme.colors.background = colors.gray[700];
 
   const renderUserRoutes = () => {
-    if (user.type === "admin") {
+    if (user && user.type === "admin") {
       return <AppAdminRoutes />;
     }
 
-    if (user.type === "club") {
+    if (user && user.type === "club") {
       return <AppClubRoutes />;
     }
 
-    if (user.type === "sponsor") {
+    if (user && user.type === "sponsor") {
       return <AppSponsorRoutes />;
     }
 
-    if (user.type === "confection") {
+    if (user && user.type === "confection") {
       return <AppConfectionRoutes />;
     }
+
+    return <AuthRoutes />;
   };
 
   return (
     <Box flex={1} bg="gray.800">
       <NavigationContainer theme={theme}>
-        {user ? renderUserRoutes() : <AuthRoutes />}
+        {renderUserRoutes()}
       </NavigationContainer>
     </Box>
   );
