@@ -56,7 +56,6 @@ type UserSponsorProps = {
   type: string;
   taxIdType: string;
   taxId: string;
-  ie: string;
   address: Address;
   numberAddress: string;
   complementAddress?: string;
@@ -181,7 +180,6 @@ export function FormSponsor() {
       .required("Informe o CPF / CNPJ")
       .default(infoSponsor[0]?.taxId),
     taxIdType: yup.string().default(infoSponsor[0]?.taxIdType),
-    ie: yup.string().required("Informe o I.E.").default(infoSponsor[0]?.ie),
     address: yup.object({
       zipCode: yup
         .string()
@@ -478,31 +476,6 @@ export function FormSponsor() {
 
             <Controller
               control={control}
-              name="ie"
-              render={({ field: { onChange, value } }) => (
-                <InputMask
-                  placeholder="I.E."
-                  type={"only-numbers"}
-                  value={infoSponsor[0]?.ie ? infoSponsor[0]?.ie : value}
-                  onChange={onChange}
-                  defaultValue={infoSponsor[0]?.ie}
-                  errorMessage={errors.ie?.message}
-                  getElement={function (): TextInput {
-                    throw new Error("Function not implemented.");
-                  }}
-                  getRawValue={function (): string {
-                    throw new Error("Function not implemented.");
-                  }}
-                  isValid={function (): boolean {
-                    throw new Error("Function not implemented.");
-                  }}
-                  keyboardType="numeric"
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
               name="email"
               render={({ field: { onChange, value } }) => (
                 <Input
@@ -795,7 +768,7 @@ export function FormSponsor() {
 
             <VStack mb={4}>
               <Text color="gray.100" fontSize="sm" fontFamily="body" mr={2}>
-                Quantidade de times à patrtocinar:
+                Quantidade de times à Patrocionar:
               </Text>
               <FormControl>
                 <HStack space={6} mt={2}>

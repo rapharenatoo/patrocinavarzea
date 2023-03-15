@@ -75,12 +75,14 @@ export function ChampionshipCard({
       </Text>
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1}>
-        Região: Zona {zone}
+        Região: {zone}
       </Text>
 
-      <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
-        Instagram: {instagram}
-      </Text>
+      {instagram && (
+        <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
+          Instagram: {instagram}
+        </Text>
+      )}
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
         Prêmio em dinheiro: {cashReward}

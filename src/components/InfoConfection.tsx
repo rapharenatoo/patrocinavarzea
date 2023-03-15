@@ -25,7 +25,6 @@ type UserConfectionProps = {
   name: string;
   email: string;
   taxId: string;
-  ie?: number;
   address: Address;
   numberAddress?: string;
   complementAddress?: string;
@@ -98,15 +97,6 @@ export function InfoConfection() {
                     numberOfLines={1}
                   >
                     CPF / CNPJ: {infoConfection[0]?.taxId}
-                  </Text>
-                  <Text
-                    color="white"
-                    fontSize="sm"
-                    mb={1}
-                    fontFamily="body"
-                    numberOfLines={1}
-                  >
-                    I.E.: {infoConfection[0]?.ie}
                   </Text>
                   <Text
                     color="white"

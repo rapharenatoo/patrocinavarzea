@@ -64,7 +64,7 @@ type UserClubProps = {
   complementAddress?: string;
   zone?: string;
   clubColors?: string;
-  instagram?: string;
+  instagram?: string; 
   facebook?: string;
   nameContact?: string;
   phoneContact?: string;

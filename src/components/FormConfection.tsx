@@ -50,7 +50,6 @@ type UserConfectionProps = {
   type: string;
   taxIdType: string;
   taxId: string;
-  ie?: string;
   address: Address;
   numberAddress?: string;
   complementAddress?: string;
@@ -134,7 +133,6 @@ export function FormConfection() {
       .string()
       .required("Informe o CPF / CNPJ")
       .default(infoConfection[0]?.taxId),
-    ie: yup.string().required("Informe o I.E.").default(infoConfection[0]?.ie),
     address: yup.object({
       zipCode: yup
         .string()
@@ -417,30 +415,6 @@ export function FormConfection() {
                   />
                 )
               }
-            />
-
-            <Controller
-              control={control}
-              name="ie"
-              render={({ field: { onChange, value } }) => (
-                <InputMaskTaxId
-                  placeholder="I.E."
-                  type={"only-numbers"}
-                  value={infoConfection[0]?.ie ? infoConfection[0]?.ie : value}
-                  onChangeText={onChange}
-                  defaultValue={infoConfection[0]?.ie}
-                  errorMessage={errors.ie?.message}
-                  getElement={function (): TextInput {
-                    throw new Error("Function not implemented.");
-                  }}
-                  getRawValue={function (): string {
-                    throw new Error("Function not implemented.");
-                  }}
-                  isValid={function (): boolean {
-                    throw new Error("Function not implemented.");
-                  }}
-                />
-              )}
             />
 
             <Controller

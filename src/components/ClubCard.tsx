@@ -20,9 +20,17 @@ type ClubCard = ICheckboxGroupProps & {
   };
   numberAddress: string;
   zone: string;
-  category: string;
+  instagram: string;
+  facebook: string;
+  foundationDate: string;
+  clubColors: string;
+  categoryJuvenile: boolean;
+  categorySport: boolean;
+  categoryVeteran: boolean;
+  categoryFemale: boolean;
   wantSponsorship: string;
   isSponsorship: string;
+  ownField: string;
 };
 
 export function ClubCard({
@@ -31,9 +39,17 @@ export function ClubCard({
   taxId,
   address,
   zone,
-  category,
+  instagram,
+  facebook,
+  foundationDate,
+  clubColors,
+  categoryJuvenile,
+  categorySport,
+  categoryVeteran,
+  categoryFemale,
   wantSponsorship,
   isSponsorship,
+  ownField,
   ...rest
 }: ClubCard) {
   return (
@@ -69,19 +85,38 @@ export function ClubCard({
       <Text color="gray.100" fontSize="sm" numberOfLines={2} mt={2}>
         {address.city} - {address.state}
       </Text>
-
       <Text color="gray.100" fontSize="sm" numberOfLines={1}>
         Região: {zone}
       </Text>
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
-        Categoria: {category}
+        Cores: {clubColors}
+      </Text>
+      <Text color="gray.100" fontSize="sm" numberOfLines={1}>
+        Categoria: {categoryJuvenile ? "Juvenil   " : ""}
+        {categorySport ? "Sport   " : ""}
+        {categoryVeteran ? "Veterano   " : ""}
+        {categoryFemale ? "Female   " : ""}
+      </Text>
+
+      <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
+        Data da fundação: {foundationDate}
       </Text>
       <Text color="gray.100" fontSize="sm" numberOfLines={1}>
         Quer Patrocínio: {wantSponsorship}
       </Text>
       <Text color="gray.100" fontSize="sm" numberOfLines={1}>
         Patrocinado: {isSponsorship}
+      </Text>
+      <Text color="gray.100" fontSize="sm" numberOfLines={1}>
+        Campo próprio: {ownField}
+      </Text>
+
+      <Text color="gray.100" fontSize="sm" numberOfLines={2} mt={2}>
+        Instagram: {instagram}
+      </Text>
+      <Text color="gray.100" fontSize="sm" numberOfLines={1}>
+        Facebook: {facebook}
       </Text>
     </VStack>
   );

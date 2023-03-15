@@ -125,7 +125,7 @@ export function InfoClub() {
                     fontFamily="body"
                     numberOfLines={1}
                   >
-                    Contato: {auth().currentUser.displayName}
+                    Contato: {infoClub[0]?.nameContact}
                   </Text>
                   <Text
                     color="white"

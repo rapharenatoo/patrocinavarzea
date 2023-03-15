@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigation } from "@react-navigation/native";
 import {
   VStack,
   Input,
   Icon,
-  ScrollView,
   FlatList,
   Spinner,
   Center,
@@ -15,8 +13,6 @@ import { Ionicons } from "@expo/vector-icons";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import email from "react-native-email";
-
-import { AppNavigatorRoutesProps } from "../routes/app.admin.routes";
 
 import { ClubCard } from "../components/ClubCard";
 import { ScreenHeader } from "../components/ScreenHeader";
@@ -42,9 +38,17 @@ type ClubProps = {
   address: Address;
   numberAddress: string;
   zone: string;
-  category: string;
+  instagram: string;
+  facebook: string;
+  foundationDate: string;
+  clubColors: string;
+  categoryJuvenile: boolean;
+  categorySport: boolean;
+  categoryVeteran: boolean;
+  categoryFemale: boolean;
   wantSponsorship: string;
   isSponsorship: string;
+  ownField: string;
 };
 
 type Sponsorships = Array<string>;
@@ -57,7 +61,6 @@ type SponsorProps = {
 
 export function ClubList() {
   const toast = useToast();
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [textSearch, setTextSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [club, setClub] = useState<ClubProps[]>([]);
@@ -118,8 +121,7 @@ export function ClubList() {
             item.name.toLowerCase().indexOf(textSearch.toLowerCase()) > -1 ||
             item.address?.city.toLowerCase().indexOf(textSearch.toLowerCase()) >
               -1 ||
-            item.zone.toLowerCase().indexOf(textSearch.toLowerCase()) > -1 ||
-            item.category.toLowerCase().indexOf(textSearch.toLowerCase()) > -1
+            item.zone.toLowerCase().indexOf(textSearch.toLowerCase()) > -1
           ) {
             return true;
           } else {
@@ -250,9 +252,17 @@ export function ClubList() {
                   }}
                   numberAddress={item.numberAddress}
                   zone={item.zone}
-                  category={item.category}
+                  instagram={item.instagram}
+                  facebook={item.facebook}
+                  foundationDate={item.foundationDate}
+                  clubColors={item.clubColors}
+                  categoryJuvenile={item.categoryJuvenile}
+                  categorySport={item.categorySport}
+                  categoryVeteran={item.categoryVeteran}
+                  categoryFemale={item.categoryFemale}
                   wantSponsorship={item.wantSponsorship}
                   isSponsorship={item.isSponsorship}
+                  ownField={item.ownField}
                   idCheckBox={item.name}
                   onChange={setSelectedClub}
                   value={selectedClub}

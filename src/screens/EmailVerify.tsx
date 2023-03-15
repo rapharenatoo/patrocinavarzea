@@ -79,7 +79,7 @@ export function EmailVerify() {
             resizeMode="center"
           />
         </Center>
-        <Center mb={16}>
+        <Center mb={14}>
           <Icon
             as={MaterialCommunityIcons}
             name="email-check"
@@ -95,7 +95,7 @@ export function EmailVerify() {
             mb={6}
             fontFamily="heading"
           >
-            Verique se e-mail, por favor!
+            Verique seu e-mail, por favor!
           </Heading>
 
           <Text
@@ -107,7 +107,7 @@ export function EmailVerify() {
             Olá, para começar a usar o Patrocina Várzea, precisamos verificar o
             seu e-mail.{`\n\n`}
             Já enviamos o link de verificação. Por favor, verifique e confirme
-            que é você mesmo.
+            seu cadastro. Lembre de verificar também na caixa de SPAM. 
           </Text>
         </Center>
         <Center>

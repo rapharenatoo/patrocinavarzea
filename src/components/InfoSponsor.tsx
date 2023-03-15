@@ -29,7 +29,6 @@ type UserSponsorProps = {
   name: string;
   email: string;
   taxId: string;
-  ie: string;
   address: Address;
   numberAddress: string;
   complementAddress?: string;
@@ -111,15 +110,6 @@ export function InfoSponsor() {
                     numberOfLines={1}
                   >
                     CPF / CNPJ: {infoSponsor[0].taxId}
-                  </Text>
-                  <Text
-                    color="white"
-                    fontSize="sm"
-                    mb={1}
-                    fontFamily="body"
-                    numberOfLines={1}
-                  >
-                    I.E.: {infoSponsor[0].ie}
                   </Text>
                   <Text
                     color="white"
