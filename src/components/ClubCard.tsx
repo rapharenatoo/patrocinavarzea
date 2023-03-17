@@ -4,6 +4,7 @@ import {
   HStack,
   Text,
   VStack,
+  Link,
   ICheckboxGroupProps,
 } from "native-base";
 
@@ -112,12 +113,37 @@ export function ClubCard({
         Campo próprio: {ownField}
       </Text>
 
-      <Text color="gray.100" fontSize="sm" numberOfLines={2} mt={2}>
-        Instagram: {instagram}
-      </Text>
-      <Text color="gray.100" fontSize="sm" numberOfLines={1}>
-        Facebook: {facebook}
-      </Text>
+      <HStack mt={2} h={5}>
+        <Text color="gray.100" fontSize="sm">
+          Instagram:{" "}
+        </Text>
+        <Link
+          href={`https://www.instagram.com/${instagram}`}
+          _text={{
+            color: "gray.100",
+            size: "sm",
+            fontWeight: "bold",
+          }}
+        >
+          {instagram}
+        </Link>
+      </HStack>
+
+      <HStack mt={2} h={5}>
+        <Text color="gray.100" fontSize="sm">
+          Facebook:{" "}
+        </Text>
+        <Link
+          href={`https://www.facebook.com/${facebook}`}
+          _text={{
+            color: "gray.100",
+            size: "sm",
+            fontWeight: "bold",
+          }}
+        >
+          {facebook}
+        </Link>
+      </HStack>
     </VStack>
   );
 }

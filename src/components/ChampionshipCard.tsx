@@ -1,4 +1,4 @@
-import { Heading, HStack, Text, VStack } from "native-base";
+import { Heading, HStack, Link, Text, VStack } from "native-base";
 
 type ChampionshipProps = {
   name: string;
@@ -79,9 +79,21 @@ export function ChampionshipCard({
       </Text>
 
       {instagram && (
-        <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
-          Instagram: {instagram}
-        </Text>
+        <HStack mt={2} h={5}>
+          <Text color="gray.100" fontSize="sm">
+            Instagram:{" "}
+          </Text>
+          <Link
+            href={`https://www.instagram.com/${instagram}`}
+            _text={{
+              color: "gray.100",
+              size: "sm",
+              fontWeight: "bold",
+            }}
+          >
+            {instagram}
+          </Link>
+        </HStack>
       )}
 
       <Text color="gray.100" fontSize="sm" numberOfLines={1} mt={2}>
