@@ -7,8 +7,8 @@ import {
 
 import { Home } from "../screens/Home";
 import { Profile } from "../screens/Profile";
-import { ChampionshipsList } from "../screens/ChampionshipsList";
 import { ClubListConfection } from "../screens/ClubListConfection";
+import { EmailSponsorConfection } from "../screens/EmailSponsorConfection";
 
 import HomeSvg from "../assets/home.svg";
 import HistorySvg from "../assets/history.svg";
@@ -22,6 +22,7 @@ type AppConfectionRoutes = {
   profile: undefined;
   championshipsList: undefined;
   clubListConfection: undefined;
+  emailSponsorConfection: undefined;
 };
 
 export type AppNavigatorRoutesProps =
@@ -80,6 +81,13 @@ export function AppConfectionRoutes() {
       <Screen
         name="profile"
         component={Profile}
+        options={{
+          tabBarButton: () => null,
+        }}
+      />
+      <Screen
+        name="emailSponsorConfection"
+        component={EmailSponsorConfection}
         options={{
           tabBarButton: () => null,
         }}

@@ -18,6 +18,7 @@ import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 
 import { SelectSingUp } from "../components/SelectSingUp";
 import { Input } from "../components/Input";
+import { InputPassword } from "../components/InputPassword";
 import { Button } from "../components/Button";
 
 import IllustrationImg from "../assets/icon.png";
@@ -48,6 +49,8 @@ export function SignUp() {
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -201,9 +204,10 @@ export function SignUp() {
             control={control}
             name="password"
             render={({ field: { onChange, value } }) => (
-              <Input
+              <InputPassword
                 placeholder="Senha"
-                secureTextEntry
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
                 onChangeText={onChange}
                 value={value}
                 errorMessage={errors.password?.message}
@@ -215,9 +219,10 @@ export function SignUp() {
             control={control}
             name="password_confirm"
             render={({ field: { onChange, value } }) => (
-              <Input
-                placeholder="Confirme a Senha"
-                secureTextEntry
+              <InputPassword
+                placeholder="Confirme a senha"
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
                 onChangeText={onChange}
                 value={value}
                 onSubmitEditing={handleSubmit(handleSignUp)}

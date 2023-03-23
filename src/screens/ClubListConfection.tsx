@@ -9,10 +9,13 @@ import {
   Text,
   useToast,
 } from "native-base";
+import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import email from "react-native-email";
+
+import { AppNavigatorRoutesProps } from "../routes/app.confection.routes";
 
 import { ClubCard } from "../components/ClubCard";
 import { ScreenHeader } from "../components/ScreenHeader";
@@ -61,6 +64,7 @@ type ConfectionProps = {
 
 export function ClubListConfection() {
   const toast = useToast();
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [textSearch, setTextSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [club, setClub] = useState<ClubProps[]>([]);
@@ -132,6 +136,10 @@ export function ClubListConfection() {
     }
   }, [textSearch]);
 
+  function handleEmailSponsorConfection() {
+    navigation.navigate("emailSponsorConfection");
+  }
+
   async function handleSendEmail() {
     setIsLoading(true);
 
@@ -170,7 +178,7 @@ export function ClubListConfection() {
       .then(() => {
         setIsOpen(false);
         handleSendEmail();
-
+        handleEmailSponsorConfection();
         const messageSuccess = toast.show({
           title:
             "Parabéns você acabou de patrocinar! Nossa equipe entrará em contato nos próximos dias.",

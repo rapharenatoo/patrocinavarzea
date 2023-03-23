@@ -1,13 +1,7 @@
+import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import {
-  VStack,
-  Image,
-  Center,
-  Heading,
-  ScrollView,
-  Text,
-} from "native-base";
+import { VStack, Image, Center, Heading, ScrollView, Text } from "native-base";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -17,6 +11,7 @@ import { AuthNavigatorRoutesProps } from "../routes/auth.routes";
 import { useAuth } from "../hooks/auth";
 
 import { Input } from "../components/Input";
+import { InputPassword } from "../components/InputPassword";
 import { Button } from "../components/Button";
 
 import IllustrationImg from "../assets/icon.png";
@@ -37,6 +32,8 @@ const signUpSchema = yup.object({
 export function SignInSponsor() {
   const { signIn, isLogging } = useAuth();
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -97,9 +94,10 @@ export function SignInSponsor() {
             control={control}
             name="password"
             render={({ field: { onChange, value } }) => (
-              <Input
+              <InputPassword
                 placeholder="Senha"
-                secureTextEntry
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
                 onChangeText={onChange}
                 value={value}
                 errorMessage={errors.password?.message}

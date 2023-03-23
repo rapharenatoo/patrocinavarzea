@@ -9,6 +9,7 @@ import { Home } from "../screens/Home";
 import { Profile } from "../screens/Profile";
 import { ChampionshipsList } from "../screens/ChampionshipsList";
 import { ClubList } from "../screens/ClubList";
+import { EmailSponsor } from "../screens/EmailSponsor";
 
 import HomeSvg from "../assets/home.svg";
 import HistorySvg from "../assets/history.svg";
@@ -22,6 +23,7 @@ type AppSponsorRoutes = {
   profile: undefined;
   championshipsList: undefined;
   clubList: undefined;
+  emailSponsor: undefined;
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppSponsorRoutes>;
@@ -79,6 +81,13 @@ export function AppSponsorRoutes() {
       <Screen
         name="profile"
         component={Profile}
+        options={{
+          tabBarButton: () => null,
+        }}
+      />
+      <Screen
+        name="emailSponsor"
+        component={EmailSponsor}
         options={{
           tabBarButton: () => null,
         }}
